@@ -1,0 +1,48 @@
+*.class
+*.log
+
+# sbt specific
+.cache
+.cache-main
+.cache-tests
+.history
+.lib/
+dist/*
+resolution-cache/
+streams/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/target/
+project/project/
+target/
+
+plugin/bin/sbt
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+/bin/
+.project
+.settings
+.classpath
+
+js/etarget/
+js/bin/
+jvm/etarget/
+jvm/bin/
+
+# OS X
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+.DS_Store
+
+# Special
+
+ep-sheet.css
+ep-sheet.html
+translation.json

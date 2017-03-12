@@ -1,0 +1,342 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2017 Lars Kroll <bathtor@googlemail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ */
+
+/* latin */
+@font-face {
+  font-family: 'Abel';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Abel'), local('Abel-Regular'), url(http://fonts.gstatic.com/s/abel/v6/UzN-iejR1VoXU2Oc-7LsbvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Aldrich';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Aldrich'), url(http://fonts.gstatic.com/s/aldrich/v6/TqyqZ92O6-MkXS4JR8sZ6gLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+sheet-abel {
+    font-family: 'Abel', serif;
+}
+
+sheet-aldrich {
+    font-family: 'Aldrich', monospace;
+}
+
+label {
+    font-size: 1em;
+    font-weight: 400;
+    margin-bottom: 0;
+    padding-right: 0;
+    text-align: inherit;
+    width: auto
+}
+
+input {
+  background-color: ${input-background-colour};
+  color: ${input-colour};
+  font-size: 12px;
+  padding: 0;
+}
+
+button,
+input[type=number],
+input[type=text],
+select,
+textarea {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    margin-bottom: 0!important
+}
+
+button:focus,
+input[type=number]:focus,
+input[type=text]:focus,
+select:focus,
+textarea:focus {
+    outline: 0
+}
+
+button[type=roll] {
+    background-image: none;
+    border: 0;
+    box-shadow: none;
+    text-align: left;
+    text-shadow: initial
+}
+
+button[type=roll].btn {
+    font-size: inherit;
+    margin: 0
+}
+
+button[type=roll].btn:not(.sheet-visible-button) {
+    background-color: transparent;
+    padding: 0
+}
+
+button[type=roll].btn:not(.sheet-visible-button):hover,
+button[type=roll].btn:not(.sheet-visible-button):hover .sheet-light-label,
+button[type=roll].btn:not(.sheet-visible-button):hover h3,
+button[type=roll].btn:not(.sheet-visible-button):hover input,
+button[type=roll].btn:not(.sheet-visible-button):hover span,
+button[type=roll].btn:not(.sheet-visible-button):hover div {
+    color: ${button-highlight}!important
+}
+
+button[type=roll].btn.sheet-visible-button {
+    background-color: ${button-highlight};
+    border-radius: 3px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .3);
+    color: rgba(255, 255, 255, .87);
+    font-size: .9em;
+    padding: 1px 3px;
+}
+
+button[type=roll].btn.sheet-visible-button:active {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .3)
+}
+
+button[type=roll]:hover {
+    background-position: initial
+}
+
+button[type=roll]::before {
+    content: ''!important;
+    font-family: inherit!important
+}
+
+button[type=roll]:active {
+    box-shadow: none
+}
+
+input,
+select,
+textarea {
+    background-color: ${presentation-mode-background};
+    color: #000;
+    font-size: 12px;
+    padding: 0;
+}
+
+input[type=number],
+input[type=text],
+select,
+textarea {
+    width: 100%!important;
+}
+
+input[type="checkbox"] {
+  margin: 3px 0;
+  line-height: normal;
+  border-radius : 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    text-align: center;
+}
+
+textarea {
+    height: 150px;
+    resize: both
+}
+
+.sheet-one-line-textarea,
+.sheet-xs-textarea {
+    height: 1.273em
+}
+
+.sheet-two-line-textarea {
+    height: 2.4em
+}
+
+.sheet-max-two-line-textarea {
+    max-height: 2.4em
+}
+
+.sheet-three-line-textarea {
+    height: 3.4em
+}
+
+.sheet-four-line-textarea {
+    height: 4.5em
+}
+
+.sheet-five-line-textarea {
+    height: 5.9em
+}
+
+.sheet-six-line-textarea {
+    height: 7em
+}
+
+.sheet-eight-line-textarea {
+    height: 9.3em
+}
+
+.sheet-twenty-line-textarea {
+    height: 23.3em
+}
+
+.sheet-thirty-line-textarea {
+    height: 35.6em
+}
+
+.sheet-presentation span {
+    color: ${input-colour};
+    white-space: pre-wrap;
+}
+
+.sheet-flex-grow {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+
+.sheet-flex-container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.sheet-left-top-corner {
+    width: 30% !important;
+}
+
+.sheet-inlineLabel::after {
+    content: ": ";
+}
+
+.sheet-rolltemplate-ep-ini,
+.sheet-rolltemplate-ep-default {
+    margin-left: -42px
+}
+
+.withoutavatars .sheet-rolltemplate-ep-ini,
+.withoutavatars .sheet-rolltemplate-ep-default {
+    margin-left: -11px
+}
+
+
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper,
+.sheet-rolltemplate-ep-default .sheet-template-wrapper {
+    background-color: ${template-background};
+    color: ${template-text};
+    border: 0px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.sheet-rolltemplate-ep-ini .inlinerollresult,
+.sheet-rolltemplate-ep-default .inlinerollresult {
+    background: 0 0;
+    border: 2px solid transparent;
+    border-radius: 1px;
+    font-size: 18px;
+    padding: 0 2px;
+    color: ${roll-highlight};
+    text-shadow:
+        -1px -1px 1px ${roll-highlight-shadow},
+        1px -1px 1px ${roll-highlight-shadow},
+        -1px 1px 1px ${roll-highlight-shadow},
+        1px 1px 1px ${roll-highlight-shadow};
+}
+
+.sheet-rolltemplate-ep-ini .inlinerollresult.fullcrit,
+.sheet-rolltemplate-ep-ini .inlinerollresult.fullfail,
+.sheet-rolltemplate-ep-default .inlinerollresult.fullcrit,
+.sheet-rolltemplate-ep-default .inlinerollresult.fullfail {
+    border: 0px;
+}
+
+
+
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper h3,
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h3 {
+    background-image: linear-gradient(to right, ${template-header} -30%, transparent 120%);
+    color: ${template-text};
+    font-variant: small-caps;
+    font-family: 'Aldrich', monospace;
+    text-align: center;
+    font-weight: 500;
+    text-shadow:
+        -1px -1px 1px ${text-highlight},
+        1px -1px 1px ${text-highlight},
+        -1px 1px 1px ${text-highlight},
+        1px 1px 1px ${text-highlight};
+    padding: 5px;
+}
+
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h4 {
+    background-color: transparent;
+    color: ${template-text};
+    /*font-variant: small-caps;*/
+    font-family: 'Abel', serif;
+    text-align: left;
+    font-style: italic;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 0px;
+    margin-left: 2em;
+    margin-right: 2em;
+    border-bottom: 1px solid ${text-highlight};
+}
+
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper p,
+.sheet-rolltemplate-ep-default .sheet-template-wrapper p {
+    font-family: 'Abel', serif;
+    text-align: left;
+    padding: 5px;
+    text-indent: 2em;
+    margin: 0px;
+}
+
+.sheet-rolltemplate-ep-default .sheet-roll-success {
+    background-image: linear-gradient(to right, ${template-success} -30%, transparent 120%);
+}
+
+.sheet-rolltemplate-ep-default .sheet-roll-failure {
+    background-image: linear-gradient(to right, ${template-failure} -30%, transparent 120%);
+}
+
