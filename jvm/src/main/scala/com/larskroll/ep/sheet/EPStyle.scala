@@ -69,7 +69,7 @@ object EPStyle extends SheetStyle {
     margin := "5px");
 
   val wrapBoxTitle = cls(
-    color := c.primaryShade4.css,
+    color := c.titleText.css,
     marginTop := "4px",
     paddingLeft := "2px",
     paddingRight := "2px",
@@ -80,7 +80,7 @@ object EPStyle extends SheetStyle {
     textAlign.center);
 
   val smallWrapBoxTitle = cls(
-    color := c.primaryShade4.css,
+    color := c.titleText.css,
     marginTop := "2px",
     paddingLeft := "2px",
     paddingRight := "2px",
@@ -95,6 +95,8 @@ object EPStyle extends SheetStyle {
 
   val largeText = cls(
     input(fontSize := "1.4rem",
+      fontWeight.bold),
+    span(fontSize := "1.4rem",
       fontWeight.bold));
 
   val aptTable = cls(
@@ -105,6 +107,40 @@ object EPStyle extends SheetStyle {
       span(textAlign.right,
         display.block,
         paddingRight := "5px")));
+
+  val skillTable = cls(
+    tableLayout.fixed,
+    width := "100%",
+    minWidth := "40rem",
+    td(width := "20%",
+      span(textAlign.right,
+        display.block,
+        paddingRight := "5px")));
+
+  val skillName = cls(
+    fontWeight.bold);
+
+  val skillField = cls(
+    fontStyle.oblique,
+    paddingLeft := "2px",
+    paddingRight := "4px");
+
+  val skillApt = cls(
+    textTransform.uppercase);
+
+  val skillSpec = cls(
+    fontStyle.italic);
+
+  val skillTotal = cls(
+    fontWeight.normal,
+    paddingLeft := "5px",
+    paddingRight := "10px",
+    paddingBottom := "0px",
+    borderBottomStyle.solid,
+    borderBottomColor := c.lightGrey.css,
+    borderBottomWidth := "1px",
+    width := "1.5em",
+    textAlign.right);
 
   val `left-top-corner` = cls();
 
@@ -126,9 +162,20 @@ object EPStyle extends SheetStyle {
     fontWeight.bold);
 
   val inlineLabelGroup = cls(
+    display.`inline-block`,
     marginLeft := "2px",
     marginRight := "2px",
     whiteSpace.nowrap);
+
+  val note = cls(
+    display.`inline-block`,
+    marginLeft := "2px",
+    marginRight := "2px",
+    whiteSpace.normal,
+    fontSize.smaller,
+    inlineLabel(
+      fontWeight.normal,
+      fontStyle.italic));
 
   val fieldLabel = cls(
     backgroundColor := c.primaryShade3.css,
@@ -178,16 +225,41 @@ object EPStyle extends SheetStyle {
     maxWidth := "100%",
     minWidth := "1rem");
 
+  val exactly15rem = cls(
+    width := "15rem");
+
+  val exactly20rem = cls(
+    width := "20rem");
+
+  val exactly23rem = cls(
+    width := "23rem");
+
+  val marginr1rem = cls(
+    marginRight := "1rem");
+
+  val skillRow = cls(
+    width := "100%");
+
+  val `ep-row`, `ep-twocolrow`, `ep-threecolrow` = cls();
+  val `ep-col` = cls();
+
   val `flex-grow` = cls();
   val `flex-container` = cls();
+  val `flex-start`, `flex-centre`, `flex-end` = cls();
+  val `flex-col` = cls();
   val `two-line-textarea` = cls();
   val `visible-button` = cls();
+
+  val `class-tag-field` = cls();
+  val `cat-tag-field` = cls();
+  val `h2hr` = cls();
 
   // ***  Templates ***
 
   val `template-wrapper` = cls();
   val `roll-success` = cls();
   val `roll-failure` = cls();
+  val `sub-header` = cls();
 
 }
 
@@ -204,6 +276,7 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val lightText = hex("light-text", 0xfafafa);
   val darkText = hex("dark-text", 0x0c0c0c);
 
+  val titleText = alias("title-text", primaryShade3);
   val toggleSpanText = alias("toggle-span-text", mediumGrey);
   val toggleInputText = alias("toggle-input-text", mediumGrey);
   val toggleCheckedText = alias("toggle-checked-text", complementShade2);
@@ -223,6 +296,8 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val rollHighlightShadow = alias("roll-highlight-shadow", complementShade3);
   val remplateSuccess = alias("template-success", tertiaryShade0);
   val remplateFailure = alias("template-failure", secondaryShade0);
+  val classTag = alias("class-tag-colour", primaryShade3);
+  val catTag = alias("cat-tag-colour", secondaryShade3);
 }
 
 object EPColourData {

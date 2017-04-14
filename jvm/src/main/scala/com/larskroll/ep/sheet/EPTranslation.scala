@@ -34,6 +34,8 @@ object EPTranslation extends SheetI18N {
   val author = text("author", "Author");
   val github = text("github", "Github");
 
+  val note = text("note", "Note");
+
   val characterInfo = text("character-info", "Character Info");
   val background = text("background", "Background");
   val faction = text("faction", "Faction");
@@ -81,11 +83,103 @@ object EPTranslation extends SheetI18N {
   val energy = text("energy", "Energy");
 
   val skills = text("skills", "Skills");
-  val skillMod = text("skillmod", "Skill Modifier");
+  val activeSkills = text("active-skills", "Active Skills");
+  val knowledgeSkills = text("knowledge-skills", "Knowledge Skills");
+  val skillName = text("skill-name", "Name");
+  val skillField = text("skill-field", "Field");
+  val skillCategories = text("skill-categories", "Categories");
+  val skillSpecialisations = text("skill-specialisations", "Specialisations");
+  val skillLinkedAptitude = text("skill-linked-aptitude", "Aptitude");
+  val skillNoDefaulting = text("skill-no-defaulting", "No Defaulting");
+  val skillRanks = text("skill-ranks", "Ranks");
+  val skillMorphBonus = text("skill-morph-bonus", "Morph Bonus");
+  val skillTotal = text("skill-total", "Total");
+  val skillCategoryOptions = {
+    import Skills.SkillCategory;
+    import SkillCategory._;
+    val opts = SkillCategory.values.map {
+      case Combat    => (Combat.toString() -> "Combat")
+      case Mental    => (Mental.toString() -> "Mental")
+      case Physical  => (Physical.toString() -> "Physical")
+      case Psi       => (Psi.toString() -> "Psi & Mental") // always go together
+      case Social    => (Social.toString() -> "Social")
+      case Technical => (Technical.toString() -> "Technical")
+      case Vehicle   => (Vehicle.toString() -> "Vehicle")
+      case NA        => (NA.toString() -> "None")
+    }.toMap;
+    enum(SkillCategory.labelPrefix, opts)
+  }
+  val skillCategoryOptionsShort = {
+    import Skills.SkillCategory;
+    import SkillCategory._;
+    val opts = SkillCategory.values.map {
+      case Combat    => (Combat.toString() -> "C")
+      case Mental    => (Mental.toString() -> "M")
+      case Physical  => (Physical.toString() -> "P")
+      case Psi       => (Psi.toString() -> "\u03A8&M")
+      case Social    => (Social.toString() -> "S")
+      case Technical => (Technical.toString() -> "T")
+      case Vehicle   => (Vehicle.toString() -> "V")
+      case NA        => (NA.toString() -> " ")
+    }.toMap;
+    enum(SkillCategory.labelShortPrefix, opts)
+  }
+
+  val skillClassOptions = {
+    import Skills.SkillClass;
+    import SkillClass._;
+    val opts = SkillClass.values.map {
+      case Active    => (Active.toString() -> "Active")
+      case Knowledge => (Knowledge.toString() -> "Knowledge")
+    }.toMap;
+    enum(SkillClass.labelPrefix, opts)
+  }
+
+  //  val skillClassOptionsShort = {
+  //    import Skills.SkillClass;
+  //    import SkillClass._;
+  //    val opts = SkillClass.values.map {
+  //      case Active    => (Active.toString() -> "A")
+  //      case Knowledge => (Knowledge.toString() -> "K")
+  //    }.toMap;
+  //    enum(SkillClass.labelShortPrefix, opts)
+  //  }
+
+  val skillSortOptions = {
+    import Skills.SortBy;
+    import SortBy._;
+
+    val opts = SortBy.values.map {
+      case None     => (None.toString() -> " - ")
+      case Name     => (Name.toString() -> "Name")
+      case Category => (Category.toString() -> "Category")
+      case Aptitude => (Aptitude.toString() -> "Aptitude")
+    }.toMap;
+    enum(SortBy.labelPrefix, opts)
+  }
+
+  val allFullOptions = Map[Enumeration, OptionLabel](
+    Skills.SkillCategory -> skillCategoryOptions,
+    Skills.SkillClass -> skillClassOptions,
+    Skills.SortBy -> skillSortOptions);
+
+  val allShortOptions = Map[Enumeration, OptionLabel](
+    Skills.SkillCategory -> skillCategoryOptionsShort);
+  //Skills.SkillClass -> skillClassOptionsShort);
+
+  val skillsGenerate = text("generate-skills", "Generate Default Skills");
+  val skillsGenerating = text("generating-skills", "Generating Skills...");
+  val skillsSortBy = text("skills-sort-by", "Sort by");
+  val skillsSort = text("skills-sort", "Sort Now");
+  val skillCommands = text("skill-commands", "Commands");
+
+  val skillReloadPage = text("skill-reload-page", "Sorting result is only shown after reopening the sheet.");
+  val skillNoSortManual = text("skill-no-sort-manual", "Due to Roll20 limitations, manually added items can not be sorted automatically at this time.");
 
   val core = text("core", "Core");
   val morph = text("morphs", "Morph");
   val activeMorph = text("active-morph", "Active Morph");
+  val morphBank = text("morph-bank", "Morph Bank");
   val morphType = text("morph-type", "Type");
   val morphName = text("morph-name", "Model");
   val morphDescription = text("morph-description", "Description");

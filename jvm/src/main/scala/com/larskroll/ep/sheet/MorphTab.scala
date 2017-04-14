@@ -30,7 +30,7 @@ import scalatags.Text.all._
 
 object MorphTab extends FieldGroup {
   import SheetImplicits._
-  import Roll20Predef._
+  //import Roll20Predef._
   import Blocks._
 
   val char = EPCharModel;
@@ -38,8 +38,8 @@ object MorphTab extends FieldGroup {
   val sty = EPStyle;
 
   val morphsSection: SheetElement = char.morphs(
-    roll20row(
-      roll20col(fblock(EPStyle.min5rem,
+    eprow(
+      epcol(fblock(EPStyle.min5rem,
         char.morphs.id like { f => input(`type` := "hidden", name := f.name, value := f.initialValue) },
         char.morphs.active,
         (t.activeMorph -> span(name := char.morphs.cls)),
@@ -56,8 +56,8 @@ object MorphTab extends FieldGroup {
         (t.morphImplants -> dualMode(char.morphs.morphImplants.like(CoreTabRenderer.textareaField))),
         (t.morphDescription -> dualMode(char.morphs.morphDescription.like(CoreTabRenderer.textareaField)))))));
 
-  val members: Seq[SheetElement] = Seq(roll20row(
-    roll20col(fblock(t.activeMorph, EPStyle.min5rem,
+  val members: Seq[SheetElement] = Seq(eprow(
+    epcol(fblock(t.activeMorph, EPStyle.min5rem,
       (t.activeMorph -> char.currentMorph),
       (t.morphName -> char.morphName),
       (t.morphType -> char.morphType),
@@ -67,6 +67,7 @@ object MorphTab extends FieldGroup {
       (t.morphTraits -> char.morphTraits),
       (t.morphImplants -> char.morphImplants),
       (t.morphDescription -> char.morphDescription)))),
+    h2(sty.`h2hr`, t.morphBank),
     morphsSection);
 
   override def renderer = CoreTabRenderer;

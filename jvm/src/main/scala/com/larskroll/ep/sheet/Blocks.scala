@@ -33,10 +33,20 @@ object Blocks {
   def block(title: LabelsI18N, elems: SheetElement*): CoreBlock = CoreBlock(title, elems);
   def fblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(title), growStyle, elems);
   def fblock(growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(None, growStyle, elems);
-  def frow(elems: SheetElement*): FlexRow = FlexRow(elems);
+  def frow(alignStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexRow = FlexRow(alignStyle, elems);
+  def fcol(growStyles: Seq[scalatags.stylesheet.Cls], elems: SheetElement*): FlexColumn = FlexColumn(growStyles, elems);
+  def tightfrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow, elems);
   def sblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, None, growStyle, elems);
   def sblock(title: LabelsI18N, titleRoll: Button, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, Some(titleRoll), growStyle, elems);
   def coreSeq(elems: SheetElement*) = GroupWithRenderer(CoreTabRenderer, elems);
+  def eprow(elems: SheetElement*): FieldGroup = GroupWithRenderer(DivRenderer(Seq(EPStyle.`ep-row`)), elems);
+  def ep2colrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(DivRenderer(Seq(EPStyle.`ep-twocolrow`)), elems);
+  def ep3colrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(DivRenderer(Seq(EPStyle.`ep-threecolrow`)), elems);
+  def epcol(elems: SheetElement*): FieldGroup = GroupWithRenderer(DivRenderer(Seq(EPStyle.`ep-col`)), elems);
+  def pseudoButton(toggle: FlagField, buttonLabel: FieldLike[_]): PseudoButton = PseudoButton(toggle, Left(buttonLabel));
+  def pseudoButton(toggle: FlagField, buttonLabel: LabelI18N): PseudoButton = PseudoButton(toggle, Right(buttonLabel));
+  def note(s: String): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(s));
+  def note(l: LabelI18N): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(l));
 
   val flexFill = span(EPStyle.`flex-grow`, EPStyle.min1rem);
   //def roll(roll: Button, members: SheetElement*): RollContent = RollContent(roll, members);
@@ -124,14 +134,69 @@ case class FlexBlock(title: Option[LabelsI18N], growStyle: scalatags.stylesheet.
   }
 }
 
-case class FlexRow(members: Seq[SheetElement]) extends FieldGroup {
+case class FlexRow(alignStyle: scalatags.stylesheet.Cls, members: Seq[SheetElement]) extends FieldGroup {
   override def renderer = flexRowRenderer;
 
   val flexRowRenderer = new GroupRenderer {
     import GroupRenderer._
 
     override def fieldCombiner: FieldCombiner = { tags =>
-      div(EPStyle.flexRow, EPStyle.`flex-container`, tags)
+      div(EPStyle.flexRow, EPStyle.`flex-container`, alignStyle, tags)
+    };
+
+    override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+  }
+}
+
+case class FlexColumn(growStyles: Seq[scalatags.stylesheet.Cls], members: Seq[SheetElement]) extends FieldGroup {
+
+  override def renderer = flexColRenderer;
+
+  val flexColRenderer = new GroupRenderer {
+    import GroupRenderer._
+
+    override def fieldCombiner: FieldCombiner = { tags =>
+      div(growStyles, EPStyle.`flex-col`, tags)
+    };
+
+    override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+  }
+}
+
+object TightFlexRow extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(EPStyle.flexRow, EPStyle.`flex-container`, tags)
+  };
+
+  override def fieldRenderers: FieldRenderer = {
+    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+  }
+
+  override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+    div(EPStyle.inlineLabelGroup,
+      span(EPStyle.inlineLabel, l),
+      e);
+
+}
+
+case class PseudoButton(toggle: FlagField, buttonLabel: Either[FieldLike[_], LabelI18N]) extends FieldGroup {
+  val members: Seq[SheetElement] = Seq.empty;
+
+  override def renderer = pbRenderer;
+
+  val pbRenderer = new GroupRenderer {
+    import GroupRenderer._
+    import CoreTabRenderer.obool2Checked
+
+    override def fieldCombiner: FieldCombiner = { tags =>
+      label(TabbedStyle.pseudoButtonWrapper,
+        input(`type` := "checkbox", name := toggle.name, toggle.defaultValue),
+        buttonLabel match {
+          case Left(f)  => span(name := f.name, SheetI18N.datai18nDynamic)
+          case Right(l) => span(l)
+        })
     };
 
     override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;

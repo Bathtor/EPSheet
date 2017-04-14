@@ -16,9 +16,9 @@ val htmlfile = "ep-sheet.html";
 val cssfile = "ep-sheet.css";
 val translationfile = "translation.json";
 
-val epdev = Roll20Config("roll20", "2004105");
+val epdev = Roll20Config("roll20", "<campaign id>");
 val campaign = epdev;
-val rackSessionId = "328c140b0ebd01b88ba8bd3f42a11f7fd1356fa1c984df5ca96d9abe78ec62c6";
+val rackSessionId = "<insert me>";
 
 val maxRetries = 3;
 

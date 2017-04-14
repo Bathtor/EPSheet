@@ -28,7 +28,7 @@
   font-family: 'Abel';
   font-style: normal;
   font-weight: 400;
-  src: local('Abel'), local('Abel-Regular'), url(http://fonts.gstatic.com/s/abel/v6/UzN-iejR1VoXU2Oc-7LsbvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  src: local('Abel'), local('Abel-Regular'), url(https://fonts.gstatic.com/s/abel/v6/UzN-iejR1VoXU2Oc-7LsbvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
@@ -37,15 +37,15 @@
   font-family: 'Aldrich';
   font-style: normal;
   font-weight: 400;
-  src: local('Aldrich'), url(http://fonts.gstatic.com/s/aldrich/v6/TqyqZ92O6-MkXS4JR8sZ6gLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
+  src: local('Aldrich'), url(https://fonts.gstatic.com/s/aldrich/v6/TqyqZ92O6-MkXS4JR8sZ6gLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
-sheet-abel {
+.sheet-abel {
     font-family: 'Abel', serif;
 }
 
-sheet-aldrich {
+.sheet-aldrich {
     font-family: 'Aldrich', monospace;
 }
 
@@ -93,6 +93,7 @@ button[type=roll] {
 }
 
 button[type=roll].btn {
+    color: inherit;
     font-size: inherit;
     margin: 0
 }
@@ -169,6 +170,93 @@ textarea {
     resize: both
 }
 
+h2.sheet-h2hr {
+    overflow: hidden;
+    text-align: center;
+    color: ${title-text};
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+h2.sheet-h2hr:before,
+h2.sheet-h2hr:after {
+    background-color: ${title-text};
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+h2.sheet-h2hr:before {
+    right: 0.5em;
+    margin-left: -50%;
+}
+h2.sheet-h2hr:after {
+    left: 0.5em;
+    margin-right: -50%;
+}
+
+.sheet-ep-row, .sheet-ep-twocolrow, .sheet-ep-threecolrow {
+    display: block;
+    clear: both;
+}
+
+.sheet-ep-col {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.sheet-ep-col:last-child {
+    margin-right: 0!important
+}
+
+.sheet-ep-twocolrow .sheet-ep-col {
+    width: calc(50% - 20px);
+    margin-right: 30px;
+}
+
+.sheet-ep-threecolrow .sheet-ep-col {
+    width: calc(30% - 40px);
+    margin-right: 30px;
+}
+
+.sheet-flex-grow {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+
+.sheet-flex-container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;    
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.sheet-flex-start {
+    -webkit-box-align: flex-start;
+    -ms-flex-align: flex-start;
+    align-items: flex-start;
+}
+
+.sheet-flex-end {
+    -webkit-box-align: flex-end;
+    -ms-flex-align: flex-end;
+    align-items: flex-end;
+}
+
+.sheet-flex-centre {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
 .sheet-one-line-textarea,
 .sheet-xs-textarea {
     height: 1.273em
@@ -215,27 +303,6 @@ textarea {
     white-space: pre-wrap;
 }
 
-.sheet-flex-grow {
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-}
-
-.sheet-flex-container {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-}
-
 .sheet-left-top-corner {
     width: 30% !important;
 }
@@ -243,6 +310,31 @@ textarea {
 .sheet-inlineLabel::after {
     content: ": ";
 }
+
+span.sheet-cat-tag-field {
+  color: ${cat-tag-colour};
+  font-size: 80%;
+  font-weight: bold;
+  padding-left: 1px;
+  padding-right: 1px;
+  position: relative;
+  top: -0.5em;
+}
+
+span.sheet-skillName {
+    font-variant: small-caps;
+}
+
+span.sheet-skillSpec:not(:empty)::before {
+    content: " — ";
+}
+
+
+/*
+*
+* ROLL TEMPLATE
+*
+*/
 
 .sheet-rolltemplate-ep-ini,
 .sheet-rolltemplate-ep-default {
@@ -321,6 +413,22 @@ textarea {
     margin-left: 2em;
     margin-right: 2em;
     border-bottom: 1px solid ${text-highlight};
+}
+
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h4 .sheet-sub-header {
+    background-color: transparent;
+    color: ${template-text};
+    /*font-variant: small-caps;*/
+    font-family: 'Abel', serif;
+    text-align: left;
+    font-style: normal;
+    font-size: smaller;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 0px;
+    margin-left: 2em;
+    margin-right: 2em;
 }
 
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper p,

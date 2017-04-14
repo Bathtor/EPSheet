@@ -36,7 +36,7 @@ object EPCharModel extends SheetModel {
 
   val sheetName = "EPSheet";
   val author = "Lars Kroll";
-  val github = "FILL URL!";
+  val github = "https://github.com/Bathtor/EPSheet";
 
   val characterSheet = text("character_sheet").default(s"$sheetName v$version");
 
@@ -117,16 +117,53 @@ object EPCharModel extends SheetModel {
   val morphArmourEnergy = "morph_armour_energy".editable(false).default(0);
   val morphArmourKinetic = "morph_armour_kinetic".editable(false).default(0);
 
-  val skills = SkillSection;
+  val activeSkills = ActiveSkillSection;
+  val knowledgeSkills = KnowledgeSkillSection;
+  val generateSkills = "skills_generate".default(false);
+  val generateSkillsLabel = "skills_generate_label".editable(false).default("generate-skills"); // other possibility is "generating-skills"
+  val sortSkills = "skills_sort".default(false);
+  val sortSkillsBy = "skills_sort_by".options(Skills.SortBy).default(Skills.SortBy.None);
   val morphs = MorphSection;
 }
 
-object SkillSection extends RepeatingSection {
+object ActiveSkillSection extends RepeatingSection {
   import FieldImplicits._;
   implicit val ctx = this.renderingContext;
 
-  def name = "skills";
-  val mod = "skillmod".default(0);
+  def name = "activeskills";
+  val rowId = text("rowid").editable(false).default("?");
+  val skillName = text("skill_name");
+  val skillField = "skill_field".default("");
+  val skillCategory = "skill_category".options(Skills.SkillCategory);
+  val skillCategoryShort = text("skill_category_short").editable(false);
+  val specialisations = "skill_specialisations".default("");
+  val linkedAptitude = "skill_linked_aptitude".options(Aptitude);
+  val noDefaulting = "skill_no_defaulting".default(false);
+  val ranks = "skill_ranks".default(0);
+  val morphBonus = "skill_morph_bonus".editable(false).default(0);
+  val total = number[Int]("skill_total").editable(false);
+  val rollTarget = roll("skill_target", EPCharModel.modQuery.expr + total);
+  val rollSpecTarget = roll("skill_spec_target", EPCharModel.modQuery.expr + total + 10);
+
+}
+
+object KnowledgeSkillSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "knowledgeskills";
+  val rowId = text("rowid").editable(false).default("?");
+  val skillName = text("skill_name");
+  val skillField = "skill_field".default("");
+  val specialisations = "skill_specialisations".default("");
+  val linkedAptitude = "skill_linked_aptitude".options(Aptitude);
+  val noDefaulting = "skill_no_defaulting".default(false);
+  val ranks = "skill_ranks".default(0);
+  val morphBonus = "skill_morph_bonus".editable(false).default(0);
+  val total = number[Int]("skill_total").editable(false);
+  val rollTarget = roll("skill_target", EPCharModel.modQuery.expr + total);
+  val rollSpecTarget = roll("skill_spec_target", EPCharModel.modQuery.expr + total + 10);
+
 }
 
 object MorphSection extends RepeatingSection {

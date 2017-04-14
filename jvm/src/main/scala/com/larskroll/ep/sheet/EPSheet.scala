@@ -44,9 +44,7 @@ object EPSheet extends TabbedSheet {
 
   val core = tab(t.core, CoreTab);
 
-  val skills = tab(t.skills, roll20col(
-    label(t.skills),
-    char.skills(label(t.skillMod), char.skills.mod)));
+  val skills = tab(t.skills, SkillTab);
 
   val morphs = tab(t.morph, MorphTab);
 

@@ -92,7 +92,7 @@ object ValueParsers {
     return AptitudeValues(None, None, None, None, None, None, None);
   }
 
-  private def aptFrom(s: String): Aptitude.Aptitude = Aptitude.withName(s);
+  def aptFrom(s: String): Aptitude.Aptitude = Aptitude.withName(s);
 
   private def dynamicToOption[T](d: Dynamic): Option[T] = if (js.isUndefined(d)) { None } else { Some(d.asInstanceOf[T]) }
 }

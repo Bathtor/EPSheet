@@ -30,7 +30,7 @@ import scalatags.Text.all._
 
 object CoreTab extends FieldGroup {
   import SheetImplicits._
-  import Roll20Predef._
+  //import Roll20Predef._
   import Blocks._
 
   val char = EPCharModel;
@@ -44,7 +44,7 @@ object CoreTab extends FieldGroup {
     AptitudeRow(t.aptTotal, Seq(char.cogTotal, char.cooTotal, char.intTotal, char.refTotal, char.savTotal, char.somTotal, char.wilTotal))));
 
   val members: Seq[SheetElement] = Seq(
-    roll20row(frow(
+    eprow(frow(sty.`flex-centre`,
       flexFill,
       sblock(t.mox,
         roll("moxie-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
@@ -65,14 +65,14 @@ object CoreTab extends FieldGroup {
       flexFill,
       sblock(t.rezPoints, sty.max5rem, char.rezPoints),
       flexFill)),
-    roll202colrow(
-      roll20col(fblock(t.characterInfo, EPStyle.min5rem,
+    frow(sty.`flex-start`,
+      fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem), fblock(t.characterInfo, EPStyle.min5rem,
         (t.background -> dualMode(char.background)),
         (t.faction -> dualMode(char.faction)),
         (t.genderId -> dualMode(char.genderId)),
         (t.actualAge -> dualMode(char.actualAge)),
         (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))))),
-      roll20col(block(t.aptitudes,
+      fcol(Seq(EPStyle.exactly23rem), block(t.aptitudes,
         aptitudes),
         fblock(t.stats, EPStyle.max2p5rem,
           (t.tt -> char.traumaThreshold),
@@ -93,6 +93,12 @@ object CoreTabRenderer extends GroupRenderer {
   import GroupRenderer._
   import RenderMode._
 
+  implicit def obool2Checked(ob: Option[Boolean]): Modifier = ob match {
+    case Some(true)  => checked
+    case Some(false) => ()
+    case None        => ()
+  }
+
   override def fieldRenderers: FieldRenderer = {
     case (b: Button, _) =>
       button(`type` := "roll", name := b.name, value := b.roll.render)
@@ -100,16 +106,30 @@ object CoreTabRenderer extends GroupRenderer {
       span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
     case (f: Field[_], Normal) if f.editable() => f match {
       case n: NumberField[_] => span(EPStyle.max3charinline, input(`type` := "number", name := n.name, value := n.initialValue))
-      case ff: FlagField     => input(`type` := "checkbox", name := ff.name, checked := ff.initialValue)
-      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
+      case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
+      case ef: EnumField => ef.enum match {
+        case Some(e) => EPTranslation.allFullOptions.get(e) match {
+          case Some(l) => select(name := ef.name, ef.options.map(o => option(value := o, l.apply(o).attr)).toSeq)
+          case None    => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
+        }
+        case None => select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
+      }
+      case _ => input(`type` := "text", name := f.name, value := f.initialValue)
     }
     case (f: Field[_], Presentation) if f.editable() =>
       span(name := f.name)
     case (f: Field[_], Edit) if f.editable() => f match {
       case n: NumberField[_] => span(EPStyle.max3charinline, input(`type` := "number", name := n.name, value := n.initialValue))
       case ff: FlagField     => input(`type` := "checkbox", name := ff.name, checked := ff.initialValue)
-      case ef: EnumField     => select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
-      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
+      case ef: EnumField => ef.enum match {
+        case Some(e) => EPTranslation.allFullOptions.get(e) match {
+          case Some(l) => select(name := ef.name, ef.options.map(o => option(value := o, l.apply(o).attr)).toSeq)
+          case None    => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
+        }
+        case None => select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
+      }
+
+      case _ => input(`type` := "text", name := f.name, value := f.initialValue)
     }
     case (f: Field[_], _) if !(f.editable()) =>
       span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
