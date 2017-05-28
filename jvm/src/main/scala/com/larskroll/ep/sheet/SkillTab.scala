@@ -42,50 +42,50 @@ object SkillTab extends FieldGroup {
     fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
       block(t.activeSkills,
         char.activeSkills(
-          SkillRow(
+          TightRepRow(
             char.activeSkills.rowId like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
             presOnly(tightfrow(
               char.activeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll("active_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.skillField, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
-              char.activeSkills.skillCategoryShort.like(SkillRenderers.categoryRenderer),
-              char.activeSkills.skillField like { sfield => span(sty.skillField, name := sfield.name) },
+              roll(char.activeSkills, "active_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.field, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
+              char.activeSkills.categoryShort.like(SkillRenderers.categoryRenderer),
+              char.activeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
               char.activeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
               //span(raw(" &mdash; ")),
-              roll("active_spec_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.specialisations, char.epRoll, char.activeSkills.rollSpecTarget), char.activeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
+              roll(char.activeSkills, "active_spec_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.specialisations, char.epRoll, char.activeSkills.rollSpecTarget), char.activeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
               flexFill)),
-            editOnly(tightfrow(
-              char.activeSkills.skillName like { sname => div(sty.inlineLabelGroup, input(`type` := "text", name := sname.name, value := sname.initialValue, t.skillName.placeholder)) },
+            editOnly(tightfrow(sty.halfRemRowSeparator,
+              char.activeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
               (t.skillNoDefaulting -> char.activeSkills.noDefaulting),
-              char.activeSkills.skillField like { sfield => div(sty.inlineLabelGroup, input(`type` := "text", name := sfield.name, value := sfield.initialValue, t.skillField.placeholder)) },
-              char.activeSkills.skillCategory,
+              char.activeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
+              char.activeSkills.category,
               char.activeSkills.linkedAptitude,
               (t.skillRanks -> char.activeSkills.ranks),
               (t.skillMorphBonus -> char.activeSkills.morphBonus),
               (t.skillTotal -> char.activeSkills.total),
-              char.activeSkills.specialisations like { sspec => div(sty.inlineLabelGroup, input(`type` := "text", name := sspec.name, value := sspec.initialValue, t.skillSpecialisations.placeholder)) },
+              char.activeSkills.specialisations.like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
               flexFill)))))),
     fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly20rem),
       block(t.knowledgeSkills,
         char.knowledgeSkills(
-          SkillRow(
+          TightRepRow(
             char.knowledgeSkills.rowId like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
             presOnly(tightfrow(
               char.knowledgeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll("knowledge_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.skillField, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
-              char.knowledgeSkills.skillField like { sfield => span(sty.skillField, name := sfield.name) },
+              roll(char.knowledgeSkills, "knowledge_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.field, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
+              char.knowledgeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
               char.knowledgeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
               //span(raw(" &mdash; ")),
-              roll("knowledge_spec_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.specialisations, char.epRoll, char.knowledgeSkills.rollSpecTarget), char.knowledgeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
+              roll(char.knowledgeSkills, "knowledge_spec_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.specialisations, char.epRoll, char.knowledgeSkills.rollSpecTarget), char.knowledgeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
               flexFill)),
-            editOnly(tightfrow(
-              char.knowledgeSkills.skillName like { sname => div(sty.inlineLabelGroup, input(`type` := "text", name := sname.name, value := sname.initialValue, t.skillName.placeholder)) },
+            editOnly(tightfrow(sty.halfRemRowSeparator,
+              char.knowledgeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
               (t.skillNoDefaulting -> char.knowledgeSkills.noDefaulting),
-              char.knowledgeSkills.skillField like { sfield => div(sty.inlineLabelGroup, input(`type` := "text", name := sfield.name, value := sfield.initialValue, t.skillField.placeholder)) },
+              char.knowledgeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
               char.knowledgeSkills.linkedAptitude,
               (t.skillRanks -> char.knowledgeSkills.ranks),
               (t.skillMorphBonus -> char.knowledgeSkills.morphBonus),
               (t.skillTotal -> char.knowledgeSkills.total),
-              char.knowledgeSkills.specialisations like { sspec => div(sty.inlineLabelGroup, input(`type` := "text", name := sspec.name, value := sspec.initialValue, t.skillSpecialisations.placeholder)) },
+              char.knowledgeSkills.specialisations.like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
               flexFill))))),
       block(t.skillCommands,
         char.generateSkillsLabel like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
@@ -115,7 +115,7 @@ object SkillRenderers {
   }
 }
 
-object SkillRow extends GroupRenderer {
+object TightRepRow extends GroupRenderer {
   import GroupRenderer._
   import RenderMode._
 

@@ -94,5 +94,67 @@ object ValueParsers {
 
   def aptFrom(s: String): Aptitude.Aptitude = Aptitude.withName(s);
 
+  private lazy val skillPattern = {
+    val mod = """([+-]\d+)""";
+    val words = """(\w(?:(?:\w| )*\w)?)""";
+    val whitespace = """\s""";
+    val wordsInParenMaybe = """(?:\s\(""" + words + """\))?""";
+    val skillMaybe = """(?:\sskill)?""";
+
+    val expr = mod + whitespace + words + wordsInParenMaybe + skillMaybe;
+    expr.r
+  }
+
+  def skillsFrom(sraw: String): Seq[SkillMod] = {
+    val s = sraw.trim;
+    try {
+      if (s.startsWith("{")) {
+        EPWorkers.log(s"Trying to parse $s as single json object.");
+        val res = js.JSON.parse(s);
+        EPWorkers.log(s"Got dynamic: $res.");
+        skillFromJson(res).toSeq
+      } else if (s.startsWith("[")) {
+        EPWorkers.log(s"Trying to parse $s as json list.");
+        val res = js.JSON.parse(s);
+        EPWorkers.log(s"Got dynamic: $res.");
+        dynamicToOption[js.Array[js.Dynamic]](res) match {
+          case Some(data) => {
+            data.flatMap(skillFromJson).toSeq
+          }
+          case None => EPWorkers.error("Object was not an array!"); Seq.empty
+        }
+      } else {
+        val commaSplit = s.split(",");
+        val res = commaSplit.flatMap { group =>
+          group.trim match {
+            case skillPattern(mod, skill, null)  => Some(SkillMod(removeFinalSkill(skill), None, mod.toInt))
+            case skillPattern(mod, skill, field) => Some(SkillMod(removeFinalSkill(skill), Some(field), mod.toInt))
+            case _                               => println(s"Extracted nothing from: $group"); None
+          }
+        };
+        res.toSeq
+      }
+    } catch {
+      case e: Throwable => EPWorkers.error(e); Seq.empty
+    }
+  }
+
+  private lazy val finalSkillPattern = """(.*)\sskill""".r;
+
+  private def removeFinalSkill(s: String): String = {
+    s match {
+      case finalSkillPattern(x) => x
+      case x                    => x
+    }
+  }
+
+  def skillFromJson(res: js.Dynamic): Option[SkillMod] = {
+    for {
+      skill <- dynamicToOption[String](res.skill);
+      field <- Some(dynamicToOption[String](res.field));
+      mod <- dynamicToOption[Int](res.mod)
+    } yield SkillMod(skill, field, mod)
+  }
+
   private def dynamicToOption[T](d: Dynamic): Option[T] = if (js.isUndefined(d)) { None } else { Some(d.asInstanceOf[T]) }
 }

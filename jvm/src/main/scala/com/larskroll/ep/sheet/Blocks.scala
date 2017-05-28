@@ -31,11 +31,13 @@ import SheetImplicits._
 
 object Blocks {
   def block(title: LabelsI18N, elems: SheetElement*): CoreBlock = CoreBlock(title, elems);
-  def fblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(title), growStyle, elems);
+  def fblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(Left(title)), growStyle, elems);
+  def fblock(title: TextField, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(Right(title)), growStyle, elems);
   def fblock(growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(None, growStyle, elems);
   def frow(alignStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexRow = FlexRow(alignStyle, elems);
   def fcol(growStyles: Seq[scalatags.stylesheet.Cls], elems: SheetElement*): FlexColumn = FlexColumn(growStyles, elems);
-  def tightfrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow, elems);
+  def tightfrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow(None), elems);
+  def tightfrow(sepStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow(Some(sepStyle)), elems);
   def sblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, None, growStyle, elems);
   def sblock(title: LabelsI18N, titleRoll: Button, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, Some(titleRoll), growStyle, elems);
   def coreSeq(elems: SheetElement*) = GroupWithRenderer(CoreTabRenderer, elems);
@@ -47,9 +49,41 @@ object Blocks {
   def pseudoButton(toggle: FlagField, buttonLabel: LabelI18N): PseudoButton = PseudoButton(toggle, Right(buttonLabel));
   def note(s: String): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(s));
   def note(l: LabelI18N): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(l));
+  def flowpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar, elems);
+  def buttonSeq(elems: SheetElement*) = GroupWithRenderer(ButtonSeq, elems);
 
   val flexFill = span(EPStyle.`flex-grow`, EPStyle.min1rem);
   //def roll(roll: Button, members: SheetElement*): RollContent = RollContent(roll, members);
+}
+
+case object ButtonSeq extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(tags)
+  };
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+
+  override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+    div(EPStyle.inlineLabelGroup,
+      span(EPStyle.inlineLabel, l),
+      e);
+}
+
+case object FlowPar extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    p(EPStyle.flowPar, tags)
+  };
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+
+  override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+    div(EPStyle.inlineLabelGroup,
+      span(EPStyle.inlineLabel, l),
+      e);
 }
 
 case class CoreBlock(title: LabelsI18N, members: Seq[SheetElement]) extends FieldGroup {
@@ -103,7 +137,7 @@ case class SmallBlock(title: LabelsI18N, titleRoll: Option[Button], growStyle: s
   }
 }
 
-case class FlexBlock(title: Option[LabelsI18N], growStyle: scalatags.stylesheet.Cls, members: Seq[SheetElement]) extends FieldGroup {
+case class FlexBlock(title: Option[Either[LabelsI18N, TextField]], growStyle: scalatags.stylesheet.Cls, members: Seq[SheetElement]) extends FieldGroup {
   override def renderer = flexBlockRenderer;
 
   val flexBlockRenderer = new GroupRenderer {
@@ -111,9 +145,12 @@ case class FlexBlock(title: Option[LabelsI18N], growStyle: scalatags.stylesheet.
 
     override def fieldCombiner: FieldCombiner = { tags =>
       title match {
-        case Some(t) => div(EPStyle.wrapBox,
+        case Some(Left(t)) => div(EPStyle.wrapBox,
           div(EPStyle.`flex-container`, tags),
           div(EPStyle.wrapBoxTitle, t.attrs))
+        case Some(Right(f)) => div(EPStyle.wrapBox,
+          div(EPStyle.`flex-container`, tags),
+          div(EPStyle.wrapBoxTitle, span(name := f.name)))
         case None => div(EPStyle.wrapBox,
           div(EPStyle.`flex-container`, tags))
       }
@@ -163,11 +200,11 @@ case class FlexColumn(growStyles: Seq[scalatags.stylesheet.Cls], members: Seq[Sh
   }
 }
 
-object TightFlexRow extends GroupRenderer {
+case class TightFlexRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends GroupRenderer {
   import GroupRenderer._
 
   override def fieldCombiner: FieldCombiner = { tags =>
-    div(EPStyle.flexRow, EPStyle.`flex-container`, tags)
+    div(EPStyle.flexRow, EPStyle.`flex-container`, sepStyle, tags)
   };
 
   override def fieldRenderers: FieldRenderer = {

@@ -16,6 +16,10 @@ object EPDefaultTemplate extends RollTemplate {
     apply(character <<= cf, attributeField <<= af, testRoll <<= rf, testTarget <<= tf);
   def apply(cf: Field[String], af: Field[String], asf: Field[String], rf: RollField[Int], tf: RollField[Int]): TemplateApplication =
     apply(character <<= cf, attributeField <<= af, attributeSubField <<= asf, testRoll <<= rf, testTarget <<= tf);
+  def apply(cf: Field[String], af: Field[String], asf: Field[String], rf: RollField[Int], tf: RollField[Int], sm: CommandButton): TemplateApplication =
+    apply(character <<= cf, attributeField <<= af, attributeSubField <<= asf, testRoll <<= rf, testTarget <<= tf, successMacro <<= sm);
+  def apply(cf: Field[String], af: Field[String], asf: Field[String], rf: RollField[Int], tf: RollField[Int], sm: CommandButton, smes30: CommandButton, smes60: CommandButton): TemplateApplication =
+    apply(character <<= cf, attributeField <<= af, attributeSubField <<= asf, testRoll <<= rf, testTarget <<= tf, successMacro <<= sm, successMacroES30 <<= smes30, successMacroES60 <<= smes60);
 
   // **** Fields ****
   val character = attribute[String]("character");
@@ -24,9 +28,38 @@ object EPDefaultTemplate extends RollTemplate {
   val attributeSubField = attribute[String]("attribute-subfield");
   val testRoll = rollable[Int]("test-roll");
   val testTarget = rollable[Int]("test-target"); // attribute plus rollquery
+  val successMacro = button("success-macro");
+  val successMacroES30 = button("success-macro-es30");
+  val successMacroES60 = button("success-macro-es60");
 
-  def rollSuccess(l: LabelI18N) = p(sty.`roll-success`,
-    span(l), span(raw("! &raquo; ")), span(t.mos), span(": "), testRoll);
+  def rollSuccess(l: LabelI18N) = div(
+    p(sty.`roll-success`,
+      span(l), span(raw("! &raquo; ")), span(t.mos), span(": "), testRoll),
+    rollLess(testRoll, 30) {
+      exists(successMacro) {
+        p(sty.`roll-success`, successMacro)
+      }
+    },
+    rollGreater(testRoll, 29) {
+      rollLess(testRoll, 60) {
+        switchExists(successMacroES30, {
+          p(sty.`roll-success`, successMacroES30)
+        }, {
+          exists(successMacro) {
+            p(sty.`roll-success`, successMacro)
+          }
+        })
+      }
+    },
+    rollGreater(testRoll, 59) {
+      switchExists(successMacroES60, {
+        p(sty.`roll-success`, successMacroES60)
+      }, {
+        exists(successMacro) {
+          p(sty.`roll-success`, successMacro)
+        }
+      })
+    });
   def rollFailure(l: LabelI18N) = p(sty.`roll-failure`,
     span(l), span(raw("... &raquo; ")), span(t.mof), span(": "), testRoll, raw(" - "), testTarget);
   // TODO write API script that replaces the inline math with the result

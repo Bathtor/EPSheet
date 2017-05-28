@@ -44,4 +44,6 @@ object Aptitude extends Enumeration {
 }
 
 case class AptitudeValues(cog: Option[Int], coo: Option[Int], int: Option[Int],
-                          ref: Option[Int], sav: Option[Int], som: Option[Int], wil: Option[Int])
+                          ref: Option[Int], sav: Option[Int], som: Option[Int], wil: Option[Int]);
+
+case class SkillMod(skill: String, field: Option[String], mod: Int);                      

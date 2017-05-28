@@ -66,7 +66,7 @@ def upload(attempt: Int) {
 	println(s"#${attempt}: Uploading to ${campaign.roll20} -> ${campaign.campaignId}...");
 	val requrl = s"https://app.${campaign.roll20}.net/campaigns/savesettings/${campaign.campaignId}";
 	val respurl = s"https://app.${campaign.roll20}.net/campaigns/campaignsettings/${campaign.campaignId}";
-	val res = Http(requrl).postForm(Seq(
+	val res = Http(requrl).option(HttpOptions.connTimeout(5000)).option(HttpOptions.readTimeout(30000)).postForm(Seq(
 		"customcharsheet_layout" -> html,
 	    "customcharsheet_style" -> css,
 	    "customcharsheet_translation" -> translation,

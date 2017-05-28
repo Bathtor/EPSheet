@@ -257,6 +257,12 @@ h2.sheet-h2hr:after {
     align-items: center;
 }
 
+.sheet-flex-stretch {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+}
+
 .sheet-one-line-textarea,
 .sheet-xs-textarea {
     height: 1.273em
@@ -311,6 +317,10 @@ h2.sheet-h2hr:after {
     content: ": ";
 }
 
+.sheet-subtleInlineLabel::after {
+    content: ". ";
+}
+
 span.sheet-cat-tag-field {
   color: ${cat-tag-colour};
   font-size: 80%;
@@ -329,6 +339,9 @@ span.sheet-skillSpec:not(:empty)::before {
     content: " — ";
 }
 
+.sheet-labelGroup span:empty::before {
+    content: "—";
+}
 
 /*
 *
@@ -337,18 +350,21 @@ span.sheet-skillSpec:not(:empty)::before {
 */
 
 .sheet-rolltemplate-ep-ini,
-.sheet-rolltemplate-ep-default {
+.sheet-rolltemplate-ep-default,
+.sheet-rolltemplate-ep-damage {
     margin-left: -42px
 }
 
 .withoutavatars .sheet-rolltemplate-ep-ini,
-.withoutavatars .sheet-rolltemplate-ep-default {
+.withoutavatars .sheet-rolltemplate-ep-default,
+.withoutavatars .sheet-rolltemplate-ep-damage {
     margin-left: -11px
 }
 
 
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper,
-.sheet-rolltemplate-ep-default .sheet-template-wrapper {
+.sheet-rolltemplate-ep-default .sheet-template-wrapper,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper {
     background-color: ${template-background};
     color: ${template-text};
     border: 0px;
@@ -360,7 +376,8 @@ span.sheet-skillSpec:not(:empty)::before {
 }
 
 .sheet-rolltemplate-ep-ini .inlinerollresult,
-.sheet-rolltemplate-ep-default .inlinerollresult {
+.sheet-rolltemplate-ep-default .inlinerollresult,
+.sheet-rolltemplate-ep-damage .inlinerollresult {
     background: 0 0;
     border: 2px solid transparent;
     border-radius: 1px;
@@ -374,17 +391,29 @@ span.sheet-skillSpec:not(:empty)::before {
         1px 1px 1px ${roll-highlight-shadow};
 }
 
+.sheet-rolltemplate-ep-ini .sheet-fieldvalue,
+.sheet-rolltemplate-ep-default .sheet-fieldvalue,
+.sheet-rolltemplate-ep-damage .sheet-fieldvalue {
+    font-size: larger;
+    padding: 0 2px;
+    color: ${roll-highlight};
+    font-weight: bold;
+}
+
 .sheet-rolltemplate-ep-ini .inlinerollresult.fullcrit,
 .sheet-rolltemplate-ep-ini .inlinerollresult.fullfail,
 .sheet-rolltemplate-ep-default .inlinerollresult.fullcrit,
-.sheet-rolltemplate-ep-default .inlinerollresult.fullfail {
+.sheet-rolltemplate-ep-default .inlinerollresult.fullfail,
+.sheet-rolltemplate-ep-damage .inlinerollresult.fullcrit,
+.sheet-rolltemplate-ep-damage .inlinerollresult.fullfail {
     border: 0px;
 }
 
 
 
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper h3,
-.sheet-rolltemplate-ep-default .sheet-template-wrapper h3 {
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h3,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper h3 {
     background-image: linear-gradient(to right, ${template-header} -30%, transparent 120%);
     color: ${template-text};
     font-variant: small-caps;
@@ -399,7 +428,8 @@ span.sheet-skillSpec:not(:empty)::before {
     padding: 5px;
 }
 
-.sheet-rolltemplate-ep-default .sheet-template-wrapper h4 {
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h4,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper h4 {
     background-color: transparent;
     color: ${template-text};
     /*font-variant: small-caps;*/
@@ -432,7 +462,8 @@ span.sheet-skillSpec:not(:empty)::before {
 }
 
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper p,
-.sheet-rolltemplate-ep-default .sheet-template-wrapper p {
+.sheet-rolltemplate-ep-default .sheet-template-wrapper p,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper p {
     font-family: 'Abel', serif;
     text-align: left;
     padding: 5px;
@@ -448,3 +479,12 @@ span.sheet-skillSpec:not(:empty)::before {
     background-image: linear-gradient(to right, ${template-failure} -30%, transparent 120%);
 }
 
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='~'],
+.sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='~'],
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~'] {
+    background-color: transparent;
+    border: 0;
+    color: ${roll-highlight}; /* #ce0f69; */
+    display: inline;
+    padding: 0
+}

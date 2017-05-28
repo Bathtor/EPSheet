@@ -77,6 +77,7 @@ object EPTranslation extends SheetI18N {
   val physicalHealth = text("physical-health", "Physical Health");
   val damage = text("damage", "Damage");
   val wounds = text("wounds", "Wounds");
+  val woundsIgnored = text("wounds-ignored", "Ignored Wounds")
 
   val armour = text("armour", "Armour");
   val kinetic = text("kinetic", "Kinetic");
@@ -182,6 +183,7 @@ object EPTranslation extends SheetI18N {
   val morphBank = text("morph-bank", "Morph Bank");
   val morphType = text("morph-type", "Type");
   val morphName = text("morph-name", "Model");
+  val morphLabel = text("morph-label", "Label");
   val morphDescription = text("morph-description", "Description");
   val morphTraits = text("morph-traits", "Traits");
   val morphImplants = text("morph-implants", "Implants/Enhancements");
@@ -194,6 +196,43 @@ object EPTranslation extends SheetI18N {
   val morphAptitudeMax = text("morph-aptitude-max", "Aptitude Max");
   val morphSkillBoni = text("morph-skill-boni", "Skill Boni");
 
+  val gear = text("gear", "Gear");
+  val gearFreeform = text("gear-freeform", "Freeform Gear");
+  val meleeWeapons = text("melee-weapons", "Melee Weapons");
+  val rangedWeapons = text("ranged-weapons", "Ranged Weapons");
+  val armourWorn = text("armour-worn", "Armour Worn");
+  val armourActiveTotal = text("armour-active-total", "Active Bonus");
+  val layeringPenalty = text("armour-layering-penalty", "Layered Armour Penalty")
+  val armourName = text("armour-name", "Name");
+  val armourAccessory = text("armour-accessory", "Armour Accessory");
+  val equipment = text("equipment", "Equipment");
+  val equipmentName = text("equipment-name", "Name");
+  val equipmentDescription = text("equipment-description", "Description");
+
+  val ap = abbr("ap", "AP", "armour-penetration", "Armour Penetration");
+  val orTotalAP = text("or-total-ap", "or ignore armour if critical success");
+  val dmg = abbr("weapon-dmg", "Dmg", "weapon-damage", "Damage");
+  val dmgType = {
+    import DamageType._;
+    val opts = DamageType.values.map {
+      case Kinetic => (Kinetic.toString -> "Kinetic")
+      case Energy  => (Energy.toString -> "Energy")
+    }.toMap;
+    enum(DamageType.labelPrefix, opts)
+  }
+  val weaponName = text("weapon-name", "Weapon Name");
+  val weaponSkill = text("weapon-skill", "Skill");
+  val weaponSkillSearch = text("weapon-skill-search", "Search Skill");
+  val weaponDescription = text("weapon-description", "Description");
+
+  val damageInflicts = text("damage-inflicts", "Inflicts");
+  val damageValue = abbr("dv", "DV", "damage-value", "Damage Value");
+
+  val options = text("options", "Options");
+  val sheetSettings = text("sheet-settings", "Sheet Settings");
+  val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
+  //val weightUnit = text("weight-unit", "Weight Unit");
+
   val rollsfor = text("rolls-for", "rolls for");
   val rollSuccess = text("roll-success", "Roll is a success");
   val rollCritSuccess = text("roll-crit-success", "Roll is a critical success");
@@ -203,4 +242,5 @@ object EPTranslation extends SheetI18N {
   val rollAutoFailure = text("roll-auto-failure", "Roll is an automatic failure");
   val mos = abbr("mos", "MoS", "margin-of-success", "Margin of Success");
   val mof = abbr("mof", "MoF", "margin-of-failure", "Margin of Failure");
+
 }

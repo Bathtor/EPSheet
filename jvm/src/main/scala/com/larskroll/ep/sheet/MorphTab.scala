@@ -39,26 +39,28 @@ object MorphTab extends FieldGroup {
 
   val morphsSection: SheetElement = char.morphs(
     eprow(
-      epcol(fblock(EPStyle.min5rem,
-        char.morphs.id like { f => input(`type` := "hidden", name := f.name, value := f.initialValue) },
+      epcol(fblock(char.morphs.morphLabel, EPStyle.min5rem,
+        char.morphs.id.hidden,
         char.morphs.active,
-        (t.activeMorph -> span(name := char.morphs.cls)),
+        editOnly((t.morphLabel -> char.morphs.morphLabel)),
         (t.morphName -> dualMode(char.morphs.morphName)),
         (t.morphType -> dualMode(char.morphs.morphType)),
         (t.morphAptitudeMax -> dualMode(char.morphs.aptitudeMax)),
         (t.morphAptitudeBoni -> dualMode(char.morphs.aptitudeBoni)),
         (t.morphSkillBoni -> dualMode(char.morphs.skillBoni)),
-        (t.morphDurability -> dualMode(char.morphs.morphDurability)),
-        (t.morphMobilitySystem -> dualMode(char.morphs.morphMobilitySystem)),
-        (t.morphArmourEnergy -> dualMode(char.morphs.morphArmourEnergy)),
-        (t.morphArmourKinetic -> dualMode(char.morphs.morphArmourKinetic)),
-        (t.morphTraits -> dualMode(char.morphs.morphTraits.like(CoreTabRenderer.textareaField))),
-        (t.morphImplants -> dualMode(char.morphs.morphImplants.like(CoreTabRenderer.textareaField))),
-        (t.morphDescription -> dualMode(char.morphs.morphDescription.like(CoreTabRenderer.textareaField)))))));
+        (t.morphDurability -> dualMode(char.morphs.durability)),
+        (t.morphMobilitySystem -> dualMode(char.morphs.mobilitySystem)),
+        (t.morphArmourEnergy -> dualMode(char.morphs.armourEnergy)),
+        (t.morphArmourKinetic -> dualMode(char.morphs.armourKinetic)),
+        (t.morphTraits -> dualMode(char.morphs.traits.like(CoreTabRenderer.textareaField))),
+        (t.morphImplants -> dualMode(char.morphs.implants.like(CoreTabRenderer.textareaField))),
+        (t.morphDescription -> dualMode(char.morphs.description.like(CoreTabRenderer.textareaField)))))));
 
   val members: Seq[SheetElement] = Seq(eprow(
     epcol(fblock(t.activeMorph, EPStyle.min5rem,
-      (t.activeMorph -> char.currentMorph),
+      char.morphSkillBoni.hidden,
+      char.currentMorph.hidden,
+      //char.morphLabel,
       (t.morphName -> char.morphName),
       (t.morphType -> char.morphType),
       (t.morphDurability -> char.morphDurability),

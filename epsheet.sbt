@@ -39,6 +39,7 @@ lazy val epsheet = crossProject.in(file(".")).
     name := "EP Sheet Shared",
     libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.3",
     libraryDependencies += "com.larskroll.roll20" %%% "roll20-sheet-framework" % "0.2-SNAPSHOT", //sheetVersion.value
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
     //libraryDependencies += "be.doeraene" %%% "scalajs-pickling-core" % "0.4.0",
     EclipseKeys.useProjectId := true,
     EclipseKeys.eclipseOutput := Some("./etarget"),

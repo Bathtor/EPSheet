@@ -142,6 +142,11 @@ object EPStyle extends SheetStyle {
     width := "1.5em",
     textAlign.right);
 
+  val tfrowName = cls(
+    paddingLeft := 2.px,
+    paddingRight := 2.px,
+    fontWeight.bold);
+
   val `left-top-corner` = cls();
 
   val subLabel = cls(
@@ -161,11 +166,24 @@ object EPStyle extends SheetStyle {
   val inlineLabel = cls(
     fontWeight.bold);
 
+  val subtleInlineLabel = cls(
+    fontStyle.italic);
+
   val inlineLabelGroup = cls(
-    display.`inline-block`,
-    marginLeft := "2px",
-    marginRight := "2px",
+    display.`inline-flex`,
+    marginLeft := 2.px,
+    marginRight := 2.px,
+    marginTop := 2.px,
     whiteSpace.nowrap);
+
+  val flowPar = cls(
+    display.`inline-block`,
+    paddingLeft := 2.rem,
+    textIndent := -2.rem,
+    verticalAlign.`text-top`,
+    textAlign.justify,
+    marginRight := 5.px,
+    marginLeft := 2.px);
 
   val note = cls(
     display.`inline-block`,
@@ -196,6 +214,13 @@ object EPStyle extends SheetStyle {
     //    div(display.`inline-block`)
     );
 
+  val halfRemRowSeparator = cls(
+    borderBottomWidth := 1.px,
+    borderBottomStyle.solid,
+    borderBottomColor := c.lightGrey.css,
+    marginBottom := 0.5.rem,
+    paddingBottom := 0.5.rem);
+
   val wrapButton = cls();
 
   val rem15 = cls(
@@ -206,7 +231,7 @@ object EPStyle extends SheetStyle {
 
   val max3charinline = cls(
     maxWidth := "3em",
-    display.`inline-block`);
+    display.`inline-flex`);
 
   val max5rem = cls(
     maxWidth := "5rem");
@@ -237,6 +262,9 @@ object EPStyle extends SheetStyle {
   val marginr1rem = cls(
     marginRight := "1rem");
 
+  val marginrp5rem = cls(
+    marginRight := 0.5.rem);
+
   val skillRow = cls(
     width := "100%");
 
@@ -245,9 +273,9 @@ object EPStyle extends SheetStyle {
 
   val `flex-grow` = cls();
   val `flex-container` = cls();
-  val `flex-start`, `flex-centre`, `flex-end` = cls();
+  val `flex-start`, `flex-centre`, `flex-end`, `flex-stretch` = cls();
   val `flex-col` = cls();
-  val `two-line-textarea` = cls();
+  val `two-line-textarea`, `eight-line-textarea` = cls();
   val `visible-button` = cls();
 
   val `class-tag-field` = cls();
@@ -260,6 +288,7 @@ object EPStyle extends SheetStyle {
   val `roll-success` = cls();
   val `roll-failure` = cls();
   val `sub-header` = cls();
+  val fieldvalue = cls();
 
 }
 
