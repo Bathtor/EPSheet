@@ -156,7 +156,6 @@ object EPWorkers extends SheetWorker {
       Seq(activeSkills.categoryShort <<= catLabel)
     }
   }
-
   val setSkillsGenerating = nop update { _ =>
     Seq(generateSkillsLabel <<= "generating-skills")
   };
@@ -527,59 +526,102 @@ object EPWorkers extends SheetWorker {
 
   val armourBonus = bind(armourBonusFields).update(armourBonusCalc, armourBonusSum.andThen(armourTotalCalc));
 
-  val skillSearchOp = bind(op(meleeWeapons.skillSearch)) { (o: Option[String]) =>
+  val skillSearchOpMelee = bind(op(meleeWeapons.skillSearch)) { (o: Option[String]) =>
     o match {
       case Some(needle) => {
-        val rowId = Roll20.getActiveRepeatingField();
-        val simpleRowId = rowId.split('_').last;
-        val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
-        log(s"Searching for skill name for melee weapon ($simpleRowId). Fetching rows...");
-        val doF = for {
-          rowAttrs <- rowAttrsF
-        } yield {
-          log(s"Got rows:\n${rowAttrs.mkString(",")}");
-
-          val nameToId = rowAttrs.flatMap {
-            case (id, attrs) => attrs(activeSkills.skillName).map((_, id))
-          }.toMap;
-          val needleL = needle.toLowerCase();
-          val ratings = nameToId.keys.flatMap(n => {
-            val nL = n.toLowerCase();
-            val matchRes = (nL, needleL).zipped.takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
-            val matchLength = matchRes.length;
-            log(s"Compared $nL with $needleL and matched $matchRes of length $matchLength");
-            if (matchLength > 0) {
-              Some((matchLength, n))
-            } else {
-              None
-            }
-          }).toList;
-          if (ratings.isEmpty) {
-            log(s"No match found for $needle");
-            setAttrs(Map(
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillName) <<= meleeWeapons.skillName.resetValue,
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillTotal) <<= meleeWeapons.skillTotal.resetValue))
-          } else {
-            val sorted = ratings.sorted;
-            val selection = sorted.last;
-            log(s"Selected $selection as best fit for $needle");
-            val selectionId = nameToId(selection._2);
-            setAttrs(Map(
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillName) <<= selection._2,
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillTotal) <<= meleeWeapons.skillTotal.valueAt(selectionId)))
-          }
-        };
-        doF.onFailure {
-          case e: Throwable =>
-            error(e); setAttrs(Map(
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillName) <<= meleeWeapons.skillName.resetValue,
-              meleeWeapons.at(simpleRowId, meleeWeapons.skillTotal) <<= meleeWeapons.skillTotal.resetValue))
-        }
-        doF.flatMap(identity)
+        searchSkillAndSetNameTotal(needle, meleeWeapons, meleeWeapons.skillName, meleeWeapons.skillTotal)
       }
       case None => Future.successful(()) // ignore
     }
   };
+
+  val skillSearchOpRanged = bind(op(rangedWeapons.skillSearch)) { (o: Option[String]) =>
+    o match {
+      case Some(needle) => {
+        searchSkillAndSetNameTotal(needle, rangedWeapons, rangedWeapons.skillName, rangedWeapons.skillTotal)
+      }
+      case None => Future.successful(()) // ignore
+    }
+  };
+
+  private def searchSkillAndSetNameTotal(needle: String, weaponSection: RepeatingSection, nameField: TextField, totalField: FieldRef[Int]): Future[Unit] = {
+    val rowId = Roll20.getActiveRepeatingField();
+    val simpleRowId = rowId.split('_').last;
+    val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
+    log(s"Searching for skill name for ${weaponSection.name} ($simpleRowId). Fetching rows...");
+    val doF = for {
+      rowAttrs <- rowAttrsF
+    } yield {
+      log(s"Got rows:\n${rowAttrs.mkString(",")}");
+
+      val nameToId = rowAttrs.flatMap {
+        case (id, attrs) => attrs(activeSkills.skillName).map((_, id))
+      }.toMap;
+      val needleL = needle.toLowerCase();
+      val ratings = nameToId.keys.flatMap(n => {
+        val nL = n.toLowerCase();
+        val matchRes = (nL, needleL).zipped.takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
+        val matchLength = matchRes.length;
+        log(s"Compared $nL with $needleL and matched $matchRes of length $matchLength");
+        if (matchLength > 0) {
+          Some((matchLength, n))
+        } else {
+          None
+        }
+      }).toList;
+      if (ratings.isEmpty) {
+        log(s"No match found for $needle");
+        setAttrs(Map(
+          weaponSection.at(simpleRowId, nameField) <<= nameField.resetValue,
+          weaponSection.at(simpleRowId, totalField) <<= totalField.resetValue))
+      } else {
+        val sorted = ratings.sorted;
+        val selection = sorted.last;
+        log(s"Selected $selection as best fit for $needle");
+        val selectionId = nameToId(selection._2);
+        setAttrs(Map(
+          weaponSection.at(simpleRowId, nameField) <<= selection._2,
+          weaponSection.at(simpleRowId, totalField) <<= totalField.valueAt(selectionId)))
+      }
+    };
+    doF.onFailure {
+      case e: Throwable =>
+        error(e); setAttrs(Map(
+          weaponSection.at(simpleRowId, nameField) <<= nameField.resetValue,
+          weaponSection.at(simpleRowId, totalField) <<= totalField.resetValue))
+    }
+    doF.flatMap(identity)
+  }
+
+  val weaponRangeLimits = bind(op(rangedWeapons.shortRangeUpper, rangedWeapons.mediumRangeUpper, rangedWeapons.longRangeUpper)) update {
+    case (sru, mru, lru) => {
+      val mrl = sru + 1;
+      val lrl = mru + 1;
+      val xrl = lru + 1;
+      Seq(rangedWeapons.mediumRangeLower <<= mrl,
+        rangedWeapons.longRangeLower <<= lrl,
+        rangedWeapons.extremeRangeLower <<= xrl)
+    }
+  }
+
+  val meleeDamageTypeCalc = bind(op(meleeWeapons.damageType)) update {
+    case (dtName) => {
+      import DamageType._
+
+      val dt = withName(dtName);
+      val dtLabel = dynamicLabelShort(dt);
+      Seq(meleeWeapons.damageTypeShort <<= dtLabel)
+    }
+  }
+  val rangedDamageTypeCalc = bind(op(rangedWeapons.damageType)) update {
+    case (dtName) => {
+      import DamageType._
+
+      val dt = withName(dtName);
+      val dtLabel = dynamicLabelShort(dt);
+      Seq(rangedWeapons.damageTypeShort <<= dtLabel)
+    }
+  }
 
   private def morphAptBoni(s: String): Seq[(FieldLike[Any], Any)] = {
     val ab = ValueParsers.aptitudesFrom(s);

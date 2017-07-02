@@ -159,13 +159,15 @@ object EPTranslation extends SheetI18N {
     enum(SortBy.labelPrefix, opts)
   }
 
-  val allFullOptions = Map[Enumeration, OptionLabel](
+  lazy val allFullOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptions,
     Skills.SkillClass -> skillClassOptions,
-    Skills.SortBy -> skillSortOptions);
+    Skills.SortBy -> skillSortOptions,
+    DamageType -> dmgType);
 
-  val allShortOptions = Map[Enumeration, OptionLabel](
-    Skills.SkillCategory -> skillCategoryOptionsShort);
+  lazy val allShortOptions = Map[Enumeration, OptionLabel](
+    Skills.SkillCategory -> skillCategoryOptionsShort,
+    DamageType -> dmgTypeShort);
   //Skills.SkillClass -> skillClassOptionsShort);
 
   val skillsGenerate = text("generate-skills", "Generate Default Skills");
@@ -220,13 +222,48 @@ object EPTranslation extends SheetI18N {
     }.toMap;
     enum(DamageType.labelPrefix, opts)
   }
+  val dmgTypeShort = {
+    import DamageType._;
+    val opts = DamageType.values.map {
+      case Kinetic => (Kinetic.toString -> "K")
+      case Energy  => (Energy.toString -> "E")
+    }.toMap;
+    enum(DamageType.labelShortPrefix, opts)
+  }
   val weaponName = text("weapon-name", "Weapon Name");
   val weaponSkill = text("weapon-skill", "Skill");
   val weaponSkillSearch = text("weapon-skill-search", "Search Skill");
   val weaponDescription = text("weapon-description", "Description");
+  val firingModes = text("fire-modes", "Firing Modes");
+  val singleShot = abbr("ss", "SS", "single-shot", "Single Shot");
+  val semiAutomatic = abbr("sa", "SA", "semi-automatic", "Semi-Automatic");
+  val burstFire = abbr("bf", "BF", "burst-fire", "Burst Fire");
+  val fullAutomatic = abbr("fa", "FA", "full-automatic", "Full Automatic");
+  val singleShotDescription = text("single-shot-description", """
+Single shot weapons may only be fired once per Complex Action.
+""".trim);
+  val semiAutomaticDescription = text("semi-automatic-description", """
+Semi-automatic weapons may be fired twice with the same Complex Action. Each shot is handled as a separate attack.
+""".trim);
+  val burstFireDescription = text("burst-fire-description", """
+Two bursts maybe fired with the same Complex Action. Each burst is handled as a separate attack. Bursts use up 3 shots worth of ammunition.
+A burst may be shot against a single target (concentrated fire) or against two targets within one meter of each other. Against a single target, the attacker can choose either a +10 modifier to hit or increase the DV by +1d10.
+""".trim);
+  val fullAutomaticDescription = text("full-automatic-description", """
+Only one full-auto attack may be made with each Complex Action. This attack may be made on a single target or against up to three separate targets within one meter of another. Against a single individual, the attacker can choose either a +30 modifier to hit or increase the DV by +3d10. Firing in full automatic mode uses up 10 shots.
+""".trim);
+  val weaponRanges = text("weapon-ranges", "Ranges");
+  val shortRange = abbr("s-range", "S", "short-range", "Short");
+  val mediumRange = abbr("m-range", "M", "medium-range", "Medium");
+  val longRange = abbr("l-range", "L", "long-range", "Long");
+  val extremeRange = abbr("x-range", "X", "extreme-range", "Extreme");
+  val magazine = text("magazine", "Magazine");
+  val size = text("size", "Size");
+  val ammoType = text("ammo-type", "Ammo Type");
 
   val damageInflicts = text("damage-inflicts", "Inflicts");
   val damageValue = abbr("dv", "DV", "damage-value", "Damage Value");
+  val concentrateFire = text("concentrate-fire", "Concentrate Fire");
 
   val options = text("options", "Options");
   val sheetSettings = text("sheet-settings", "Sheet Settings");

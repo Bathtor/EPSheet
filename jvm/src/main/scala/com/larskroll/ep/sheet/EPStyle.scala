@@ -147,6 +147,10 @@ object EPStyle extends SheetStyle {
     paddingRight := 2.px,
     fontWeight.bold);
 
+  val tcol = cls(
+    width := "100%",
+    display.block);
+
   val `left-top-corner` = cls();
 
   val subLabel = cls(
@@ -168,6 +172,12 @@ object EPStyle extends SheetStyle {
 
   val subtleInlineLabel = cls(
     fontStyle.italic);
+
+  val lineLabel = cls(
+    textTransform.uppercase,
+    color := c.darkText.css,
+    fontSize := 11.px,
+    marginRight := 5.px);
 
   val inlineLabelGroup = cls(
     display.`inline-flex`,
@@ -268,6 +278,9 @@ object EPStyle extends SheetStyle {
   val skillRow = cls(
     width := "100%");
 
+  val description = cls(
+    fontSize.smaller);
+
   val `ep-row`, `ep-twocolrow`, `ep-threecolrow` = cls();
   val `ep-col` = cls();
 
@@ -281,6 +294,7 @@ object EPStyle extends SheetStyle {
   val `class-tag-field` = cls();
   val `cat-tag-field` = cls();
   val `h2hr` = cls();
+  val `checklabel` = cls();
 
   // ***  Templates ***
 

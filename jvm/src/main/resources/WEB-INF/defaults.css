@@ -170,6 +170,13 @@ textarea {
     resize: both
 }
 
+input[type=checkbox]:checked ~ .sheet-checklabel {
+    display: inherit;
+}
+input[type=checkbox]:not(:checked) ~ .sheet-checklabel {
+    display: none;
+}
+
 h2.sheet-h2hr {
     overflow: hidden;
     text-align: center;
@@ -269,11 +276,11 @@ h2.sheet-h2hr:after {
 }
 
 .sheet-two-line-textarea {
-    height: 2.4em
+    height: 3em
 }
 
 .sheet-max-two-line-textarea {
-    max-height: 2.4em
+    max-height: 3em
 }
 
 .sheet-three-line-textarea {
@@ -445,7 +452,8 @@ span.sheet-skillSpec:not(:empty)::before {
     border-bottom: 1px solid ${text-highlight};
 }
 
-.sheet-rolltemplate-ep-default .sheet-template-wrapper h4 .sheet-sub-header {
+.sheet-rolltemplate-ep-default .sheet-template-wrapper h4 .sheet-sub-header,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper h4 .sheet-sub-header {
     background-color: transparent;
     color: ${template-text};
     /*font-variant: small-caps;*/
@@ -481,7 +489,10 @@ span.sheet-skillSpec:not(:empty)::before {
 
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='~'],
-.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~'] {
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~'],
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='!'],
+.sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='!'],
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='!'] {
     background-color: transparent;
     border: 0;
     color: ${roll-highlight}; /* #ce0f69; */

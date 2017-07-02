@@ -137,6 +137,8 @@ object EPCharModel extends SheetModel {
   val rangeQuery = LabelledSelectQuery("Range",
     Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30));
   lazy val rangedWeapons = RangedWeaponSection;
+  val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
+  val rangedConcFAXDmg = roll("ranged_conc_fa_xdmg", 3.d(10));
   val armourItems = ArmourItemSection;
   val armourEnergyBonus = "armour_energy_bonus".editable(false).default(0);
   val armourKineticBonus = "armour_kinetic_bonus".editable(false).default(0);
@@ -167,6 +169,8 @@ object MeleeWeaponSection extends RepeatingSection {
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus);
   val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 5);
   val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 10);
+  val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
+  val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val description = text("description");
 }
 
@@ -180,24 +184,28 @@ object RangedWeaponSection extends RepeatingSection {
   val skillSearch = "skill_search".options("Beam Weapons", "Exotic Ranged Weapon: ...", "Kinetic Weapons", "Seeker Weapons", "Spray Weapons", "Throwing Weapons");
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty);
+  val miscMod = "misc_mod".default(0);
+  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty);
   val armourPenetration = "armour_penetration".default(0);
   val numDamageDice = "num_damage_dice".default(0);
   val damageBonus = "damage_bonus".default(0);
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus);
+  val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 5);
+  val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 10);
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
+  val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val singleShot = "single_shot".default(false);
   val semiAutomatic = "semi_automatic".default(false);
   val burstFire = "burst_fire".default(false);
   val fullAutomatic = "full_automatic".default(false);
   val shortRangeLower = "short_range_lower".default(0).editable(false);
-  val shortRangeUpper = "short_range_upper".default(0);
+  val shortRangeUpper = "short_range_upper".default(0).validIn(0, 99999, 1);
   val mediumRangeLower = "medium_range_lower".default(0).editable(false);
-  val mediumRangeUpper = "medium_range_upper".default(0);
+  val mediumRangeUpper = "medium_range_upper".default(0).validIn(0, 99999, 1);
   val longRangeLower = "long_range_lower".default(0).editable(false);
-  val longRangeUpper = "long_range_upper".default(0);
+  val longRangeUpper = "long_range_upper".default(0).validIn(0, 99999, 1);
   val extremeRangeLower = "extreme_range_lower".default(0).editable(false);
-  val extremeRangeUpper = "extreme_range_upper".default(0);
+  val extremeRangeUpper = "extreme_range_upper".default(0).validIn(0, 99999, 1);
   val magazineSize = "ammo_max".default(0);
   val magazineCurrent = "ammo".default(0);
   val magazineType = "ammo_type".default("standard");

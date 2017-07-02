@@ -127,6 +127,33 @@ object CoreTabRenderer extends GroupRenderer {
 
   }
 
+  private def enumRender(ef: EnumField): Tag = {
+
+    val selector: String => Option[Modifier] = ef.defaultValue match {
+      case Some(dv) =>
+        println(s"Default value for $ef is $dv");
+        (o: String) => if (dv == o) {
+          //println(s"Match of $dv with $o!");
+          Some(selected)
+        } else {
+          //println(s"No match between $dv and $o");
+          None
+        }
+        case None => println(s"No default value for $ef"); (o: String) => None
+    }
+    ef.enum match {
+      case Some(e) => EPTranslation.allFullOptions.get(e) match {
+        case Some(l) => {
+          val options = ef.options.map((o) => option(value := o, l.apply(o).attr, selector(o))).toSeq
+          select(name := ef.name, options)
+        }
+        case None => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o, selector(o))).toSeq)
+      }
+      case None => select(name := ef.name, ef.options.map(o => option(value := o, o, selector(o))).toSeq)
+    }
+
+  }
+
   override def fieldRenderers: FieldRenderer = {
     case (b: Button, _) =>
       button(`type` := "roll", name := b.name, value := b.roll.render)
@@ -135,14 +162,8 @@ object CoreTabRenderer extends GroupRenderer {
     case (f: Field[_], Normal) if f.editable() => f match {
       case n: NumberField[_] => renderNumberField(n)
       case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case ef: EnumField => ef.enum match {
-        case Some(e) => EPTranslation.allFullOptions.get(e) match {
-          case Some(l) => select(name := ef.name, ef.options.map(o => option(value := o, l.apply(o).attr)).toSeq)
-          case None    => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
-        }
-        case None => select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
-      }
-      case _ => input(`type` := "text", name := f.name, value := f.initialValue)
+      case ef: EnumField     => enumRender(ef)
+      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
     }
     case (f: Field[_], Presentation) if f.editable() => f match {
       case ff: FlagField => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
@@ -152,15 +173,8 @@ object CoreTabRenderer extends GroupRenderer {
     case (f: Field[_], Edit) if f.editable() => f match {
       case n: NumberField[_] => renderNumberField(n)
       case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case ef: EnumField => ef.enum match {
-        case Some(e) => EPTranslation.allFullOptions.get(e) match {
-          case Some(l) => select(name := ef.name, ef.options.map(o => option(value := o, l.apply(o).attr)).toSeq)
-          case None    => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
-        }
-        case None => select(name := ef.name, ef.options.map(o => option(value := o, o)).toSeq)
-      }
-
-      case _ => input(`type` := "text", name := f.name, value := f.initialValue)
+      case ef: EnumField     => enumRender(ef)
+      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
     }
     case (f: Field[_], _) if !(f.editable()) =>
       span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
@@ -189,4 +203,10 @@ object CoreTabRenderer extends GroupRenderer {
 
   def textWithPlaceholder(placeholder: PlaceholderLabel): FieldSingleRenderer = (f) =>
     div(EPStyle.inlineLabelGroup, input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs))
+
+  val description: FieldSingleRenderer = (f) => {
+    span(EPStyle.description, raw(" &mdash; "), span(name := f.name))
+  }
+
+  def labelDescription(label: LabelsI18N) = span(EPStyle.description, raw(" &mdash; "), span(label.attrs));
 }

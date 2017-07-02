@@ -38,6 +38,9 @@ object Blocks {
   def fcol(growStyles: Seq[scalatags.stylesheet.Cls], elems: SheetElement*): FlexColumn = FlexColumn(growStyles, elems);
   def tightfrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow(None), elems);
   def tightfrow(sepStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FieldGroup = GroupWithRenderer(TightFlexRow(Some(sepStyle)), elems);
+  def tightrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightRow(None), elems);
+  def tightrow(sepStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FieldGroup = GroupWithRenderer(TightRow(Some(sepStyle)), elems);
+  def tightcol(elems: SheetElement*): FieldGroup = GroupWithRenderer(TightCol, elems);
   def sblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, None, growStyle, elems);
   def sblock(title: LabelsI18N, titleRoll: Button, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): SmallBlock = SmallBlock(title, Some(titleRoll), growStyle, elems);
   def coreSeq(elems: SheetElement*) = GroupWithRenderer(CoreTabRenderer, elems);
@@ -200,6 +203,24 @@ case class FlexColumn(growStyles: Seq[scalatags.stylesheet.Cls], members: Seq[Sh
   }
 }
 
+case class TightRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(sepStyle, tags)
+  };
+
+  override def fieldRenderers: FieldRenderer = {
+    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+  }
+
+  override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+    div(EPStyle.inlineLabelGroup,
+      span(EPStyle.inlineLabel, l),
+      e);
+
+}
+
 case class TightFlexRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends GroupRenderer {
   import GroupRenderer._
 
@@ -216,6 +237,18 @@ case class TightFlexRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends Grou
       span(EPStyle.inlineLabel, l),
       e);
 
+}
+
+case object TightCol extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(EPStyle.tcol, tags)
+  };
+
+  override def fieldRenderers: FieldRenderer = {
+    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+  }
 }
 
 case class PseudoButton(toggle: FlagField, buttonLabel: Either[FieldLike[_], LabelI18N]) extends FieldGroup {
