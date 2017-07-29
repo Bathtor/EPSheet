@@ -20,6 +20,7 @@ val epdev = Roll20Config("roll20", "<campaign id>");
 val campaign = epdev;
 val rackSessionId = "<insert me>";
 
+
 val maxRetries = 3;
 
 

@@ -146,6 +146,8 @@ object Skills {
     Skill("Networking", Some("Hypercorps"), Active, Social, SAV),
     Skill("Networking", Some("Media"), Active, Social, SAV),
     Skill("Networking", Some("Scientists"), Active, Social, SAV),
+    Skill("Networking", Some("Ultimates"), Active, Social, SAV),
+    Skill("Networking", Some("Gatecrashers"), Active, Social, SAV),
     Skill("Palming", None, Active, Physical, COO),
     Skill("Perception", None, Active, Mental, INT),
     Skill("Persuasion", None, Active, Social, SAV),

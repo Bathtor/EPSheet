@@ -39,18 +39,17 @@ object EPSheet extends TabbedSheet {
 
   override def hidden = Seq[SheetElement](char.characterSheet, char.morphType, char.woundMod, char.woundsApplied, char.traumaMod);
   override def header = Header;
-  override def tabs = Seq(core, skills, morphs, gear, options);
+  override def tabs = Seq(core, skills, morphs, gear, psi, identities, muse, options);
   override def footer = Footer;
 
   val core = tab(t.core, CoreTab);
-
   val skills = tab(t.skills, SkillTab);
-
   val morphs = tab(t.morph, MorphTab);
-
   val gear = tab(t.gear, GearTab);
-
   val options = tab(t.options, OptionsTab);
+  val identities = tab(t.identities, IdentitiesTab);
+  val psi = tab(t.psi, PsiTab);
+  val muse = tab(t.muse, MuseTab);
 
   override def style(): StyleSheet = EPStyle;
   override def externalStyles() = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));

@@ -227,6 +227,9 @@ object GearTab extends FieldGroup {
           flexFill)))
     });
 
+  val currency: SheetElement = sblock(t.currency, sty.growFull,
+    (t.cryptoCredits -> char.cryptoCredits));
+
   val equipment: SheetElement = block(t.equipment,
     char.equipment {
       TightRepRow(
@@ -267,6 +270,7 @@ object GearTab extends FieldGroup {
       fireModes),
     fcol(Seq(EPStyle.`flex-grow`, sty.exactly20rem),
       armourWorn,
+      currency,
       equipment)),
     frow(sty.`flex-stretch`,
       fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),

@@ -54,9 +54,49 @@ object Blocks {
   def note(l: LabelI18N): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(l));
   def flowpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar, elems);
   def buttonSeq(elems: SheetElement*) = GroupWithRenderer(ButtonSeq, elems);
+  def arrowList(elems: SheetElement*) = GroupWithRenderer(ArrowList, elems);
+  def rwd(roll: RollElement, descriptions: LabelI18N*) = RollWithDescription(roll, descriptions);
 
   val flexFill = span(EPStyle.`flex-grow`, EPStyle.min1rem);
+  val flexFillNarrow = span(EPStyle.`flex-grow`, EPStyle.min02rem);
   //def roll(roll: Button, members: SheetElement*): RollContent = RollContent(roll, members);
+}
+
+case class RollWithDescription(roll: RollElement, descriptions: Seq[LabelI18N]) extends FieldGroup {
+  override def renderer = coreBlockRenderer;
+
+  override def members: Seq[SheetElement] = Seq(roll);
+
+  val coreBlockRenderer = new GroupRenderer {
+    import GroupRenderer._
+
+    override def fieldCombiner: FieldCombiner = { tags =>
+      val descs = descriptions flatMap { d => Seq(span(EPStyle.description, ", "), span(EPStyle.description, d.attrs)) };
+      span(tags, descs)
+    };
+
+    override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+      span(EPStyle.inlineLabelGroup,
+        e,
+        div(EPStyle.inlineLabel, l.attrs));
+
+    override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+  }
+}
+
+case object ArrowList extends GroupRenderer {
+  import GroupRenderer._
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(tags map { t => div(EPStyle.rollList, t) })
+  };
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+
+  override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+    div(EPStyle.rollList,
+      span(EPStyle.inlineLabel, l),
+      e);
 }
 
 case object ButtonSeq extends GroupRenderer {

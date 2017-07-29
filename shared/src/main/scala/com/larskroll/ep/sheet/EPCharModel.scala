@@ -46,6 +46,12 @@ object EPCharModel extends SheetModel {
     foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
   //val justEPRoll = button("just_ep_roll", epRoll);
   lazy val moxieTarget = roll("moxie-target", modQuery.expr + currentMoxie);
+  lazy val customTarget = roll("custom-target", modQuery.expr);
+  lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2);
+  lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3);
+  lazy val somx3Target = roll("somx3-target", modQuery.expr + somTotal * 3);
+  lazy val intx3Target = roll("intx3-target", modQuery.expr + intTotal * 3);
+  // TODO fray/2 for ranged defense
 
   // **** core ****
   val background = text("background");
@@ -55,35 +61,50 @@ object EPCharModel extends SheetModel {
   val currentMoxie = "current_moxie".default(0);
   val rezPoints = "rez_points".default(0);
   val motivations = text("motivations");
+  val charTraits = text("character_traits");
   // aptitudes
   val cogBase = "cog_base".default(0);
+  val cogTemp = "cog_temp".default(0);
   val cogMorph = "cog_morph".editable(false).default(0);
   val cogMorphMax = "cog_morph_max".editable(false).default(20);
   val cogTotal = "cog_total".editable(false).default(0);
+  val cogTarget = roll("cog-target", modQuery.expr + cogTotal);
   val cooBase = "coo_base".default(0);
+  val cooTemp = "coo_temp".default(0);
   val cooMorph = "coo_morph".editable(false).default(0);
   val cooMorphMax = "coo_morph_max".editable(false).default(20);
   val cooTotal = "coo_total".editable(false).default(0);
+  val cooTarget = roll("coo-target", modQuery.expr + cooTotal);
   val intBase = "int_base".default(0);
+  val intTemp = "int_temp".default(0);
   val intMorph = "int_morph".editable(false).default(0);
   val intMorphMax = "int_morph_max".editable(false).default(20);
   val intTotal = "int_total".editable(false).default(0);
+  val intTarget = roll("int-target", modQuery.expr + intTotal);
   val refBase = "ref_base".default(0);
+  val refTemp = "ref_temp".default(0);
   val refMorph = "ref_morph".editable(false).default(0);
   val refMorphMax = "ref_morph_max".editable(false).default(20);
   val refTotal = "ref_total".editable(false).default(0);
+  val refTarget = roll("ref-target", modQuery.expr + refTotal);
   val savBase = "sav_base".default(0);
+  val savTemp = "sav_temp".default(0);
   val savMorph = "sav_morph".editable(false).default(0);
   val savMorphMax = "sav_morph_max".editable(false).default(20);
   val savTotal = "sav_total".editable(false).default(0);
+  val savTarget = roll("sav-target", modQuery.expr + savTotal);
   val somBase = "som_base".default(0);
+  val somTemp = "som_temp".default(0);
   val somMorph = "som_morph".editable(false).default(0);
   val somMorphMax = "som_morph_max".editable(false).default(20);
   val somTotal = "som_total".editable(false).default(0);
+  val somTarget = roll("som-target", modQuery.expr + somTotal);
   val wilBase = "wil_base".default(0);
+  val wilTemp = "wil_temp".default(0);
   val wilMorph = "wil_morph".editable(false).default(0);
   val wilMorphMax = "wil_morph_max".editable(false).default(20);
   val wilTotal = "wil_total".editable(false).default(0);
+  val wilTarget = roll("wil-target", modQuery.expr + wilTotal);
   // base stats
   val moxie = "moxie".default(0);
   val traumaThreshold = "trauma_threshold".editable(false).default(0);
@@ -144,12 +165,167 @@ object EPCharModel extends SheetModel {
   val armourKineticBonus = "armour_kinetic_bonus".editable(false).default(0);
   val layeringPenalty = "layering_penalty".editable(false).default(0);
   val equipment = GearSection;
+  val cryptoCredits = "crypto_currency".default(0).validIn(-999999999, 999999999, 1);
   val gear1 = "gear1".default("");
   val gear2 = "gear2".default("");
   val gear3 = "gear2".default("");
 
+  // identities
+  lazy val identities = IdentitiesSection;
+
+  // PSI
+  lazy val psiChi = PsiChiSection;
+  lazy val psiGamma = PsiGammaSection;
+
+  // MUSE
+  val museName = text("muse_name");
+  val museCog = "muse_cog".default(10);
+  val museCogTarget = roll("muse-cog-target", modQuery.expr + museCog);
+  val museCoo = "muse_coo".default(10);
+  val museCooTarget = roll("muse-coo-target", modQuery.expr + museCoo);
+  val museInt = "muse_int".default(20);
+  val museIntTarget = roll("muse-int-target", modQuery.expr + museInt);
+  val museRef = "muse_ref".default(10);
+  val museRefTarget = roll("muse-ref-target", modQuery.expr + museRef);
+  val museSav = "muse_sav".default(10);
+  val museSavTarget = roll("muse-sav-target", modQuery.expr + museSav);
+  val museSom = "muse_som".default(10);
+  val museSomTarget = roll("muse-som-target", modQuery.expr + museSom);
+  val museWil = "muse_wil".default(10);
+  val museWilTarget = roll("muse-wil-target", modQuery.expr + museWil);
+  val museTraumaThreshold = "muse_trauma_threshold".editable(false).default(4);
+  val museLucidity = "muse_lucidity".editable(false).default(20);
+  val museInsanityRating = "muse_insanity_rating".editable(false).default(40);
+  val museSkills = MuseSkillSection;
+  val museNotes = text("muse_notes");
+  val generateMuseSkills = "muse_skills_generate".default(false);
+  val generateMuseSkillsLabel = "muse_skills_generate_label".editable(false).default("generate-skills"); // other possibility is "generating-skills"
+
   // settings
   //val weightUnit = "weight_unit".options("kg", "lb").default("kg"); // not feasible with current roll20 repeating sections as field can't be accessed from within a RS
+  val miscNotes = text("misc_notes");
+}
+
+object MuseSkillSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "museskills";
+
+  val skillName = text("name");
+  val field = "field".default("");
+  val linkedAptitude = "linked_aptitude".options(Aptitude);
+  val ranks = "ranks".default(0);
+  val total = number[Int]("total").editable(false);
+  val rollTarget = roll("target", EPCharModel.modQuery.arith + total);
+}
+
+object PsiChiSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "psichi";
+
+  val sleight = text("sleight");
+  val psiType = "psi_type".options(PsiType).default(PsiType.Passive);
+  val psiTypeShort = text("psi_type_short").editable(false).default(PsiType.dynamicLabelShort(PsiType.Passive));
+  val range = "range".default("Self");
+  val action = "action".default("Automatic");
+  val duration = "duration".default("Constant");
+  val strainMod = "strain_mod".default(0);
+  val description = text("description");
+}
+
+object PsiGammaSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "psigamma";
+
+  val sleight = text("sleight");
+  val psiType = "psi_type".options(PsiType).default(PsiType.Active);
+  val psiTypeShort = text("psi_type_short").editable(false).default(PsiType.dynamicLabelShort(PsiType.Active));
+  val range = "range".default("Touch");
+  val action = "action".default("Complex");
+  val duration = "duration".default("Temp (Action Turns)");
+  val strainMod = "strain_mod".default(0);
+  val skill = text("skill");
+  val description = text("description");
+}
+
+object IdentitiesSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "identities";
+
+  val identity = text("identity");
+  val description = text("description");
+  val credits = "credits".default(0).validIn(-999999999, 999999999, 1);
+  val notes = text("notes");
+
+  val atRepScore = "at_rep_score".default(0).validIn(0, 99, 1);
+  val atRepFavour1 = "at_rep_favour1".default(false);
+  val atRepFavour2 = "at_rep_favour2".default(false);
+  val atRepFavour3 = "at_rep_favour3".default(false);
+  val atRepFavour4 = "at_rep_favour4".default(false);
+  val atRepFavour5 = "at_rep_favour5".default(false);
+
+  val cRepScore = "c_rep_score".default(0).validIn(0, 99, 1);
+  val cRepFavour1 = "c_rep_favour1".default(false);
+  val cRepFavour2 = "c_rep_favour2".default(false);
+  val cRepFavour3 = "c_rep_favour3".default(false);
+  val cRepFavour4 = "c_rep_favour4".default(false);
+  val cRepFavour5 = "c_rep_favour5".default(false);
+
+  val eRepScore = "e_rep_score".default(0).validIn(0, 99, 1);
+  val eRepFavour1 = "e_rep_favour1".default(false);
+  val eRepFavour2 = "e_rep_favour2".default(false);
+  val eRepFavour3 = "e_rep_favour3".default(false);
+  val eRepFavour4 = "e_rep_favour4".default(false);
+  val eRepFavour5 = "e_rep_favour5".default(false);
+
+  val fRepScore = "f_rep_score".default(0).validIn(0, 99, 1);
+  val fRepFavour1 = "f_rep_favour1".default(false);
+  val fRepFavour2 = "f_rep_favour2".default(false);
+  val fRepFavour3 = "f_rep_favour3".default(false);
+  val fRepFavour4 = "f_rep_favour4".default(false);
+  val fRepFavour5 = "f_rep_favour5".default(false);
+
+  val gRepScore = "g_rep_score".default(0).validIn(0, 99, 1);
+  val gRepFavour1 = "g_rep_favour1".default(false);
+  val gRepFavour2 = "g_rep_favour2".default(false);
+  val gRepFavour3 = "g_rep_favour3".default(false);
+  val gRepFavour4 = "g_rep_favour4".default(false);
+  val gRepFavour5 = "g_rep_favour5".default(false);
+
+  val iRepScore = "i_rep_score".default(0).validIn(0, 99, 1);
+  val iRepFavour1 = "i_rep_favour1".default(false);
+  val iRepFavour2 = "i_rep_favour2".default(false);
+  val iRepFavour3 = "i_rep_favour3".default(false);
+  val iRepFavour4 = "i_rep_favour4".default(false);
+  val iRepFavour5 = "i_rep_favour5".default(false);
+
+  val rRepScore = "r_rep_score".default(0).validIn(0, 99, 1);
+  val rRepFavour1 = "r_rep_favour1".default(false);
+  val rRepFavour2 = "r_rep_favour2".default(false);
+  val rRepFavour3 = "r_rep_favour3".default(false);
+  val rRepFavour4 = "r_rep_favour4".default(false);
+  val rRepFavour5 = "r_rep_favour5".default(false);
+
+  val uRepScore = "u_rep_score".default(0).validIn(0, 99, 1);
+  val uRepFavour1 = "u_rep_favour1".default(false);
+  val uRepFavour2 = "u_rep_favour2".default(false);
+  val uRepFavour3 = "u_rep_favour3".default(false);
+  val uRepFavour4 = "u_rep_favour4".default(false);
+  val uRepFavour5 = "u_rep_favour5".default(false);
+
+  val xRepScore = "x_rep_score".default(0).validIn(0, 99, 1);
+  val xRepFavour1 = "x_rep_favour1".default(false);
+  val xRepFavour2 = "x_rep_favour2".default(false);
+  val xRepFavour3 = "x_rep_favour3".default(false);
+  val xRepFavour4 = "x_rep_favour4".default(false);
+  val xRepFavour5 = "x_rep_favour5".default(false);
 }
 
 object MeleeWeaponSection extends RepeatingSection {

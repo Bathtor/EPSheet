@@ -41,49 +41,78 @@ object CoreTab extends FieldGroup {
     AptitudeRow(t.aptBase, Seq(char.cogBase, char.cooBase, char.intBase, char.refBase, char.savBase, char.somBase, char.wilBase)),
     AptitudeRow(t.aptMorphBonus, Seq(char.cogMorph, char.cooMorph, char.intMorph, char.refMorph, char.savMorph, char.somMorph, char.wilMorph)),
     AptitudeRow(t.aptMorphMax, Seq(char.cogMorphMax, char.cooMorphMax, char.intMorphMax, char.refMorphMax, char.savMorphMax, char.somMorphMax, char.wilMorphMax)),
+    AptitudeRow(t.aptTemp, Seq(char.cogTemp, char.cooTemp, char.intTemp, char.refTemp, char.savTemp, char.somTemp, char.wilTemp)),
     AptitudeRow(t.aptTotal, Seq(char.cogTotal, char.cooTotal, char.intTotal, char.refTotal, char.savTotal, char.somTotal, char.wilTotal))));
 
+  val topRow = eprow(frow(sty.`flex-centre`,
+    flexFillNarrow,
+    sblock(t.mox,
+      roll(char, "moxie-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
+      sty.max10rem,
+      char.currentMoxie, span(" / "), dualMode(char.moxie)),
+    flexFillNarrow,
+    sblock(t.mentalHealth, sty.max15rem,
+      (t.stress -> char.stress),
+      (t.trauma -> char.trauma)),
+    flexFillNarrow,
+    sblock(t.physicalHealth, sty.max15rem,
+      (t.damage -> char.damage),
+      (t.wounds -> char.wounds)),
+    flexFillNarrow,
+    sblock(t.armour, sty.max15rem,
+      (t.energy -> char.armourEnergyTotal),
+      (t.kinetic -> char.armourKineticTotal)),
+    flexFillNarrow,
+    sblock(t.rezPoints, sty.max5rem, char.rezPoints),
+    flexFillNarrow));
+
+  val leftCol = fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
+    fblock(t.characterInfo, EPStyle.min5rem,
+      (t.background -> dualMode(char.background)),
+      (t.faction -> dualMode(char.faction)),
+      (t.genderId -> dualMode(char.genderId)),
+      (t.actualAge -> dualMode(char.actualAge)),
+      (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))),
+      (t.traits -> dualMode(char.charTraits.like(CoreTabRenderer.textareaField)))),
+    block(t.specialRolls, arrowList(
+      rwd(roll(char, "simple-success-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.simpleSuccessRoll, char.epRoll, char.customTarget),
+        span(sty.rollLabel, t.simpleSuccessRoll))),
+      rwd(roll(char, "willx2-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.wilx2Roll.fullLabel, char.epRoll, char.willx2Target),
+        span(sty.rollLabel, t.wilx2Roll)),
+        t.psiDefense),
+      rwd(roll(char, "willx3-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.wilx3Roll.fullLabel, char.epRoll, char.willx3Target),
+        span(sty.rollLabel, t.wilx3Roll)),
+        t.continuityTest, t.stressTest, t.resistTraumaDisorientation, t.healTrauma),
+      rwd(roll(char, "somx3-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.somx3Roll.fullLabel, char.epRoll, char.somx3Target),
+        span(sty.rollLabel, t.somx3Roll)),
+        t.integrationTest, t.resistWoundKnockdown),
+      rwd(roll(char, "intx3-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
+        span(sty.rollLabel, t.intx3Roll)),
+        t.alienationTest))));
+
+  val rightCol = fcol(Seq(EPStyle.exactly23rem),
+    block(t.aptitudes, aptitudes),
+    fblock(t.stats, EPStyle.max2p5rem,
+      (t.tt -> char.traumaThreshold),
+      (t.luc -> char.lucidity),
+      (t.ir -> char.insanityRating),
+      (t.wt -> char.woundThreshold),
+      (t.dur -> char.durability),
+      (t.dr -> char.deathRating),
+      roll(char, "initiative-roll", Chat.Default, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
+      (t.spd -> dualMode(char.speed)),
+      (t.db -> char.damageBonus)));
+
   val members: Seq[SheetElement] = Seq(
-    eprow(frow(sty.`flex-centre`,
-      flexFill,
-      sblock(t.mox,
-        roll(char, "moxie-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
-        sty.max10rem,
-        char.currentMoxie, span(" / "), dualMode(char.moxie)),
-      flexFill,
-      sblock(t.mentalHealth, sty.max15rem,
-        (t.stress -> char.stress),
-        (t.trauma -> char.trauma)),
-      flexFill,
-      sblock(t.physicalHealth, sty.max15rem,
-        (t.damage -> char.damage),
-        (t.wounds -> char.wounds)),
-      flexFill,
-      sblock(t.armour, sty.max15rem,
-        (t.energy -> char.armourEnergyTotal),
-        (t.kinetic -> char.armourKineticTotal)),
-      flexFill,
-      sblock(t.rezPoints, sty.max5rem, char.rezPoints),
-      flexFill)),
+    topRow,
     frow(sty.`flex-start`,
-      fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem), fblock(t.characterInfo, EPStyle.min5rem,
-        (t.background -> dualMode(char.background)),
-        (t.faction -> dualMode(char.faction)),
-        (t.genderId -> dualMode(char.genderId)),
-        (t.actualAge -> dualMode(char.actualAge)),
-        (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))))),
-      fcol(Seq(EPStyle.exactly23rem), block(t.aptitudes,
-        aptitudes),
-        fblock(t.stats, EPStyle.max2p5rem,
-          (t.tt -> char.traumaThreshold),
-          (t.luc -> char.lucidity),
-          (t.ir -> char.insanityRating),
-          (t.wt -> char.woundThreshold),
-          (t.dur -> char.durability),
-          (t.dr -> char.deathRating),
-          roll(char, "initiative-roll", Chat.Default, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
-          (t.spd -> dualMode(char.speed)),
-          (t.db -> char.damageBonus)))));
+      leftCol,
+      rightCol));
 
   override def renderer = CoreTabRenderer;
 
@@ -206,6 +235,10 @@ object CoreTabRenderer extends GroupRenderer {
 
   val description: FieldSingleRenderer = (f) => {
     span(EPStyle.description, raw(" &mdash; "), span(name := f.name))
+  }
+
+  val italic: FieldSingleRenderer = (f) => {
+    span(fontStyle.italic, name := f.name)
   }
 
   def labelDescription(label: LabelsI18N) = span(EPStyle.description, raw(" &mdash; "), span(label.attrs));

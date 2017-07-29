@@ -44,6 +44,21 @@ object EPTranslation extends SheetI18N {
   val currentMoxie = text("current-moxie", "Current Moxie Points");
   val rezPoints = abbr("rez", "REZ", "rez-points", "Rez Points");
   val motivations = text("motivations", "Motivations");
+  val traits = text("traits", "Traits");
+  val specialRolls = text("special-rolls", "Special Rolls");
+  val simpleSuccessRoll = text("simple-success-roll", "Simple Success Roll");
+  val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
+  val wilx3Roll = abbr("wilx3", "WIL × 3", "willpowerx3", "Willpower tripled");
+  val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
+  val intx3Roll = abbr("intx3", "INT × 3", "intuitionx3", "Intuition tripled");
+  val psiDefense = text("psi-defense", "Psi Defense");
+  val continuityTest = text("continutity-test", "Continuity Test");
+  val resistTraumaDisorientation = text("resist-trauma-disorientation", "Resist Trauma Disorientation");
+  val stressTest = text("stress-test", "Stress Test");
+  val healTrauma = text("heal-trauma", "Heal Trauma");
+  val resistWoundKnockdown = text("resist-wound-knockdown", "Resist Knockdown from Wound");
+  val integrationTest = text("integration-test", "Integration Test");
+  val alienationTest = text("alienation-test", "Alienation Test");
 
   val aptitudes = text("aptitudes", "Aptitudes");
   val cog = abbr("cog", "COG", "cognition", "Cognition");
@@ -56,6 +71,7 @@ object EPTranslation extends SheetI18N {
   val aptBase = text("apt-base", "Base");
   val aptMorphBonus = text("apt-morph-bonus", "Morph Bonus");
   val aptMorphMax = text("apt-morph-max", "Morph Max");
+  val aptTemp = text("apt-temp", "Temp");
   val aptTotal = text("apt-total", "Total");
 
   val stats = text("stats", "Character Stats");
@@ -159,15 +175,20 @@ object EPTranslation extends SheetI18N {
     enum(SortBy.labelPrefix, opts)
   }
 
+  // ****************
+  // ADD OPTIONS HERE
+  // ****************
   lazy val allFullOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptions,
     Skills.SkillClass -> skillClassOptions,
     Skills.SortBy -> skillSortOptions,
-    DamageType -> dmgType);
+    DamageType -> dmgType,
+    PsiType -> psiType);
 
   lazy val allShortOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptionsShort,
-    DamageType -> dmgTypeShort);
+    DamageType -> dmgTypeShort,
+    PsiType -> psiTypeShort);
   //Skills.SkillClass -> skillClassOptionsShort);
 
   val skillsGenerate = text("generate-skills", "Generate Default Skills");
@@ -210,6 +231,8 @@ object EPTranslation extends SheetI18N {
   val equipment = text("equipment", "Equipment");
   val equipmentName = text("equipment-name", "Name");
   val equipmentDescription = text("equipment-description", "Description");
+  val currency = text("currency", "Currency");
+  val cryptoCredits = text("crypto-credit", "Crypto Credits");
 
   val ap = abbr("ap", "AP", "armour-penetration", "Armour Penetration");
   val orTotalAP = text("or-total-ap", "or ignore armour if critical success");
@@ -270,6 +293,68 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
   //val weightUnit = text("weight-unit", "Weight Unit");
 
+  // identities
+  val identities = text("identities", "Identities");
+  val identity = text("identity", "Identity");
+  val idDescription = text("id-description", "Description");
+  val idCredits = text("id-credits", "Credits");
+  val idNotes = text("id-notes", "Notes");
+
+  val repScore = text("rep-score", "Score");
+  val calledInFavours = text("called-in-favours", "Called in Favours");
+  val lvl1 = abbr("lvl1", "Lvl 1", "level1", "Level 1");
+  val lvl2 = abbr("lvl2", "Lvl 2", "level2", "Level 2");
+  val lvl3 = abbr("lvl3", "Lvl 3", "level3", "Level 3");
+  val lvl4 = abbr("lvl4", "Lvl 4", "level4", "Level 4");
+  val lvl5 = abbr("lvl5", "Lvl 5", "level5", "Level 5");
+  val atRep = abbr("atRep", "@-Rep", "circleAlist", "The Circle-A List (Autonomists)");
+  val cRep = abbr("cRep", "c-Rep", "civicNet", "CivicNet (Hypercorps)");
+  val eRep = abbr("eRep", "e-Rep", "ecoWave", "EcoWave (Ecologists)");
+  val fRep = abbr("fRep", "f-Rep", "fame", "Fame (Media)");
+  val gRep = abbr("gRep", "g-Rep", "guanxi", "Guanxi (Criminals)");
+  val iRep = abbr("iRep", "i-Rep", "theEye", "The Eye (Firewall)");
+  val rRep = abbr("rRep", "r-Rep", "rna", "Research Network Associates (Scientists)");
+  val uRep = abbr("uRep", "u-Rep", "ultimateRep", "Ultimate (Ultimates)");
+  val xRep = abbr("xRep", "x-Rep", "exploreNet", "ExploreNet (Gatecrashers)");
+
+  // PSI
+  val psi = text("psi", "Psi");
+  val psiChi = text("psi-chi", "Psi-chi Sleights");
+  val psiGamma = text("psi-gamma", "Psi-gamma Sleights");
+  val sleightName = text("sleight-name", "Name");
+  val sleightDescription = text("sleight-description", "Description");
+  val psiRange = text("psi-range", "Range");
+  val psiAction = text("psi-action", "Action");
+  val psiDuration = text("psi-duration", "Duration");
+  val strainMod = text("psi-strain-mod", "Strain Mod");
+  val psiSkill = text("psi-skill", "Skill");
+  val psiType = {
+    import PsiType._;
+    val opts = PsiType.values.map {
+      case Active  => (Active.toString -> "Active")
+      case Passive => (Passive.toString -> "Passive")
+    }.toMap;
+    enum(PsiType.labelPrefix, opts)
+  }
+  val psiTypeShort = {
+    import PsiType._;
+    val opts = PsiType.values.map {
+      case Active  => (Active.toString -> "A")
+      case Passive => (Passive.toString -> "P")
+    }.toMap;
+    enum(PsiType.labelShortPrefix, opts)
+  }
+
+  // MUSE
+  val muse = text("muse", "Muse");
+  val museInfo = text("muse-info", "Muse Info");
+  val museName = text("muse-name", "Name");
+  val museNotes = text("muse-notes", "Notes");
+  val museSkills = text("muse-skills", "Muse Skills");
+
+  val miscNotes = text("misc-notes", "Misc. Notes");
+
+  // templates
   val rollsfor = text("rolls-for", "rolls for");
   val rollSuccess = text("roll-success", "Roll is a success");
   val rollCritSuccess = text("roll-crit-success", "Roll is a critical success");

@@ -66,8 +66,8 @@ object EPWorkers extends SheetWorker {
     }
   };
 
-  private def aptTotalCalc(aptField: Field[Int]): Tuple3[Int, Int, Int] => Seq[(FieldLike[Any], Any)] = {
-    case (base, morph, morphMax) => Seq(aptField <<= aptTotal(base, morph, morphMax));
+  private def aptTotalCalc(aptField: Field[Int]): Tuple4[Int, Int, Int, Int] => Seq[(FieldLike[Any], Any)] = {
+    case (base, tmp, morph, morphMax) => Seq(aptField <<= aptTotal(base, tmp, morph, morphMax));
   }
 
   val initCalc = op(intTotal, refTotal) update {
@@ -98,6 +98,17 @@ object EPWorkers extends SheetWorker {
         lucidity <<= luc,
         traumaThreshold <<= Math.ceil(luc.toFloat / 5.0f).toInt,
         insanityRating <<= luc * 2)
+    }
+  };
+
+  val museWillStatsCalc = bind(op(museWil)) update {
+    case (wil) => {
+      log(s"Updating will dependent stats with ${wil}");
+      val luc = wil * 2;
+      Seq(
+        museLucidity <<= luc,
+        museTraumaThreshold <<= Math.ceil(luc.toFloat / 5.0f).toInt,
+        museInsanityRating <<= luc * 2)
     }
   };
 
@@ -147,6 +158,26 @@ object EPWorkers extends SheetWorker {
 
   val skillTotalCalc = activeSkillTotalCalc.all(activeSkills).andThen(knowledgeSkillTotalCalc.all(knowledgeSkills));
 
+  val museSkillTotalCalcOp = bind(op(museSkills.linkedAptitude, museSkills.ranks, museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) update {
+    case (apt, ranks, cog, coo, int, ref, sav, som, wil) => {
+      import Aptitude._
+
+      val aptTotal = ValueParsers.aptFrom(apt) match {
+        case COO => coo
+        case COG => cog
+        case INT => int
+        case REF => ref
+        case SAV => sav
+        case SOM => som
+        case WIL => wil
+      };
+      val total = aptTotal + ranks;
+      Seq(museSkills.total <<= total)
+    }
+  }
+
+  val museSkillTotalCalc = museSkillTotalCalcOp.all(museSkills);
+
   val skillCategoryCalc = bind(op(activeSkills.category)) update {
     case (catName) => {
       import Skills._
@@ -157,11 +188,14 @@ object EPWorkers extends SheetWorker {
     }
   }
   val setSkillsGenerating = nop update { _ =>
-    Seq(generateSkillsLabel <<= "generating-skills")
+    Seq(generateSkillsLabel <<= "generating-skills",
+      generateMuseSkillsLabel <<= "generating-skills")
   };
   val unsetSkillsGenerating = nop update { _ =>
     Seq(generateSkillsLabel <<= "generate-skills",
-      generateSkills <<= false)
+      generateSkills <<= false,
+      generateMuseSkillsLabel <<= "generate-skills",
+      generateMuseSkills <<= false)
   }
   val unsetSkillsSorting = nop update { _ =>
     Seq(sortSkills <<= false)
@@ -261,6 +295,76 @@ object EPWorkers extends SheetWorker {
     }
   }
 
+  val generateMuseDefaultSkills = nop { _: Option[Unit] =>
+
+    val namesF = getRowAttrs(museSkills, Seq(museSkills.skillName)).map(_.flatMap {
+      case (k, v) => v.apply(museSkills.skillName)
+    } toSet);
+
+    val defaultSkills = Map(
+      "Academics" -> 50,
+      "Hardware" -> 20,
+      "Infosec" -> 20,
+      "Interfacing" -> 30,
+      "Profession" -> 50,
+      "Research" -> 20,
+      "Programming" -> 10,
+      "Perception" -> 10,
+      "[Custom]" -> 30);
+    val defaultFields = Map(
+      "Academics" -> "Psychology",
+      "Hardware" -> "Electronics",
+      "Profession" -> "Accounting");
+    val customSkill = Skill("[Custom]", None, null, null, Aptitude.COG);
+
+    val r = for {
+      names <- namesF
+    } yield {
+      // double check there are no duplicate row ids generated (Roll20 seems to be doing that sometimes...)
+      val dataNoDuplicates = (Skills.pregen ++ Seq(customSkill, customSkill, customSkill)).foldLeft((Set.empty[String], Map.empty[FieldLike[Any], Any]))((acc, skill) => {
+        acc match {
+          case (ids, valueAcc) => {
+            val ignore = filterSkill(skill, names, defaultSkills.keySet);
+            if (ignore) {
+              (ids, valueAcc)
+            } else {
+              var curId: String = null;
+              do {
+                curId = Roll20.generateRowID();
+              } while (ids.contains(curId))
+              val skillValues = generateMuseSkillWithId(curId, skill, defaultSkills, defaultFields);
+              (ids + curId, valueAcc ++ skillValues)
+            }
+          }
+        }
+      });
+      //.flatten.toMap;
+      setAttrs(dataNoDuplicates._2)
+    };
+    r flatMap identity
+  };
+
+  private def filterSkill(skill: Skill, exclude: Set[String], include: Set[String]): Boolean = {
+    if (include.contains(skill.name)) {
+      skill.field match {
+        case Some("???") => false
+        case _           => exclude.contains(skill.name) || !include.contains(skill.name)
+      }
+    } else {
+      true
+    }
+  }
+
+  private def generateMuseSkillWithId(id: String, skill: Skill, defaultValues: Map[String, Int], defaultFields: Map[String, String]): Seq[(FieldLike[Any], Any)] = {
+    import museSkills._;
+    Seq(
+      museSkills.at(id, skillName) <<= skill.name,
+      museSkills.at(id, field) <<= defaultFields.getOrElse(skill.name, field.resetValue),
+      museSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
+      museSkills.at(id, ranks) <<= defaultValues.getOrElse(skill.name, ranks.resetValue),
+      museSkills.at(id, total) <<= total.resetValue)
+  }
+
   private def generateSkillWithId(id: String, skill: Skill): Seq[(FieldLike[Any], Any)] = {
     if (skill.cls == Skills.SkillClass.Active) {
       import activeSkills._;
@@ -302,6 +406,16 @@ object EPWorkers extends SheetWorker {
     ()
   })
 
+  onChange(generateMuseSkills, (ei: EventInfo) => {
+    for {
+      _ <- setSkillsGenerating();
+      _ <- generateMuseDefaultSkills();
+      _ <- museSkillTotalCalc();
+      _ <- unsetSkillsGenerating()
+    } yield ();
+    ()
+  })
+
   onChange(sortSkills, (ei: EventInfo) => {
     for {
       _ <- sortSkillsOp();
@@ -323,19 +437,19 @@ object EPWorkers extends SheetWorker {
     }
   })
 
-  val cogTotalCalc = bind(op(cogBase, cogMorph, cogMorphMax)) update (aptTotalCalc(cogTotal), skillTotalCalc);
+  val cogTotalCalc = bind(op(cogBase, cogTemp, cogMorph, cogMorphMax)) update (aptTotalCalc(cogTotal), skillTotalCalc);
 
-  val cooTotalCalc = bind(op(cooBase, cooMorph, cooMorphMax)) update (aptTotalCalc(cooTotal), skillTotalCalc);
+  val cooTotalCalc = bind(op(cooBase, cooTemp, cooMorph, cooMorphMax)) update (aptTotalCalc(cooTotal), skillTotalCalc);
 
-  val intTotalCalc = bind(op(intBase, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(skillTotalCalc));
+  val intTotalCalc = bind(op(intBase, intTemp, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(skillTotalCalc));
 
-  val refTotalCalc = bind(op(refBase, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(skillTotalCalc));
+  val refTotalCalc = bind(op(refBase, refTemp, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(skillTotalCalc));
 
-  val savTotalCalc = bind(op(savBase, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), skillTotalCalc);
+  val savTotalCalc = bind(op(savBase, savTemp, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), skillTotalCalc);
 
-  val somTotalCalc = bind(op(somBase, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(skillTotalCalc));
+  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(skillTotalCalc));
 
-  val wilTotalCalc = bind(op(wilBase, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(skillTotalCalc));
+  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(skillTotalCalc));
 
   val aptTotals = cogTotalCalc ++ List(cooTotalCalc, intTotalCalc, refTotalCalc, savTotalCalc, somTotalCalc, wilTotalCalc);
 
@@ -349,6 +463,10 @@ object EPWorkers extends SheetWorker {
         deathRating <<= drCalc(dur, MorphType.withName(mt)))
     }
   }
+
+  val nop7: Option[Tuple7[Int, Int, Int, Int, Int, Int, Int]] => ChainingDecision = (f) => ExecuteChain;
+
+  val museAptSkillCalc = bind(op(museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) apply (nop7, museSkillTotalCalc);
 
   // TODO ongoing updates notification
 
@@ -622,6 +740,25 @@ object EPWorkers extends SheetWorker {
       Seq(rangedWeapons.damageTypeShort <<= dtLabel)
     }
   }
+  val psiChiTypeCalc = bind(op(psiChi.psiType)) update {
+    case (ptName) => {
+      import PsiType._
+
+      val pt = withName(ptName);
+      val ptLabel = dynamicLabelShort(pt);
+      Seq(psiChi.psiTypeShort <<= ptLabel)
+    }
+  }
+
+  val psiGammaTypeCalc = bind(op(psiGamma.psiType)) update {
+    case (ptName) => {
+      import PsiType._
+
+      val pt = withName(ptName);
+      val ptLabel = dynamicLabelShort(pt);
+      Seq(psiGamma.psiTypeShort <<= ptLabel)
+    }
+  }
 
   private def morphAptBoni(s: String): Seq[(FieldLike[Any], Any)] = {
     val ab = ValueParsers.aptitudesFrom(s);
@@ -659,8 +796,8 @@ object EPWorkers extends SheetWorker {
     }
   }
 
-  private def aptTotal(base: Int, morph: Int, max: Int): Int = {
-    Math.min(base + morph, max)
+  private def aptTotal(base: Int, tmp: Int, morph: Int, max: Int): Int = {
+    Math.min(base + morph, max) + tmp // or Math.min(base + morph + tmp, max) the rules are unclear on this
   }
 
   //  onChange(skills.mod, (e: EventInfo) => {

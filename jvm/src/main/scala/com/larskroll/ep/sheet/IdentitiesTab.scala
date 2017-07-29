@@ -1,0 +1,99 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2017 Lars Kroll <bathtor@googlemail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ */
+package com.larskroll.ep.sheet
+
+import com.larskroll.roll20.sheet._
+import scalatags.Text.all._
+import SheetImplicits._
+
+object IdentitiesTab extends FieldGroup {
+  //import Roll20Predef._
+  import Blocks._
+
+  val char = EPCharModel;
+  val t = EPTranslation;
+  val sty = EPStyle;
+
+  val ci = char.identities;
+
+  val repTable = RepTable(Seq(
+    RepRow(t.atRep, Seq(ci.atRepScore, ci.atRepFavour1, ci.atRepFavour2, ci.atRepFavour3, ci.atRepFavour4, ci.atRepFavour5)),
+    RepRow(t.cRep, Seq(ci.cRepScore, ci.cRepFavour1, ci.cRepFavour2, ci.cRepFavour3, ci.cRepFavour4, ci.cRepFavour5)),
+    RepRow(t.eRep, Seq(ci.eRepScore, ci.eRepFavour1, ci.eRepFavour2, ci.eRepFavour3, ci.eRepFavour4, ci.eRepFavour5)),
+    RepRow(t.fRep, Seq(ci.fRepScore, ci.fRepFavour1, ci.fRepFavour2, ci.fRepFavour3, ci.fRepFavour4, ci.fRepFavour5)),
+    RepRow(t.gRep, Seq(ci.gRepScore, ci.gRepFavour1, ci.gRepFavour2, ci.gRepFavour3, ci.gRepFavour4, ci.gRepFavour5)),
+    RepRow(t.iRep, Seq(ci.iRepScore, ci.iRepFavour1, ci.iRepFavour2, ci.iRepFavour3, ci.iRepFavour4, ci.iRepFavour5)),
+    RepRow(t.rRep, Seq(ci.rRepScore, ci.rRepFavour1, ci.rRepFavour2, ci.rRepFavour3, ci.rRepFavour4, ci.rRepFavour5)),
+    RepRow(t.uRep, Seq(ci.uRepScore, ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
+    RepRow(t.xRep, Seq(ci.xRepScore, ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
+
+  val members: Seq[SheetElement] = Seq(char.identities(
+    eprow(
+      epcol(fblock(char.identities.identity, EPStyle.min5rem,
+        editOnly((t.identity -> char.identities.identity)),
+        (t.idDescription -> dualMode(char.identities.description)),
+        (t.idCredits -> char.identities.credits),
+        (t.idNotes -> char.identities.notes.like(CoreTabRenderer.largeTextareaField)),
+        repTable)))));
+
+  override def renderer = CoreTabRenderer;
+}
+
+case class RepTable(rows: Seq[RepRow]) extends FieldGroup {
+  override def members: Seq[SheetElement] = rows.map(GroupElement(_));
+
+  val lsty = EPStyle.fieldLabelBold;
+  val t = EPTranslation;
+
+  override def renderer = new GroupRenderer() {
+    override def fieldCombiner = { tags =>
+      table(EPStyle.repTable,
+        tr(td(colspan := 2), th(colspan := 5, EPStyle.secondTableHeader, t.calledInFavours)),
+        tr(td(EPStyle.`left-top-corner`), th(lsty, t.repScore), th(lsty, t.lvl1), th(lsty, t.lvl2), th(lsty, t.lvl3), th(lsty, t.lvl4, th(lsty, t.lvl5))),
+        tags)
+    };
+    override def fieldRenderers = CoreTabRenderer.fieldRenderers;
+  };
+}
+case class RepRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends FieldGroup {
+  import RenderMode._
+  import CoreTabRenderer.obool2Checked
+
+  override def renderer = new GroupRenderer {
+
+    override def fieldRenderers: GroupRenderer.FieldRenderer = {
+      case (f, _) if !f.editable() => td(
+        span(name := f.name), input(`type` := "hidden", name := f.name, value := f.initialValue))
+      case (f: NumberField[_], _) if f.editable => td(
+        div(span(TabbedStyle.presentation, name := f.name)),
+        div(span(TabbedStyle.edit, CoreTabRenderer.renderNumberField(f))))
+      case (ff: FlagField, _) => td(input(`type` := "checkbox", name := ff.name, ff.defaultValue))
+    };
+
+    override def fieldCombiner = { tags =>
+      tr(th(EPStyle.fieldLabelBold, textAlign.right, rowName), tags)
+    };
+  }
+}

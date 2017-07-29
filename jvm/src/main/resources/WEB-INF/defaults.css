@@ -350,6 +350,10 @@ span.sheet-skillSpec:not(:empty)::before {
     content: "—";
 }
 
+.sheet-rollList::before {
+    content: "‣";
+}
+
 /*
 *
 * ROLL TEMPLATE

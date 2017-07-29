@@ -108,6 +108,16 @@ object EPStyle extends SheetStyle {
         display.block,
         paddingRight := "5px")));
 
+  val repTable = cls(
+    tableLayout.fixed,
+    width := "50%",
+    minWidth := "20rem",
+    td(width := "35%",
+      textAlign.center,
+      span(textAlign.right,
+        display.block,
+        paddingRight := "5px")));
+
   val skillTable = cls(
     tableLayout.fixed,
     width := "100%",
@@ -146,6 +156,17 @@ object EPStyle extends SheetStyle {
     paddingLeft := 2.px,
     paddingRight := 2.px,
     fontWeight.bold);
+
+  val rollLabel = cls(
+    paddingLeft := 2.px,
+    paddingRight := 2.px,
+    fontWeight.bold,
+    color := c.textHighlight.css);
+
+  val rollList = cls(
+    display.block,
+    marginLeft := 5.px,
+    marginRight := 5.px);
 
   val tcol = cls(
     width := "100%",
@@ -214,6 +235,23 @@ object EPStyle extends SheetStyle {
     paddingRight := "1px",
     whiteSpace.nowrap);
 
+  val fieldLabelBold = cls(
+    backgroundColor := c.primaryShade3.css,
+    color := c.lightText.css,
+    paddingTop := "1px",
+    paddingBottom := "1px",
+    paddingLeft := "3px",
+    paddingRight := "1px",
+    whiteSpace.nowrap,
+    fontWeight.bold);
+
+  val secondTableHeader = cls(
+    color := c.titleText.css,
+    fontSize := "9px",
+    fontWeight.bold,
+    textTransform.uppercase,
+    textAlign.center);
+
   val labelGroup = cls(
     borderBottomWidth := "1px",
     borderBottomColor := c.mediumGrey.css,
@@ -260,6 +298,10 @@ object EPStyle extends SheetStyle {
     maxWidth := "100%",
     minWidth := "1rem");
 
+  val min02rem = cls(
+    maxWidth := "100%",
+    minWidth := "0.2rem");
+
   val exactly15rem = cls(
     width := "15rem");
 
@@ -276,6 +318,9 @@ object EPStyle extends SheetStyle {
     marginRight := 0.5.rem);
 
   val skillRow = cls(
+    width := "100%");
+
+  val growFull = cls(
     width := "100%");
 
   val description = cls(

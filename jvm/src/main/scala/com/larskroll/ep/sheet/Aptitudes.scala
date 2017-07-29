@@ -37,14 +37,108 @@ case class Aptitudes(rows: Seq[AptitudeRow]) extends FieldGroup {
 object AptitudeRenderer extends GroupRenderer {
 
   val t = EPTranslation;
-  val lsty = EPStyle.fieldLabel;
+  val lsty = EPStyle.fieldLabelBold;
+  val char = EPCharModel;
+  val sty = EPStyle;
 
   override def fieldRenderers = DefaultRenderer.fieldRenderers;
   override def fieldCombiner = { tags =>
     table(EPStyle.aptTable,
-      tr(td(EPStyle.`left-top-corner`), th(lsty, t.cog), th(lsty, t.coo), th(lsty, t.int), th(lsty, t.ref), th(lsty, t.sav), th(lsty, t.som), th(lsty, t.wil)),
+      tr(td(EPStyle.`left-top-corner`), th(lsty, cog), th(lsty, coo), th(lsty, int), th(lsty, ref), th(lsty, sav), th(lsty, som), th(lsty, wil)),
       tags)
   };
+
+  val cog = renderElement(
+    roll(char, "cog-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.cog.fullLabel, char.epRoll, char.cogTarget),
+      span(fontWeight.bold, t.cog)),
+    RenderMode.Normal);
+  val coo = renderElement(
+    roll(char, "coo-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.coo.fullLabel, char.epRoll, char.cooTarget),
+      span(fontWeight.bold, t.coo)),
+    RenderMode.Normal);
+  val int = renderElement(
+    roll(char, "int-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.int.fullLabel, char.epRoll, char.intTarget),
+      span(fontWeight.bold, t.int)),
+    RenderMode.Normal);
+  val ref = renderElement(
+    roll(char, "ref-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.ref.fullLabel, char.epRoll, char.refTarget),
+      span(fontWeight.bold, t.ref)),
+    RenderMode.Normal);
+  val sav = renderElement(
+    roll(char, "sav-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.sav.fullLabel, char.epRoll, char.savTarget),
+      span(fontWeight.bold, t.sav)),
+    RenderMode.Normal);
+  val som = renderElement(
+    roll(char, "som-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.som.fullLabel, char.epRoll, char.somTarget),
+      span(fontWeight.bold, t.som)),
+    RenderMode.Normal);
+  val wil = renderElement(
+    roll(char, "will-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.wil.fullLabel, char.epRoll, char.wilTarget),
+      span(fontWeight.bold, t.wil)),
+    RenderMode.Normal);
+}
+
+case class MuseAptitudes(rows: Seq[AptitudeRow]) extends FieldGroup {
+  override def renderer = MuseAptitudeRenderer;
+  override def members: Seq[SheetElement] = rows.map(GroupElement(_));
+}
+
+object MuseAptitudeRenderer extends GroupRenderer {
+
+  val t = EPTranslation;
+  val lsty = EPStyle.fieldLabelBold;
+  val char = EPCharModel;
+  val sty = EPStyle;
+
+  override def fieldRenderers = DefaultRenderer.fieldRenderers;
+  override def fieldCombiner = { tags =>
+    table(EPStyle.aptTable,
+      tr(td(EPStyle.`left-top-corner`), th(lsty, cog), th(lsty, coo), th(lsty, int), th(lsty, ref), th(lsty, sav), th(lsty, som), th(lsty, wil)),
+      tags)
+  };
+
+  val cog = renderElement(
+    roll(char, "cog-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.cog.fullLabel, char.epRoll, char.museCogTarget),
+      span(fontWeight.bold, t.cog)),
+    RenderMode.Normal);
+  val coo = renderElement(
+    roll(char, "coo-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.coo.fullLabel, char.epRoll, char.museCooTarget),
+      span(fontWeight.bold, t.coo)),
+    RenderMode.Normal);
+  val int = renderElement(
+    roll(char, "int-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.int.fullLabel, char.epRoll, char.museIntTarget),
+      span(fontWeight.bold, t.int)),
+    RenderMode.Normal);
+  val ref = renderElement(
+    roll(char, "ref-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.ref.fullLabel, char.epRoll, char.museRefTarget),
+      span(fontWeight.bold, t.ref)),
+    RenderMode.Normal);
+  val sav = renderElement(
+    roll(char, "sav-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.sav.fullLabel, char.epRoll, char.museSavTarget),
+      span(fontWeight.bold, t.sav)),
+    RenderMode.Normal);
+  val som = renderElement(
+    roll(char, "som-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.som.fullLabel, char.epRoll, char.museSomTarget),
+      span(fontWeight.bold, t.som)),
+    RenderMode.Normal);
+  val wil = renderElement(
+    roll(char, "will-roll", Chat.Default,
+      EPDefaultTemplate(char.museName, t.wil.fullLabel, char.epRoll, char.museWilTarget),
+      span(fontWeight.bold, t.wil)),
+    RenderMode.Normal);
 }
 
 case class AptitudeRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends FieldGroup {
