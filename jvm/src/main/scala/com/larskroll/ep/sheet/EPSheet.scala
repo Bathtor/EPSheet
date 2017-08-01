@@ -37,7 +37,7 @@ object EPSheet extends TabbedSheet {
   val t = EPTranslation;
   val sty = EPStyle;
 
-  override def hidden = Seq[SheetElement](char.characterSheet, char.morphType, char.woundMod, char.woundsApplied, char.traumaMod);
+  override def hidden = Seq[SheetElement](char.characterSheet, char.morphType, char.woundMod, char.woundsApplied, char.traumaMod, char.frayField);
   override def header = Header;
   override def tabs = Seq(core, skills, morphs, gear, psi, identities, muse, options);
   override def footer = Footer;

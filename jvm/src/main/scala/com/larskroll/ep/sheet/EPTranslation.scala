@@ -51,6 +51,8 @@ object EPTranslation extends SheetI18N {
   val wilx3Roll = abbr("wilx3", "WIL × 3", "willpowerx3", "Willpower tripled");
   val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
   val intx3Roll = abbr("intx3", "INT × 3", "intuitionx3", "Intuition tripled");
+  val frayHalvedRoll = abbr("fraydiv2", "Fray/2", "frayhalved", "Fray halved");
+  val durEnergyRoll = abbr("dur-energy-armor", "DUR + Energy Armor", "durability-energy-armor", "Durability + Energy Armor");
   val psiDefense = text("psi-defense", "Psi Defense");
   val continuityTest = text("continutity-test", "Continuity Test");
   val resistTraumaDisorientation = text("resist-trauma-disorientation", "Resist Trauma Disorientation");
@@ -59,6 +61,8 @@ object EPTranslation extends SheetI18N {
   val resistWoundKnockdown = text("resist-wound-knockdown", "Resist Knockdown from Wound");
   val integrationTest = text("integration-test", "Integration Test");
   val alienationTest = text("alienation-test", "Alienation Test");
+  val rangedDefence = text("ranged-defence", "Ranged Defence");
+  val resistShock = text("resist-shock", "Resist Shock");
 
   val aptitudes = text("aptitudes", "Aptitudes");
   val cog = abbr("cog", "COG", "cognition", "Cognition");
@@ -293,6 +297,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val options = text("options", "Options");
   val sheetSettings = text("sheet-settings", "Sheet Settings");
   val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
+  val miscActionMod = text("misc-action-mod", "Misc. All Actions Modifier");
   //val weightUnit = text("weight-unit", "Weight Unit");
 
   // identities

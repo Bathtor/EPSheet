@@ -93,7 +93,15 @@ object CoreTab extends FieldGroup {
       rwd(roll(char, "intx3-roll", Chat.Default,
         EPDefaultTemplate(char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
         span(sty.rollLabel, t.intx3Roll)),
-        t.alienationTest))));
+        t.alienationTest),
+      rwd(roll(char, "fray-halved-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.frayHalvedRoll.fullLabel, char.epRoll, char.frayHalvedTarget),
+        span(sty.rollLabel, t.frayHalvedRoll)),
+        t.rangedDefence),
+      rwd(roll(char, "dur-energy-armour-roll", Chat.Default,
+        EPDefaultTemplate(char.characterName, t.durEnergyRoll.fullLabel, char.epRoll, char.durEnergyArmour),
+        span(sty.rollLabel, t.durEnergyRoll)),
+        t.resistShock))));
 
   val rightCol = fcol(Seq(EPStyle.exactly23rem),
     block(t.aptitudes, aptitudes),

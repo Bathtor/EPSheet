@@ -401,6 +401,7 @@ object EPWorkers extends SheetWorker {
       _ <- generateDefaultSkills();
       _ <- skillTotalCalc();
       _ <- sortSkillsOp();
+      _ <- setFrayHalved();
       _ <- unsetSkillsGenerating()
     } yield ();
     ()
@@ -663,7 +664,7 @@ object EPWorkers extends SheetWorker {
     }
   };
 
-  private def searchSkillAndSetNameTotal(needle: String, weaponSection: RepeatingSection, nameField: TextField, totalField: FieldRef[Int]): Future[Unit] = {
+  private def searchSkillAndSetNameTotal(needle: String, weaponSection: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
     val rowId = Roll20.getActiveRepeatingField();
     val simpleRowId = rowId.split('_').last;
     val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
@@ -711,6 +712,36 @@ object EPWorkers extends SheetWorker {
     }
     doF.flatMap(identity)
   }
+
+  val setFrayHalved = nop { _: Option[Unit] =>
+    searchFrayAndSetHalved()
+  }
+
+  private def searchFrayAndSetHalved(): Future[Unit] = {
+    val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
+    val doF = for {
+      rowAttrs <- rowAttrsF
+    } yield {
+      val nameToId = rowAttrs.flatMap {
+        case (id, attrs) => attrs(activeSkills.skillName).map((_, id))
+      }.toMap;
+      val attrs = nameToId.get("Fray") match {
+        case Some(id) => {
+          Map(frayField <<= frayField.valueFrom(activeSkills.total, id))
+        }
+        case None => {
+          Map(frayField <<= frayField.valueFrom(refTotal))
+        }
+      };
+      setAttrs(attrs)
+    }
+    doF.onFailure {
+      case e: Throwable => error(e)
+    }
+    doF.flatMap(identity)
+  }
+
+  onRemove(activeSkills, (_: Roll20.EventInfo) => { searchFrayAndSetHalved(); () });
 
   val weaponRangeLimits = bind(op(rangedWeapons.shortRangeUpper, rangedWeapons.mediumRangeUpper, rangedWeapons.longRangeUpper)) update {
     case (sru, mru, lru) => {

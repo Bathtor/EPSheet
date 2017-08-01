@@ -21,6 +21,7 @@ object OptionsTab extends FieldGroup {
       fcol(Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         fblock(t.miscModifiers, EPStyle.min5rem,
           (t.woundsIgnored -> char.woundsIgnored),
+          (t.miscActionMod -> char.miscActionMod),
           flexFill))),
     frow(sty.`flex-stretch`,
       fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
