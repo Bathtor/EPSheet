@@ -218,6 +218,8 @@ object EPTranslation extends SheetI18N {
   val morphAptitudeBoni = text("morph-aptitude-boni", "Aptitude Boni");
   val morphAptitudeMax = text("morph-aptitude-max", "Aptitude Max");
   val morphSkillBoni = text("morph-skill-boni", "Skill Boni");
+  val morphVisibleAge = text("morph-visible-age", "Visible Age");
+  val morphVisibleGender = text("morph-visible-gender", "Visible Gender");
 
   val gear = text("gear", "Gear");
   val gearFreeform = text("gear-freeform", "Freeform Gear");

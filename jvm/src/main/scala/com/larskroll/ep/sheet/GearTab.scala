@@ -278,10 +278,10 @@ object GearTab extends FieldGroup {
           char.gear1.like(CoreTabRenderer.largeTextareaField))),
       fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
         block(t.gearFreeform,
-          char.gear1.like(CoreTabRenderer.largeTextareaField))),
+          char.gear2.like(CoreTabRenderer.largeTextareaField))),
       fcol(Seq(EPStyle.`flex-grow`, sty.exactly15rem),
         block(t.gearFreeform,
-          char.gear1.like(CoreTabRenderer.largeTextareaField)))));
+          char.gear3.like(CoreTabRenderer.largeTextareaField)))));
 
   override def renderer = CoreTabRenderer;
 }

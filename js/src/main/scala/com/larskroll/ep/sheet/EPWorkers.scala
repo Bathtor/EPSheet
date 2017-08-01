@@ -603,11 +603,12 @@ object EPWorkers extends SheetWorker {
       armourKineticTotal <<= (Math.min(dur, kineticMorph + kineticBonus)))
   }
 
-  private val morphAttrsCalc: Tuple13[Boolean, String, String, Int, String, Int, Int, String, String, String, String, String, String] => UpdateDecision = {
-    case (active, name, tpe, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB) => if (active) {
+  private val morphAttrsCalc: Tuple15[Boolean, String, String, String, String, Int, String, Int, Int, String, String, String, String, String, String] => UpdateDecision = {
+    case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB) => if (active) {
       val rowId = Roll20.getActiveRepeatingField();
       log(s"Current row: ${rowId}");
       val updates = Seq(morphs.id <<= rowId, currentMorph <<= rowId, morphType <<= tpe,
+        morphVisibleGender <<= gender, morphVisibleAge <<= age,
         morphName <<= name, morphDescription <<= descr, morphTraits <<= traits,
         morphImplants <<= imp, morphMobilitySystem <<= mob, morphDurability <<= dur,
         morphArmourEnergy <<= ae, morphArmourKinetic <<= ak, morphSkillBoni <<= skillB) ++ morphAptBoni(aptB) ++ morphAptMax(aptMax);
@@ -619,7 +620,7 @@ object EPWorkers extends SheetWorker {
   }
 
   val morphAttrs = bind(
-    op(morphs.active, morphs.morphName, morphs.morphType, morphs.durability, morphs.mobilitySystem,
+    op(morphs.active, morphs.morphName, morphs.morphType, morphs.visibleGender, morphs.visibleAge, morphs.durability, morphs.mobilitySystem,
       morphs.armourEnergy, morphs.armourKinetic, morphs.implants, morphs.traits,
       morphs.description, morphs.aptitudeBoni, morphs.aptitudeMax, morphs.skillBoni)).
     update(morphAttrsCalc, aptTotalsAll ++ List(durStatsCalc, armourTotalCalc, morphSkillBoniCalc));
