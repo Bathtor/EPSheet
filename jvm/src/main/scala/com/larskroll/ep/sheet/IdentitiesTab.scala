@@ -49,14 +49,23 @@ object IdentitiesTab extends FieldGroup {
     RepRow(t.uRep, Seq(ci.uRepScore, ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
     RepRow(t.xRep, Seq(ci.xRepScore, ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
 
+  val identityInfo = fblock(t.identity, EPStyle.min5rem,
+    editOnly((t.identity -> ci.identity)),
+    (t.idDescription -> dualMode(ci.description)),
+    (t.idCredits -> ci.credits),
+    flexBreak,
+    (t.idNotes -> ci.notes.like(CoreTabRenderer.largeTextareaField)));
+
+  val nameBarrier: GroupRenderer.FieldSingleRenderer = (f) => span(sty.`h2hr`, name := f.name);
+
   val members: Seq[SheetElement] = Seq(char.identities(
-    eprow(
-      epcol(fblock(char.identities.identity, EPStyle.min5rem,
-        editOnly((t.identity -> char.identities.identity)),
-        (t.idDescription -> dualMode(char.identities.description)),
-        (t.idCredits -> char.identities.credits),
-        (t.idNotes -> char.identities.notes.like(CoreTabRenderer.largeTextareaField)),
-        repTable)))));
+    ci.identity.like(nameBarrier),
+    frow(sty.`flex-start`,
+      fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
+        identityInfo),
+      fcol(Seq(EPStyle.`flex-grow`, sty.exactly20rem),
+        block(t.reputation,
+          repTable)))));
 
   override def renderer = CoreTabRenderer;
 }

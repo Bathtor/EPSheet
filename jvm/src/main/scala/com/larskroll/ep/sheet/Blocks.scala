@@ -59,6 +59,7 @@ object Blocks {
 
   val flexFill = span(EPStyle.`flex-grow`, EPStyle.min1rem);
   val flexFillNarrow = span(EPStyle.`flex-grow`, EPStyle.min02rem);
+  val flexBreak = div(width := "100%");
   //def roll(roll: Button, members: SheetElement*): RollContent = RollContent(roll, members);
 }
 

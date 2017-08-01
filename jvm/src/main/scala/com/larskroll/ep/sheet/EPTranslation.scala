@@ -302,6 +302,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val idCredits = text("id-credits", "Credits");
   val idNotes = text("id-notes", "Notes");
 
+  val reputation = text("reputaion", "Reputation");
   val repScore = text("rep-score", "Score");
   val calledInFavours = text("called-in-favours", "Called in Favours");
   val lvl1 = abbr("lvl1", "Lvl 1", "level1", "Level 1");

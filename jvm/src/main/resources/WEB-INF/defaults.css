@@ -204,6 +204,33 @@ h2.sheet-h2hr:after {
     margin-right: -50%;
 }
 
+span.sheet-h2hr {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    color: ${title-text};
+    font-size: 1rem;
+    font-variant: small-caps;
+}
+span.sheet-h2hr:before,
+span.sheet-h2hr:after {
+    background-color: ${title-text};
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+span.sheet-h2hr:before {
+    right: 0.5em;
+    margin-left: -50%;
+}
+span.sheet-h2hr:after {
+    left: 0.5em;
+    margin-right: -50%;
+}
+
 .sheet-ep-row, .sheet-ep-twocolrow, .sheet-ep-threecolrow {
     display: block;
     clear: both;
