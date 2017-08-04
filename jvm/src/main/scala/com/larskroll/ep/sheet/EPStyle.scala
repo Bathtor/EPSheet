@@ -322,6 +322,8 @@ object EPStyle extends SheetStyle {
 
   val growFull = cls(
     width := "100%");
+  
+  val nop = cls();
 
   val description = cls(
     fontSize.smaller);

@@ -43,7 +43,8 @@ object SkillTab extends FieldGroup {
       block(t.activeSkills,
         char.activeSkills(
           TightRepRow(
-            char.activeSkills.rowId like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
+            char.activeSkills.rowId.hidden,
+            char.activeSkills.globalMods.hidden,
             presOnly(tightfrow(
               char.activeSkills.total like { total => span(sty.skillTotal, name := total.name) },
               roll(char.activeSkills, "active_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.field, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
@@ -68,7 +69,7 @@ object SkillTab extends FieldGroup {
       block(t.knowledgeSkills,
         char.knowledgeSkills(
           TightRepRow(
-            char.knowledgeSkills.rowId like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
+            char.knowledgeSkills.rowId.hidden,
             presOnly(tightfrow(
               char.knowledgeSkills.total like { total => span(sty.skillTotal, name := total.name) },
               roll(char.knowledgeSkills, "knowledge_skill_roll", Chat.Default, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.field, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),

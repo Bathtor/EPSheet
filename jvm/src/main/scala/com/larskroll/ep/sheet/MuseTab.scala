@@ -14,13 +14,23 @@ object MuseTab extends FieldGroup {
   val aptitudes = MuseAptitudes(Seq(
     AptitudeRow(t.aptTotal, Seq(char.museCog, char.museCoo, char.museInt, char.museRef, char.museSav, char.museSom, char.museWil))));
 
+  val infoBlock = fblock(t.museInfo, EPStyle.min5rem,
+    (t.museName -> dualMode(char.museName)),
+    (t.tt -> char.museTraumaThreshold),
+    (t.luc -> char.museLucidity),
+    (t.ir -> char.museInsanityRating),
+    (t.museNotes -> dualMode(char.museNotes.like(CoreTabRenderer.textareaField))));
+
+  val topRow = eprow(frow(sty.`flex-centre`,
+    flexFillNarrow,
+    sblock(t.mentalHealth, sty.max15rem,
+      char.museTraumaMod.hidden,
+      (t.stress -> char.museStress),
+      (t.trauma -> char.museTrauma)),
+    flexFillNarrow));
+
   val leftCol = fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
-    fblock(t.museInfo, EPStyle.min5rem,
-      (t.museName -> dualMode(char.museName)),
-      (t.tt -> char.museTraumaThreshold),
-      (t.luc -> char.museLucidity),
-      (t.ir -> char.museInsanityRating),
-      (t.museNotes -> dualMode(char.museNotes.like(CoreTabRenderer.textareaField)))));
+    infoBlock);
   val rightCol = fcol(Seq(EPStyle.exactly23rem),
     block(t.aptitudes, aptitudes),
     block(t.museSkills,
@@ -47,6 +57,7 @@ object MuseTab extends FieldGroup {
         flexFill)));
 
   val members: Seq[SheetElement] = Seq(
+    topRow,
     frow(sty.`flex-start`,
       leftCol,
       rightCol));

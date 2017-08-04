@@ -47,13 +47,17 @@ object EPCharModel extends SheetModel {
   //val justEPRoll = button("just_ep_roll", epRoll);
   lazy val moxieTarget = roll("moxie-target", modQuery.expr + currentMoxie);
   lazy val customTarget = roll("custom-target", modQuery.expr);
-  lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2 - woundTraumaMods + miscActionMod);
-  lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3 - woundTraumaMods + miscActionMod);
-  lazy val somx3Target = roll("somx3-target", modQuery.expr + somTotal * 3 - woundTraumaMods + miscActionMod);
-  lazy val intx3Target = roll("intx3-target", modQuery.expr + intTotal * 3 - woundTraumaMods + miscActionMod);
+  lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2 + globalMods);
+  lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3 + globalMods);
+  lazy val somx3Target = roll("somx3-target", modQuery.expr + somTotal * 3 + globalPhysicalMods);
+  lazy val intx3Target = roll("intx3-target", modQuery.expr + intTotal * 3 + globalMods);
   lazy val frayField = "fray_field".ref[Int].editable(false).default(refTotal);
-  lazy val frayHalvedTarget = roll("fray-halved-target", modQuery.expr + floor(frayField.altArith / 2) - woundTraumaMods + miscActionMod);
-  lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery.expr + durability - damage + armourEnergyTotal - woundTraumaMods + miscActionMod);
+  lazy val frayHalvedTarget = roll("fray-halved-target", modQuery.expr + floor(frayField.altArith / 2) + globalPhysicalMods);
+  lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery.expr + durability - damage + armourEnergyTotal + globalPhysicalMods);
+  lazy val refCoox2Target = roll("ref-coox2-target", modQuery.expr + refTotal + cooTotal * 2 + globalPhysicalMods);
+  lazy val cooSomTarget = roll("coo-som-target", modQuery.expr + cooTotal + somTotal + globalPhysicalMods);
+  lazy val cogx3Target = roll("cogx3-target", modQuery.expr + cogTotal * 3 + globalMods);
+  // maybe WIL+COG for Psi brain seizure?
 
   // **** core ****
   val background = text("background");
@@ -70,47 +74,48 @@ object EPCharModel extends SheetModel {
   val cogMorph = "cog_morph".editable(false).default(0);
   val cogMorphMax = "cog_morph_max".editable(false).default(20);
   val cogTotal = "cog_total".editable(false).default(0);
-  lazy val cogTarget = roll("cog-target", modQuery.expr + cogTotal - woundTraumaMods + miscActionMod);
+  lazy val cogTarget = roll("cog-target", modQuery.expr + cogTotal + globalMods);
   val cooBase = "coo_base".default(0);
   val cooTemp = "coo_temp".default(0);
   val cooMorph = "coo_morph".editable(false).default(0);
   val cooMorphMax = "coo_morph_max".editable(false).default(20);
   val cooTotal = "coo_total".editable(false).default(0);
-  lazy val cooTarget = roll("coo-target", modQuery.expr + cooTotal - woundTraumaMods + miscActionMod);
+  lazy val cooTarget = roll("coo-target", modQuery.expr + cooTotal + globalPhysicalMods);
   val intBase = "int_base".default(0);
   val intTemp = "int_temp".default(0);
   val intMorph = "int_morph".editable(false).default(0);
   val intMorphMax = "int_morph_max".editable(false).default(20);
   val intTotal = "int_total".editable(false).default(0);
-  lazy val intTarget = roll("int-target", modQuery.expr + intTotal - woundTraumaMods + miscActionMod);
+  lazy val intTarget = roll("int-target", modQuery.expr + intTotal + globalMods);
   val refBase = "ref_base".default(0);
   val refTemp = "ref_temp".default(0);
   val refMorph = "ref_morph".editable(false).default(0);
   val refMorphMax = "ref_morph_max".editable(false).default(20);
   val refTotal = "ref_total".editable(false).default(0);
-  lazy val refTarget = roll("ref-target", modQuery.expr + refTotal - woundTraumaMods + miscActionMod);
+  lazy val refTarget = roll("ref-target", modQuery.expr + refTotal + globalPhysicalMods);
   val savBase = "sav_base".default(0);
   val savTemp = "sav_temp".default(0);
   val savMorph = "sav_morph".editable(false).default(0);
   val savMorphMax = "sav_morph_max".editable(false).default(20);
   val savTotal = "sav_total".editable(false).default(0);
-  lazy val savTarget = roll("sav-target", modQuery.expr + savTotal - woundTraumaMods + miscActionMod);
+  lazy val savTarget = roll("sav-target", modQuery.expr + savTotal + globalMods);
   val somBase = "som_base".default(0);
   val somTemp = "som_temp".default(0);
   val somMorph = "som_morph".editable(false).default(0);
   val somMorphMax = "som_morph_max".editable(false).default(20);
   val somTotal = "som_total".editable(false).default(0);
-  lazy val somTarget = roll("som-target", modQuery.expr + somTotal - woundTraumaMods + miscActionMod);
+  lazy val somTarget = roll("som-target", modQuery.expr + somTotal + globalPhysicalMods);
   val wilBase = "wil_base".default(0);
   val wilTemp = "wil_temp".default(0);
   val wilMorph = "wil_morph".editable(false).default(0);
   val wilMorphMax = "wil_morph_max".editable(false).default(20);
   val wilTotal = "wil_total".editable(false).default(0);
-  lazy val wilTarget = roll("wil-target", modQuery.expr + wilTotal - woundTraumaMods + miscActionMod);
+  lazy val wilTarget = roll("wil-target", modQuery.expr + wilTotal + globalMods);
   // base stats
   val moxie = "moxie".default(0);
   val traumaThreshold = "trauma_threshold".editable(false).default(0);
   val lucidity = "lucidity".editable(false).default(0);
+  val lucidityTarget = roll("lucidity-target", modQuery.expr + lucidity); // p. 272 I don't think any other mods apply
   val insanityRating = "insanity_rating".editable(false).default(0);
   val woundThreshold = "wound_threshold".editable(false).default(0);
   val durability = "durability".editable(false).default(0);
@@ -118,7 +123,7 @@ object EPCharModel extends SheetModel {
   val deathRating = "death_rating".editable(false).default(0);
   val initiative = "initiative".editable(false).default(0);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
-  lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - trauma & RollOptions.Tracker);
+  lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - trauma + miscInitiativeMod & RollOptions.Tracker);
   val speed = "speed".default(1);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
@@ -160,7 +165,7 @@ object EPCharModel extends SheetModel {
   // gear
   lazy val meleeWeapons = MeleeWeaponSection;
   val rangeQuery = LabelledSelectQuery("Range",
-    Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30));
+    Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10));
   lazy val rangedWeapons = RangedWeaponSection;
   val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
   val rangedConcFAXDmg = roll("ranged_conc_fa_xdmg", 3.d(10));
@@ -170,6 +175,7 @@ object EPCharModel extends SheetModel {
   val layeringPenalty = "layering_penalty".editable(false).default(0);
   val equipment = GearSection;
   val cryptoCredits = "crypto_currency".default(0).validIn(-999999999, 999999999, 1);
+  val cash = "cash".default(0).validIn(-999999999, 999999999, 1);
   val gear1 = "gear1".default("");
   val gear2 = "gear2".default("");
   val gear3 = "gear3".default("");
@@ -184,22 +190,25 @@ object EPCharModel extends SheetModel {
   // MUSE
   val museName = text("muse_name");
   val museCog = "muse_cog".default(10);
-  val museCogTarget = roll("muse-cog-target", modQuery.expr + museCog);
+  lazy val museCogTarget = roll("muse-cog-target", modQuery.expr + museCog - museTraumaMod);
   val museCoo = "muse_coo".default(10);
-  val museCooTarget = roll("muse-coo-target", modQuery.expr + museCoo);
+  lazy val museCooTarget = roll("muse-coo-target", modQuery.expr + museCoo - museTraumaMod);
   val museInt = "muse_int".default(20);
-  val museIntTarget = roll("muse-int-target", modQuery.expr + museInt);
+  lazy val museIntTarget = roll("muse-int-target", modQuery.expr + museInt - museTraumaMod);
   val museRef = "muse_ref".default(10);
-  val museRefTarget = roll("muse-ref-target", modQuery.expr + museRef);
+  lazy val museRefTarget = roll("muse-ref-target", modQuery.expr + museRef - museTraumaMod);
   val museSav = "muse_sav".default(10);
-  val museSavTarget = roll("muse-sav-target", modQuery.expr + museSav);
+  lazy val museSavTarget = roll("muse-sav-target", modQuery.expr + museSav - museTraumaMod);
   val museSom = "muse_som".default(10);
-  val museSomTarget = roll("muse-som-target", modQuery.expr + museSom);
+  lazy val museSomTarget = roll("muse-som-target", modQuery.expr + museSom - museTraumaMod);
   val museWil = "muse_wil".default(10);
-  val museWilTarget = roll("muse-wil-target", modQuery.expr + museWil);
+  lazy val museWilTarget = roll("muse-wil-target", modQuery.expr + museWil - museTraumaMod);
   val museTraumaThreshold = "muse_trauma_threshold".editable(false).default(4);
   val museLucidity = "muse_lucidity".editable(false).default(20);
   val museInsanityRating = "muse_insanity_rating".editable(false).default(40);
+  val museStress = "muse_stress".default(0).validIn(0, 990, 1);
+  val museTrauma = "muse_trauma".default(0).validIn(0, 99, 1);
+  val museTraumaMod = "muse_trauma_mod".editable(false).default(0);
   val museSkills = MuseSkillSection;
   val museNotes = text("muse_notes");
   val generateMuseSkills = "muse_skills_generate".default(false);
@@ -209,6 +218,11 @@ object EPCharModel extends SheetModel {
   //val weightUnit = "weight_unit".options("kg", "lb").default("kg"); // not feasible with current roll20 repeating sections as field can't be accessed from within a RS
   val miscNotes = text("misc_notes");
   val miscActionMod = "misc_action_mod".default(0);
+  val miscPhysicalMod = "misc_physical_mod".default(0);
+  val miscInitiativeMod = "misc_initiative_mod".default(0);
+
+  val globalMods = (miscActionMod - woundTraumaMods).paren;
+  val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;
 }
 
 object MuseSkillSection extends RepeatingSection {
@@ -222,7 +236,7 @@ object MuseSkillSection extends RepeatingSection {
   val linkedAptitude = "linked_aptitude".options(Aptitude);
   val ranks = "ranks".default(0);
   val total = number[Int]("total").editable(false);
-  val rollTarget = roll("target", EPCharModel.modQuery.arith + total);
+  val rollTarget = roll("target", EPCharModel.modQuery.arith + total - EPCharModel.museTraumaMod);
 }
 
 object PsiChiSection extends RepeatingSection {
@@ -343,7 +357,7 @@ object MeleeWeaponSection extends RepeatingSection {
   val skillSearch = "skill_search".options("Blades", "Clubs", "Exotic Melee Weapon: ...", "Unarmed Combat");
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty + EPCharModel.miscActionMod);
+  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalPhysicalMods);
   val armourPenetration = "armour_penetration".default(0);
   val numDamageDice = "num_damage_dice".default(0);
   val damageBonus = "damage_bonus".default(0);
@@ -366,7 +380,7 @@ object RangedWeaponSection extends RepeatingSection {
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val miscMod = "misc_mod".default(0);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty + EPCharModel.miscActionMod);
+  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods);
   val armourPenetration = "armour_penetration".default(0);
   val numDamageDice = "num_damage_dice".default(0);
   val damageBonus = "damage_bonus".default(0);
@@ -434,8 +448,9 @@ object ActiveSkillSection extends RepeatingSection {
   val ranks = "ranks".default(0);
   val morphBonus = "morph_bonus".editable(false).default(0);
   val total = number[Int]("total").editable(false);
-  val rollTarget = roll("target", EPCharModel.modQuery.arith + total - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty + EPCharModel.miscActionMod);
-  val rollSpecTarget = roll("spec_target", EPCharModel.modQuery.arith + total - EPCharModel.woundTraumaMods + EPCharModel.layeringPenalty + EPCharModel.miscActionMod + 10);
+  val globalMods = "global_mods".editable(false).expression[Int].default(EPCharModel.globalMods);
+  val rollTarget = roll("target", EPCharModel.modQuery.arith + total + globalMods.altArith);
+  val rollSpecTarget = roll("spec_target", EPCharModel.modQuery.arith + total + globalMods.altArith + 10);
 }
 
 object KnowledgeSkillSection extends RepeatingSection {
@@ -453,8 +468,8 @@ object KnowledgeSkillSection extends RepeatingSection {
   val ranks = "ranks".default(0);
   val morphBonus = "morph_bonus".editable(false).default(0);
   val total = number[Int]("total").editable(false);
-  val rollTarget = roll("target", EPCharModel.modQuery.arith + total - EPCharModel.woundTraumaMods + EPCharModel.miscActionMod);
-  val rollSpecTarget = roll("spec_target", EPCharModel.modQuery.arith + total - EPCharModel.woundTraumaMods + EPCharModel.miscActionMod + 10);
+  val rollTarget = roll("target", EPCharModel.modQuery.arith + total + EPCharModel.globalMods);
+  val rollSpecTarget = roll("spec_target", EPCharModel.modQuery.arith + total + EPCharModel.globalMods + 10);
 
 }
 

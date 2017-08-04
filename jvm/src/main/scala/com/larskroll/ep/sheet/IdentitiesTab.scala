@@ -61,9 +61,9 @@ object IdentitiesTab extends FieldGroup {
   val members: Seq[SheetElement] = Seq(char.identities(
     ci.identity.like(nameBarrier),
     frow(sty.`flex-start`,
-      fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
+      fcol(Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         identityInfo),
-      fcol(Seq(EPStyle.`flex-grow`, sty.exactly20rem),
+      fcol(Seq(sty.exactly23rem),
         block(t.reputation,
           repTable)))));
 

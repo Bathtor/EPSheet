@@ -227,8 +227,10 @@ object GearTab extends FieldGroup {
           flexFill)))
     });
 
-  val currency: SheetElement = sblock(t.currency, sty.growFull,
-    (t.cryptoCredits -> char.cryptoCredits));
+  val currency: SheetElement = sblock(t.currency, sty.nop,
+    (t.cryptoCredits -> char.cryptoCredits),
+    flexBreak,
+    (t.cash -> char.cash));
 
   val equipment: SheetElement = block(t.equipment,
     char.equipment {

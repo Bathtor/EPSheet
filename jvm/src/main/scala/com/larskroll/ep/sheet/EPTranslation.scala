@@ -46,13 +46,16 @@ object EPTranslation extends SheetI18N {
   val motivations = text("motivations", "Motivations");
   val traits = text("traits", "Traits");
   val specialRolls = text("special-rolls", "Special Rolls");
-  val simpleSuccessRoll = text("simple-success-roll", "Simple Success Roll");
+  val successRoll = text("success-roll", "Success Roll");
   val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
   val wilx3Roll = abbr("wilx3", "WIL × 3", "willpowerx3", "Willpower tripled");
   val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
   val intx3Roll = abbr("intx3", "INT × 3", "intuitionx3", "Intuition tripled");
+  val cogx3Roll = abbr("cogx3", "COG × 3", "cognitionx3", "Cognition tripled");
   val frayHalvedRoll = abbr("fraydiv2", "Fray/2", "frayhalved", "Fray halved");
   val durEnergyRoll = abbr("dur-energy-armor", "DUR + Energy Armor", "durability-energy-armor", "Durability + Energy Armor");
+  val refCoox2Roll = abbr("ref-coox2", "REF + COO × 2", "reflex-coordinationx2", "Reflect + Coordination doubled");
+  val cooSomRoll = abbr("coo-som", "COO + SOM", "coordination-somatics", "Coordination + Somatics");
   val psiDefense = text("psi-defense", "Psi Defense");
   val continuityTest = text("continutity-test", "Continuity Test");
   val resistTraumaDisorientation = text("resist-trauma-disorientation", "Resist Trauma Disorientation");
@@ -63,6 +66,11 @@ object EPTranslation extends SheetI18N {
   val alienationTest = text("alienation-test", "Alienation Test");
   val rangedDefence = text("ranged-defence", "Ranged Defence");
   val resistShock = text("resist-shock", "Resist Shock");
+  val bruteStrength = text("brute-strength", "Brute Strength");
+  val catchingObjects = text("catching-objects", "Catching Objects");
+  val escapeArtist = text("escape-artist", "Escape Artist");
+  val havingAnIdea = text("having-an-idea", "Having an Idea");
+  val memoriseRecall = text("memorise-recall", "Memorise/Recall");
 
   val aptitudes = text("aptitudes", "Aptitudes");
   val cog = abbr("cog", "COG", "cognition", "Cognition");
@@ -239,6 +247,7 @@ object EPTranslation extends SheetI18N {
   val equipmentDescription = text("equipment-description", "Description");
   val currency = text("currency", "Currency");
   val cryptoCredits = text("crypto-credit", "Crypto Credits");
+  val cash = text("cash", "Cash (Credit Chips)");
 
   val ap = abbr("ap", "AP", "armour-penetration", "Armour Penetration");
   val orTotalAP = text("or-total-ap", "or ignore armour if critical success");
@@ -293,12 +302,6 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val damageInflicts = text("damage-inflicts", "Inflicts");
   val damageValue = abbr("dv", "DV", "damage-value", "Damage Value");
   val concentrateFire = text("concentrate-fire", "Concentrate Fire");
-
-  val options = text("options", "Options");
-  val sheetSettings = text("sheet-settings", "Sheet Settings");
-  val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
-  val miscActionMod = text("misc-action-mod", "Misc. All Actions Modifier");
-  //val weightUnit = text("weight-unit", "Weight Unit");
 
   // identities
   val identities = text("identities", "Identities");
@@ -360,7 +363,15 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val museNotes = text("muse-notes", "Notes");
   val museSkills = text("muse-skills", "Muse Skills");
 
+  // MISC
+  val options = text("options", "Options");
+  val sheetSettings = text("sheet-settings", "Sheet Settings");
+  val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
+  val miscActionMod = text("misc-action-mod", "Misc. All Actions Modifier");
+  //val weightUnit = text("weight-unit", "Weight Unit");
   val miscNotes = text("misc-notes", "Misc. Notes");
+  val miscPhysicalMod = text("misc-physical-mod", "Misc. Physical Modifier");
+  val miscInitiativeMod = text("misc-initiative-mod", "Misc. Initiative Modifier");
 
   // templates
   val rollsfor = text("rolls-for", "rolls for");

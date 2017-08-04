@@ -90,6 +90,10 @@ object EPWorkers extends SheetWorker {
     case (tr) => Seq(traumaMod <<= tr * 10)
   }
 
+  val museTraumaCalc = bind(op(museTrauma)) update {
+    case (tr) => Seq(museTraumaMod <<= tr * 10)
+  }
+
   val willStatsCalc = op(wilTotal) update {
     case (wil) => {
       log(s"Updating will dependent stats with ${wil}");
@@ -184,7 +188,9 @@ object EPWorkers extends SheetWorker {
 
       val cat = SkillCategory.withName(catName);
       val catLabel = SkillCategory.dynamicLabelShort(cat);
-      Seq(activeSkills.categoryShort <<= catLabel)
+      val globalModsExpression = modsForSkillCategory(cat);
+      Seq(activeSkills.categoryShort <<= catLabel,
+        activeSkills.globalMods <<= activeSkills.globalMods.valueFrom(globalModsExpression))
     }
   }
   val setSkillsGenerating = nop update { _ =>
@@ -365,9 +371,18 @@ object EPWorkers extends SheetWorker {
       museSkills.at(id, total) <<= total.resetValue)
   }
 
+  private def modsForSkillCategory(c: Skills.SkillCategory.SkillCategory): ArithmeticExpression[Int] = {
+    import Skills.SkillCategory._;
+    c match {
+      case Combat | Physical => EPCharModel.globalPhysicalMods
+      case _                 => EPCharModel.globalMods
+    }
+  }
+
   private def generateSkillWithId(id: String, skill: Skill): Seq[(FieldLike[Any], Any)] = {
     if (skill.cls == Skills.SkillClass.Active) {
       import activeSkills._;
+      val globalModsExpression = modsForSkillCategory(skill.category);
       Seq(
         activeSkills.at(id, rowId) <<= id,
         activeSkills.at(id, skillName) <<= skill.name,
@@ -379,7 +394,8 @@ object EPWorkers extends SheetWorker {
         activeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
         activeSkills.at(id, ranks) <<= ranks.resetValue,
         activeSkills.at(id, morphBonus) <<= morphBonus.resetValue,
-        activeSkills.at(id, total) <<= total.resetValue)
+        activeSkills.at(id, total) <<= total.resetValue,
+        activeSkills.at(id, globalMods) <<= globalMods.valueFrom(globalModsExpression))
     } else {
       import knowledgeSkills._;
       Seq(
