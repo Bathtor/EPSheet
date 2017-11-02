@@ -100,10 +100,30 @@ object EPWorkers extends SheetWorker {
       val luc = wil * 2;
       Seq(
         lucidity <<= luc,
-        traumaThreshold <<= Math.ceil(luc.toFloat / 5.0f).toInt,
-        insanityRating <<= luc * 2)
+        insanityRating <<= luc * 2,
+        psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt)
     }
   };
+
+  val traumaThresholdCalc = op(wilTotal, async) update {
+    case (wil, isAsync) => {
+      val luc = wil * 2;
+      val tt = if (isAsync) {
+        Math.max(Math.ceil(luc.toFloat / 5.0f).toInt - 1, 0)
+      } else {
+        Math.ceil(luc.toFloat / 5.0f).toInt
+      };
+      Seq(
+        traumaThreshold <<= tt)
+    }
+  };
+
+  onChange(async, (ei: EventInfo) => {
+    val f = for {
+      _ <- traumaThresholdCalc()
+    } yield ();
+    ()
+  })
 
   val museWillStatsCalc = bind(op(museWil)) update {
     case (wil) => {
@@ -466,11 +486,11 @@ object EPWorkers extends SheetWorker {
 
   val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(skillTotalCalc));
 
-  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(skillTotalCalc));
+  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(traumaThresholdCalc).andThen(skillTotalCalc));
 
   val aptTotals = cogTotalCalc ++ List(cooTotalCalc, intTotalCalc, refTotalCalc, savTotalCalc, somTotalCalc, wilTotalCalc);
 
-  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, skillTotalCalc);
+  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, skillTotalCalc);
 
   val durStatsCalc = op(durabilityBonus, morphDurability, morphType) update {
     case (bonus, morphDur, mt) => {
@@ -487,11 +507,13 @@ object EPWorkers extends SheetWorker {
 
   // TODO ongoing updates notification
 
+  private def extractSimpleRowId(id: String): String = id.split('_').last;
+
   onChange(morphs.active, (e: EventInfo) => {
     import scalajs.js;
     log(s"Morph Active info: ${e.sourceAttribute}");
     val rowId = Roll20.getActiveRepeatingField();
-    val simpleRowId = rowId.split('_').last;
+    val simpleRowId = extractSimpleRowId(rowId);
     val rowAttrsF = getRowAttrs(morphs, Seq(morphs.active));
     val currentF = getAttr(currentMorph);
     log("Fetching rows...");
@@ -512,8 +534,10 @@ object EPWorkers extends SheetWorker {
             case None    => false
           }).filter({
             case (_, active) => active
-          }).map({
-            case (row, _) => (morphs.at(row, morphs.active) <<= false)
+          }).flatMap({
+            case (row, _) => Seq(
+              morphs.at(row, morphs.active) <<= false,
+              morphs.at(row, morphs.morphLocation) <<= morphs.morphLocation.resetValue)
           });
           log(s"Deactivating other morphs: ${updates.mkString(",")}");
           val setF = setAttrs(updates.toMap);
@@ -522,7 +546,10 @@ object EPWorkers extends SheetWorker {
             case Failure(e) => error(e);
           }
         }
-        case (Some(currentId), Some(false)) if (currentId == rowId) => log("All morphs deactivated."); resetMorphDefaults();
+        case (Some(currentId), Some(false)) if (currentId == rowId) => {
+          log("All morphs deactivated.");
+          resetMorphDefaults(Seq(morphs.at(simpleRowId, morphs.morphLocation) <<= morphs.morphLocation.resetValue));
+        }
         case (Some(currentId), Some(false)) if (currentId != rowId) => log("Morph was already deactivated. What triggered the change?");
         case x => log(s"Got something unexpected: ${x}");
       }
@@ -597,17 +624,12 @@ object EPWorkers extends SheetWorker {
 
   }
 
-  private def resetMorphDefaults() {
-    //    val defaults = (morphs.active.resetValue, morphs.morphName.resetValue, morphs.morphType.resetValue,
-    //      morphs.durability.resetValue, morphs.mobilitySystem.resetValue, morphs.armourEnergy.resetValue,
-    //      morphs.armourKinetic.resetValue, morphs.implants.resetValue, morphs.traits.resetValue,
-    //      morphs.description.resetValue, morphs.aptitudeBoni.resetValue, morphs.aptitudeMax.resetValue,
-    //      morphs.skillBoni.resetValue);
+  private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty) {
     val updates = Seq(currentMorph, morphType,
       morphName, morphDescription, morphTraits,
       morphImplants, morphMobilitySystem, morphDurability,
       morphArmourEnergy, morphArmourKinetic, morphSkillBoni).map({ case f: Field[Any] => (f -> f.resetValue) }) ++ morphAptBoni("") ++ morphAptMax("");
-    val setF = setAttrs(updates.toMap);
+    val setF = setAttrs((extraUpdates ++ updates).toMap);
     setF.onComplete {
       case Success(_) => aptTotalsAll.andThen(durStatsCalc).andThen(morphSkillBoniCalc)()
       case Failure(e) => error(e)
@@ -624,7 +646,8 @@ object EPWorkers extends SheetWorker {
     case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB) => if (active) {
       val rowId = Roll20.getActiveRepeatingField();
       log(s"Current row: ${rowId}");
-      val updates = Seq(morphs.id <<= rowId, currentMorph <<= rowId, morphType <<= tpe,
+      val updates = Seq(morphs.id <<= rowId, morphs.morphLocation <<= "ACTIVE",
+        currentMorph <<= rowId, morphType <<= tpe,
         morphVisibleGender <<= gender, morphVisibleAge <<= age,
         morphName <<= name, morphDescription <<= descr, morphTraits <<= traits,
         morphImplants <<= imp, morphMobilitySystem <<= mob, morphDurability <<= dur,
@@ -788,6 +811,14 @@ object EPWorkers extends SheetWorker {
       Seq(rangedWeapons.damageTypeShort <<= dtLabel)
     }
   }
+
+  val psiSustainedCalc = bind(op(psiCurrentSustained)) update {
+    case (sustained) => {
+      Seq(
+        psiSustainedMod <<= -sustained * 10)
+    }
+  }
+
   val psiChiTypeCalc = bind(op(psiChi.psiType)) update {
     case (ptName) => {
       import PsiType._

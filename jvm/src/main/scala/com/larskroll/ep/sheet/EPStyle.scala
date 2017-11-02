@@ -189,7 +189,8 @@ object EPStyle extends SheetStyle {
     borderTopWidth := "1px");
 
   val inlineLabel = cls(
-    fontWeight.bold);
+    fontWeight.bold,
+    marginRight := 2.px);
 
   val subtleInlineLabel = cls(
     fontStyle.italic);
@@ -285,10 +286,13 @@ object EPStyle extends SheetStyle {
     maxWidth := "5rem");
 
   val max10rem = cls(
-    maxWidth := "15rem");
+    maxWidth := 10.rem);
 
   val max15rem = cls(
-    maxWidth := "15rem");
+    maxWidth := 15.rem);
+
+  val max20rem = cls(
+    maxWidth := 20.rem);
 
   val min5rem = cls(
     maxWidth := "100%",
@@ -322,7 +326,7 @@ object EPStyle extends SheetStyle {
 
   val growFull = cls(
     width := "100%");
-  
+
   val nop = cls();
 
   val description = cls(

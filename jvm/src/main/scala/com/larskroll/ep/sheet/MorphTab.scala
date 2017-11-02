@@ -45,6 +45,7 @@ object MorphTab extends FieldGroup {
         editOnly((t.morphLabel -> char.morphs.morphLabel)),
         (t.morphName -> dualMode(char.morphs.morphName)),
         (t.morphType -> dualMode(char.morphs.morphType)),
+        (t.morphLocation -> dualMode(char.morphs.morphLocation)),
         (t.morphVisibleGender -> dualMode(char.morphs.visibleGender)),
         (t.morphVisibleAge -> dualMode(char.morphs.visibleAge)),
         (t.morphAptitudeMax -> dualMode(char.morphs.aptitudeMax)),

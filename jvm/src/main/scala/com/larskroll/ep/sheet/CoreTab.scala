@@ -48,7 +48,7 @@ object CoreTab extends FieldGroup {
     flexFillNarrow,
     sblock(t.mox,
       roll(char, "moxie-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
-      sty.max10rem,
+      sty.max15rem,
       char.currentMoxie, span(" / "), dualMode(char.moxie)),
     flexFillNarrow,
     sblock(t.mentalHealth, sty.max15rem,

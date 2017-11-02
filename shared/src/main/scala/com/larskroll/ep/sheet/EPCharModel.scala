@@ -184,6 +184,10 @@ object EPCharModel extends SheetModel {
   lazy val identities = IdentitiesSection;
 
   // PSI
+  val async = "async".default(false);
+  val psiTempTime = "psi_temp_time".editable(false).default(0);
+  val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 9, 1);
+  val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
 
@@ -221,7 +225,7 @@ object EPCharModel extends SheetModel {
   val miscPhysicalMod = "misc_physical_mod".default(0);
   val miscInitiativeMod = "misc_initiative_mod".default(0);
 
-  val globalMods = (miscActionMod - woundTraumaMods).paren;
+  val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;
 }
 
@@ -484,6 +488,7 @@ object MorphSection extends RepeatingSection {
   val morphLabel = "morph_label".default("Unnamed");
   val morphType = "type".options(MorphType).default(MorphType.None);
   val morphName = text("morphs_name");
+  val morphLocation = text("morph_location");
   val description = text("morphs_description");
   val visibleGender = text("visible_gender");
   val visibleAge = text("visible_age");

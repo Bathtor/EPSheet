@@ -220,6 +220,7 @@ object EPTranslation extends SheetI18N {
   val morphName = text("morph-name", "Model");
   val morphLabel = text("morph-label", "Label");
   val morphDescription = text("morph-description", "Description");
+  val morphLocation = text("morph-location", "Storage Location");
   val morphTraits = text("morph-traits", "Traits");
   val morphImplants = text("morph-implants", "Implants/Enhancements");
   val morphMobilitySystem = text("morph-mobility-system", "Mobility System(s)");
@@ -329,7 +330,14 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val xRep = abbr("xRep", "x-Rep", "exploreNet", "ExploreNet (Gatecrashers)");
 
   // PSI
+  val async = text("async", "Async");
+  val asyncTrait = text("async-trait", "Has Asyc trait");
   val psi = text("psi", "Psi");
+  val psiTempTime = text("psi-temp-time", "Temporary Duration");
+  val psiTempUnits = text("psi-temp-units", "units");
+  val psiSustained = text("psi-sustained", "Sustained Sleights");
+  val psiCurrent = text("psi-current", "Currently Sustained");
+  val psiSustainedMod = text("psi-sustained-mod", "Skill Penalty");
   val psiChi = text("psi-chi", "Psi-chi Sleights");
   val psiGamma = text("psi-gamma", "Psi-gamma Sleights");
   val sleightName = text("sleight-name", "Name");

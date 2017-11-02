@@ -76,6 +76,18 @@ object PsiTab extends FieldGroup {
     });
 
   val members: Seq[SheetElement] = Seq(
+    eprow(frow(sty.`flex-centre`,
+      flexFillNarrow,
+      sblock(t.async, sty.max20rem,
+        char.async, span(raw("&nbsp;")), span(t.asyncTrait)),
+      flexFillNarrow,
+      sblock(t.psiDuration, sty.max20rem,
+        (t.psiTempTime -> char.psiTempTime), span(t.psiTempUnits)),
+      flexFillNarrow,
+      sblock(t.psiSustained, sty.max20rem,
+        (t.psiCurrent -> char.psiCurrentSustained),
+        (t.psiSustainedMod -> char.psiSustainedMod)),
+      flexFillNarrow)),
     frow(sty.`flex-start`,
       fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
         psiChi),
