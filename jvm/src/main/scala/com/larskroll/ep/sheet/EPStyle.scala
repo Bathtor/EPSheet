@@ -215,7 +215,8 @@ object EPStyle extends SheetStyle {
     verticalAlign.`text-top`,
     textAlign.justify,
     marginRight := 5.px,
-    marginLeft := 2.px);
+    marginLeft := 2.px,
+    fontSize := 0.7.rem);
 
   val note = cls(
     display.`inline-block`,
@@ -271,6 +272,9 @@ object EPStyle extends SheetStyle {
     paddingBottom := 0.5.rem);
 
   val wrapButton = cls();
+
+  val inlineNumber = cls(
+    display.`inline-flex`);
 
   val rem15 = cls(
     width := "15rem");
@@ -330,7 +334,10 @@ object EPStyle extends SheetStyle {
   val nop = cls();
 
   val description = cls(
-    fontSize.smaller);
+    fontSize := 0.9.em);
+
+  val smallDescription = cls(
+    fontSize := 0.7.em);
 
   val `ep-row`, `ep-twocolrow`, `ep-threecolrow` = cls();
   val `ep-col` = cls();

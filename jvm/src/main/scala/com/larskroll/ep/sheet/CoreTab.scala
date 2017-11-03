@@ -44,6 +44,112 @@ object CoreTab extends FieldGroup {
     AptitudeRow(t.aptTemp, Seq(char.cogTemp, char.cooTemp, char.intTemp, char.refTemp, char.savTemp, char.somTemp, char.wilTemp)),
     AptitudeRow(t.aptTotal, Seq(char.cogTotal, char.cooTotal, char.intTotal, char.refTotal, char.savTotal, char.somTotal, char.wilTotal))));
 
+  val characterInfo = fblock(t.characterInfo, EPStyle.min5rem,
+    (t.background -> dualMode(char.background)),
+    (t.faction -> dualMode(char.faction)),
+    (t.genderId -> dualMode(char.genderId)),
+    (t.actualAge -> dualMode(char.actualAge)),
+    (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))),
+    char.charTraits.hidden);
+
+  val characterTraits = block(t.characterTraits,
+    char.characterTraits {
+      TightRepRow(
+        presOnly(flowpar(
+          char.characterTraits.traitName.like(GearTab.rowItemName),
+          char.characterTraits.description.like(CoreTabRenderer.description),
+          flexFill)),
+        editOnly(tightfrow(
+          char.characterTraits.traitName.like(CoreTabRenderer.textWithPlaceholder(t.traitName.placeholder)),
+          (t.traitDescription -> char.characterTraits.description.like(CoreTabRenderer.textareaField)),
+          flexFill)))
+    });
+
+  val derangements = block(t.derangements,
+    char.derangements {
+      TightRepRow(
+        presOnly(flowpar(
+          char.derangements.conditionName.like(GearTab.rowItemName),
+          span("["), char.derangements.duration.like(CoreTabRenderer.presEditableNum), span(t.hours), span("] "),
+          span("("), char.derangements.severity, span(") "),
+          char.derangements.description.like(CoreTabRenderer.description),
+          flexFill)),
+        editOnly(tightfrow(
+          char.derangements.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
+          (t.derangementDuration -> char.derangements.duration), span(t.hours),
+          (t.derangementSeverity -> char.derangements.severity),
+          (t.derangementDescription -> char.derangements.description.like(CoreTabRenderer.textareaField)),
+          flexFill)))
+    });
+
+  val disorders = block(t.disorders,
+    char.disorders {
+      TightRepRow(
+        presOnly(flowpar(
+          char.disorders.conditionName.like(GearTab.rowItemName),
+          span(raw(" ~ ")), span(EPStyle.subtleInlineLabel, t.disorderRemainingTreatment),
+          char.disorders.treatmentRemaining.like(CoreTabRenderer.presEditableNum), span(t.hours),
+          char.disorders.description.like(CoreTabRenderer.description),
+          flexFill)),
+        editOnly(tightfrow(
+          char.disorders.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
+          (t.disorderRemainingTreatment -> char.disorders.treatmentRemaining), span(t.hours),
+          (t.derangementDescription -> char.disorders.description.like(CoreTabRenderer.textareaField)),
+          flexFill)))
+    });
+
+  val specialRolls = block(t.specialRolls, arrowList(
+    rwd(roll(char, "simple-success-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.successRoll, char.epRoll, char.customTarget),
+      span(sty.rollLabel, t.successRoll))),
+    rwd(roll(char, "fray-halved-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.frayHalvedRoll.fullLabel, char.epRoll, char.frayHalvedTarget),
+      span(sty.rollLabel, t.frayHalvedRoll)),
+      t.rangedDefence),
+    rwd(roll(char, "willx2-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.wilx2Roll.fullLabel, char.epRoll, char.willx2Target),
+      span(sty.rollLabel, t.wilx2Roll)),
+      t.psiDefense),
+    rwd(roll(char, "willx3-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.wilx3Roll.fullLabel, char.epRoll, char.willx3Target),
+      span(sty.rollLabel, t.wilx3Roll)),
+      t.continuityTest, t.stressTest, t.resistTraumaDisorientation, t.healTrauma),
+    rwd(roll(char, "somx3-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.somx3Roll.fullLabel, char.epRoll, char.somx3Target),
+      span(sty.rollLabel, t.somx3Roll)),
+      t.integrationTest, t.resistWoundKnockdown, t.bruteStrength),
+    rwd(roll(char, "intx3-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
+      span(sty.rollLabel, t.intx3Roll)),
+      t.alienationTest, t.havingAnIdea),
+    rwd(roll(char, "cogx3-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.cogx3Roll.fullLabel, char.epRoll, char.cogx3Target),
+      span(sty.rollLabel, t.cogx3Roll)),
+      t.memoriseRecall, t.havingAnIdea),
+    rwd(roll(char, "dur-energy-armour-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.durEnergyRoll.fullLabel, char.epRoll, char.durEnergyArmour),
+      span(sty.rollLabel, t.durEnergyRoll)),
+      t.resistShock),
+    rwd(roll(char, "ref-coox2-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.refCoox2Roll.fullLabel, char.epRoll, char.refCoox2Target),
+      span(sty.rollLabel, t.refCoox2Roll)),
+      t.catchingObjects),
+    rwd(roll(char, "coo-som-roll", Chat.Default,
+      EPDefaultTemplate(char.characterName, t.cooSomRoll.fullLabel, char.epRoll, char.cooSomTarget),
+      span(sty.rollLabel, t.cooSomRoll)),
+      t.escapeArtist)));
+
+  val stats = fblock(t.stats, EPStyle.max2p5rem,
+    (t.tt -> char.traumaThreshold),
+    roll(char, "lucidity-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.luc.fullLabel, char.epRoll, char.lucidityTarget), (t.luc -> char.lucidity)),
+    (t.ir -> char.insanityRating),
+    (t.wt -> char.woundThreshold),
+    (t.dur -> char.durability),
+    (t.dr -> char.deathRating),
+    roll(char, "initiative-roll", Chat.Default, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
+    (t.spd -> dualMode(char.speed)),
+    (t.db -> char.damageBonus));
+
   val topRow = eprow(frow(sty.`flex-centre`,
     flexFillNarrow,
     sblock(t.mox,
@@ -67,66 +173,15 @@ object CoreTab extends FieldGroup {
     flexFillNarrow));
 
   val leftCol = fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
-    fblock(t.characterInfo, EPStyle.min5rem,
-      (t.background -> dualMode(char.background)),
-      (t.faction -> dualMode(char.faction)),
-      (t.genderId -> dualMode(char.genderId)),
-      (t.actualAge -> dualMode(char.actualAge)),
-      (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))),
-      (t.traits -> dualMode(char.charTraits.like(CoreTabRenderer.textareaField)))),
-    block(t.specialRolls, arrowList(
-      rwd(roll(char, "simple-success-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.successRoll, char.epRoll, char.customTarget),
-        span(sty.rollLabel, t.successRoll))),
-      rwd(roll(char, "fray-halved-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.frayHalvedRoll.fullLabel, char.epRoll, char.frayHalvedTarget),
-        span(sty.rollLabel, t.frayHalvedRoll)),
-        t.rangedDefence),
-      rwd(roll(char, "willx2-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.wilx2Roll.fullLabel, char.epRoll, char.willx2Target),
-        span(sty.rollLabel, t.wilx2Roll)),
-        t.psiDefense),
-      rwd(roll(char, "willx3-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.wilx3Roll.fullLabel, char.epRoll, char.willx3Target),
-        span(sty.rollLabel, t.wilx3Roll)),
-        t.continuityTest, t.stressTest, t.resistTraumaDisorientation, t.healTrauma),
-      rwd(roll(char, "somx3-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.somx3Roll.fullLabel, char.epRoll, char.somx3Target),
-        span(sty.rollLabel, t.somx3Roll)),
-        t.integrationTest, t.resistWoundKnockdown, t.bruteStrength),
-      rwd(roll(char, "intx3-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
-        span(sty.rollLabel, t.intx3Roll)),
-        t.alienationTest, t.havingAnIdea),
-      rwd(roll(char, "cogx3-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.cogx3Roll.fullLabel, char.epRoll, char.cogx3Target),
-        span(sty.rollLabel, t.cogx3Roll)),
-        t.memoriseRecall, t.havingAnIdea),
-      rwd(roll(char, "dur-energy-armour-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.durEnergyRoll.fullLabel, char.epRoll, char.durEnergyArmour),
-        span(sty.rollLabel, t.durEnergyRoll)),
-        t.resistShock),
-      rwd(roll(char, "ref-coox2-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.refCoox2Roll.fullLabel, char.epRoll, char.refCoox2Target),
-        span(sty.rollLabel, t.refCoox2Roll)),
-        t.catchingObjects),
-      rwd(roll(char, "coo-som-roll", Chat.Default,
-        EPDefaultTemplate(char.characterName, t.cooSomRoll.fullLabel, char.epRoll, char.cooSomTarget),
-        span(sty.rollLabel, t.cooSomRoll)),
-        t.escapeArtist))));
+    characterInfo,
+    characterTraits,
+    derangements,
+    disorders);
 
   val rightCol = fcol(Seq(EPStyle.exactly23rem),
     block(t.aptitudes, aptitudes),
-    fblock(t.stats, EPStyle.max2p5rem,
-      (t.tt -> char.traumaThreshold),
-      roll(char, "lucidity-roll", Chat.Default, EPDefaultTemplate(char.characterName, t.luc.fullLabel, char.epRoll, char.lucidityTarget), (t.luc -> char.lucidity)),
-      (t.ir -> char.insanityRating),
-      (t.wt -> char.woundThreshold),
-      (t.dur -> char.durability),
-      (t.dr -> char.deathRating),
-      roll(char, "initiative-roll", Chat.Default, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
-      (t.spd -> dualMode(char.speed)),
-      (t.db -> char.damageBonus)));
+    stats,
+    specialRolls);
 
   val members: Seq[SheetElement] = Seq(
     topRow,
@@ -156,7 +211,7 @@ object CoreTabRenderer extends GroupRenderer {
         val (minD, maxD, stepD) = (nev.toDouble(minV), nev.toDouble(maxV), nev.toDouble(stepV));
         assert(maxD > minD);
         val largestBound = nmax(abs(maxD), abs(minD));
-        val integerDigits = floor(log10(abs(largestBound)) + 2.0).toInt; // +1 for first digit and +1 for possible sign
+        val integerDigits = floor(log10(abs(largestBound))).toInt + 1; // +1 for first digit
         var count = 0;
         var v = stepD;
         while (!v.isWhole()) {
@@ -164,8 +219,8 @@ object CoreTabRenderer extends GroupRenderer {
           count += 1;
         }
         val decimalDigits = count + 1; // for the decimal point
-        val digits = integerDigits + decimalDigits;
-        span(display.`inline-block`, maxWidth := digits.em,
+        val digits = integerDigits + decimalDigits + (if (nev.signum(minV) == -1) { 1 } else { 0 }); // +1 for leading minus if necessary
+        span(EPStyle.inlineNumber, maxWidth := digits.em,
           input(`type` := "number", name := f.name, value := f.initialValue, min := minV.toString(),
             max := maxV.toString(), step := stepV.toString()))
       }

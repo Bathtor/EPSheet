@@ -45,6 +45,9 @@ object EPTranslation extends SheetI18N {
   val rezPoints = abbr("rez", "REZ", "rez-points", "Rez Points");
   val motivations = text("motivations", "Motivations");
   val traits = text("traits", "Traits");
+  val traitName = text("trait-name", "Name");
+  val traitDescription = text("trait-description", "Description");
+  val characterTraits = text("character-traits", "Character Traits");
   val specialRolls = text("special-rolls", "Special Rolls");
   val successRoll = text("success-roll", "Success Roll");
   val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
@@ -195,7 +198,8 @@ object EPTranslation extends SheetI18N {
     Skills.SkillClass -> skillClassOptions,
     Skills.SortBy -> skillSortOptions,
     DamageType -> dmgType,
-    PsiType -> psiType);
+    PsiType -> psiType,
+    DerangementSeverity -> derangementSeverityOptions);
 
   lazy val allShortOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptionsShort,
@@ -370,6 +374,27 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val museName = text("muse-name", "Name");
   val museNotes = text("muse-notes", "Notes");
   val museSkills = text("muse-skills", "Muse Skills");
+
+  // Derangements and Disorders
+  val derangementSeverityOptions = {
+    import DerangementSeverity._;
+    val opts = DerangementSeverity.values.map {
+      case Minor    => (Minor.toString() -> "Minor")
+      case Moderate => (Moderate.toString() -> "Moderate")
+      case Major    => (Major.toString() -> "Major")
+    }.toMap;
+    enum(DerangementSeverity.labelPrefix, opts)
+  }
+
+  val derangements = text("derangements", "Derangements");
+  val derangementDescription = text("derangement-description", "Description");
+  val hours = abbr("hours-short", "h", "hours-long", "hours");
+  val derangementDuration = text("derangement-duration", "Duration");
+  val derangementSeverity = text("derangement-severity", "Severity");
+
+  val disorders = text("disorders", "Disorders");
+  val disorderDescription = text("disorder-description", "Description");
+  val disorderRemainingTreatment = text("disorder-remaining-treatment", "Remaining treatment time");
 
   // MISC
   val options = text("options", "Options");

@@ -67,7 +67,7 @@ object EPCharModel extends SheetModel {
   val currentMoxie = "current_moxie".default(0);
   val rezPoints = "rez_points".default(0);
   val motivations = text("motivations");
-  val charTraits = text("character_traits");
+  val charTraits = text("character_traits").editable(false); // TODO write update mechanism and delete in next version
   // aptitudes
   val cogBase = "cog_base".default(0);
   val cogTemp = "cog_temp".default(0);
@@ -218,6 +218,10 @@ object EPCharModel extends SheetModel {
   val generateMuseSkills = "muse_skills_generate".default(false);
   val generateMuseSkillsLabel = "muse_skills_generate_label".editable(false).default("generate-skills"); // other possibility is "generating-skills"
 
+  lazy val characterTraits = CharacterTraitSection;
+  lazy val derangements = DerangementSection;
+  lazy val disorders = DisorderSection;
+
   // settings
   //val weightUnit = "weight_unit".options("kg", "lb").default("kg"); // not feasible with current roll20 repeating sections as field can't be accessed from within a RS
   val miscNotes = text("misc_notes");
@@ -227,6 +231,39 @@ object EPCharModel extends SheetModel {
 
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;
+}
+
+object CharacterTraitSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "charactertrait";
+
+  val traitName = text("name");
+  val description = text("description");
+}
+
+object DerangementSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "derangements";
+
+  val conditionName = text("name");
+  val severity = "severity".options(DerangementSeverity).default(DerangementSeverity.Minor);
+  val description = text("description");
+  val duration = "duration".default(0.0).validIn(0.0, 24.0, 0.5);
+}
+
+object DisorderSection extends RepeatingSection {
+  import FieldImplicits._;
+  implicit val ctx = this.renderingContext;
+
+  def name = "disorders";
+
+  val conditionName = text("name");
+  val description = text("description");
+  val treatmentRemaining = "treatment_remaining".default(40).validIn(0, 40, 1);
 }
 
 object MuseSkillSection extends RepeatingSection {

@@ -138,6 +138,54 @@ button[type=roll]:active {
     box-shadow: none
 }
 
+/* repeating section controls */
+
+button.repcontrol_add,
+button.repcontrol_edit {
+    font-size: .8em;
+    padding: 1px 3px
+}
+
+button.repcontrol_del {
+    padding: 0 3px 2px;
+    position: relative;
+    z-index: 999
+}
+
+button.repcontrol_add,
+button.repcontrol_del,
+button.repcontrol_edit {
+    border-radius: 3px
+}
+
+.btn.repcontrol_move {
+    background: 0 0;
+    border: 0;
+    font-size: 1.2em;
+    font-weight: 700;
+    padding: 2px 0;
+    position: relative;
+    z-index: 999
+}
+
+.repcontrol::after {
+    clear: both;
+    content: ' ';
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden
+}
+
+.repcontrol_add {
+    float: left
+}
+
+div[class='repcontainer editmode']~div[class^=repcontrol] button[class='btn repcontrol_add'] {
+    display: inline-block!important;
+    visibility: hidden
+}
+
 input,
 select,
 textarea {

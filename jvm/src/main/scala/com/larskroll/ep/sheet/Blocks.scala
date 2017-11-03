@@ -72,7 +72,7 @@ case class RollWithDescription(roll: RollElement, descriptions: Seq[LabelI18N]) 
     import GroupRenderer._
 
     override def fieldCombiner: FieldCombiner = { tags =>
-      val descs = descriptions flatMap { d => Seq(span(EPStyle.description, ", "), span(EPStyle.description, d.attrs)) };
+      val descs = descriptions flatMap { d => Seq(span(EPStyle.smallDescription, ", "), span(EPStyle.smallDescription, d.attrs)) };
       span(tags, descs)
     };
 
