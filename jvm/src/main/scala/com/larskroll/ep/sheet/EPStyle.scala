@@ -201,11 +201,18 @@ object EPStyle extends SheetStyle {
     fontSize := 11.px,
     marginRight := 5.px);
 
-  val inlineLabelGroup = cls(
+  val inlineContentGroup = cls(
     display.`inline-flex`,
     marginLeft := 2.px,
     marginRight := 2.px,
     marginTop := 2.px,
+    whiteSpace.nowrap);
+
+  val inlineLabelGroup = cls(
+    display.`inline-flex`,
+    marginLeft := 2.px,
+    marginRight := 2.px,
+    marginTop := 0.px,
     whiteSpace.nowrap);
 
   val flowPar = cls(
@@ -338,6 +345,8 @@ object EPStyle extends SheetStyle {
 
   val smallDescription = cls(
     fontSize := 0.7.em);
+
+  val labelledValue = cls();
 
   val `ep-row`, `ep-twocolrow`, `ep-threecolrow` = cls();
   val `ep-col` = cls();

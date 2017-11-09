@@ -252,7 +252,7 @@ case class TightRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends GroupRen
   };
 
   override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
   }
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
@@ -270,7 +270,7 @@ case class TightFlexRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends Grou
   };
 
   override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
   }
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
@@ -288,7 +288,7 @@ case object TightCol extends GroupRenderer {
   };
 
   override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineLabelGroup, CoreTabRenderer.fieldRenderers(f, mode))
+    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
   }
 }
 

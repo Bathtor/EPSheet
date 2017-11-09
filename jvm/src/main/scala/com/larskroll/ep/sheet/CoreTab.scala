@@ -271,7 +271,7 @@ object CoreTabRenderer extends GroupRenderer {
     }
     case (f: Field[_], Presentation) if f.editable() => f match {
       case ff: FlagField => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case _             => span(name := f.name)
+      case _             => span(EPStyle.labelledValue, name := f.name)
     }
 
     case (f: Field[_], Edit) if f.editable() => f match {
@@ -281,20 +281,20 @@ object CoreTabRenderer extends GroupRenderer {
       case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
     }
     case (f: Field[_], _) if !(f.editable()) =>
-      span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
+      span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(EPStyle.labelledValue, name := f.name))
   };
 
   val textareaField: FieldDualRenderer = (f, mode) => {
     mode match {
       case RenderMode.Edit | RenderMode.Normal => textarea(EPStyle.`two-line-textarea`, name := f.name, f.initialValue)
-      case RenderMode.Presentation             => span(name := f.name)
+      case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
     }
   }
 
   val largeTextareaField: FieldDualRenderer = (f, mode) => {
     mode match {
       case RenderMode.Edit | RenderMode.Normal => textarea(EPStyle.`eight-line-textarea`, name := f.name, f.initialValue)
-      case RenderMode.Presentation             => span(name := f.name)
+      case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
     }
   }
 
@@ -313,7 +313,7 @@ object CoreTabRenderer extends GroupRenderer {
   }
 
   val italic: FieldSingleRenderer = (f) => {
-    span(fontStyle.italic, name := f.name)
+    span(fontStyle.italic, EPStyle.labelledValue, name := f.name)
   }
 
   def labelDescription(label: LabelsI18N) = span(EPStyle.description, raw(" &mdash; "), span(label.attrs));

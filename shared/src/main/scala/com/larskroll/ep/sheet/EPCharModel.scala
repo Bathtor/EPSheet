@@ -186,7 +186,7 @@ object EPCharModel extends SheetModel {
   // PSI
   val async = "async".default(false);
   val psiTempTime = "psi_temp_time".editable(false).default(0);
-  val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 9, 1);
+  val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 10, 1);
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;

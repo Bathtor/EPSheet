@@ -37,8 +37,8 @@ object Footer extends FieldGroup {
   val sty = EPStyle;
 
   val members: Seq[SheetElement] = Seq(
-    (t.author -> span(char.author)),
-    (t.github -> span(a(href := char.github, char.github))));
+    (t.author -> span(EPStyle.labelledValue, char.author)),
+    (t.github -> span(EPStyle.labelledValue, a(href := char.github, char.github))));
 
   override def renderer = FooterRenderer;
 }

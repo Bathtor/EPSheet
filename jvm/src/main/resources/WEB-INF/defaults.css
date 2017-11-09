@@ -181,18 +181,16 @@ button.repcontrol_edit {
     float: left
 }
 
-div[class='repcontainer editmode']~div[class^=repcontrol] button[class='btn repcontrol_add'] {
-    display: inline-block!important;
-    visibility: hidden
-}
-
 input,
 select,
 textarea {
     background-color: ${presentation-mode-background};
     color: #000;
     font-size: 12px;
-    padding: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 input[type=number],
@@ -200,6 +198,11 @@ input[type=text],
 select,
 textarea {
     width: 100%!important;
+}
+
+select {
+    height: auto;
+    line-height: normal;
 }
 
 input[type="checkbox"] {
@@ -277,6 +280,12 @@ span.sheet-h2hr:before {
 span.sheet-h2hr:after {
     left: 0.5em;
     margin-right: -50%;
+}
+
+.sheet-description,
+.sheet-smallDescription,
+.sheet-labelledValue {
+    user-select: text;
 }
 
 .sheet-ep-row, .sheet-ep-twocolrow, .sheet-ep-threecolrow {
