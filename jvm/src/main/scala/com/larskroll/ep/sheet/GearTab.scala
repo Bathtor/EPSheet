@@ -38,6 +38,25 @@ object GearTab extends FieldGroup {
   val dtRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
   }
+
+  case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: String) extends FieldGroup {
+
+    val fieldRenderer = CoreTabRenderer.fieldRenderers;
+
+    override def render(mode: RenderMode = RenderMode.Normal): Tag = {
+      div(EPStyle.inlineLabelGroup,
+        span(EPStyle.inlineLabel, rangeLabel),
+        fieldRenderer(rangeStart, mode),
+        span(raw(" - ")),
+        fieldRenderer(rangeEnd, mode),
+        span(raw(unit)))
+    }
+    override def renderer(): GroupRenderer = null;
+    override def members(): Seq[SheetElement] = null;
+  }
+
+  def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: String): RangeGroup = RangeGroup(rangeLabel, rangeStart, rangeEnd, unit);
+
   def checklabel(label: LabelsI18N, innerSep: Option[String] = None): GroupRenderer.FieldSingleRenderer = (f) => f match {
     case ff: FlagField => {
       import CoreTabRenderer.obool2Checked;
@@ -184,14 +203,10 @@ object GearTab extends FieldGroup {
             flexFill),
           tightfrow(span(EPStyle.lineLabel, t.weaponRanges),
             span(raw(" ")),
-            span(EPStyle.inlineLabel, t.shortRange),
-            char.rangedWeapons.shortRangeLower, span(raw("-")), char.rangedWeapons.shortRangeUpper, span(raw("m ")),
-            span(EPStyle.inlineLabel, t.mediumRange),
-            char.rangedWeapons.mediumRangeLower, span(raw("-")), char.rangedWeapons.mediumRangeUpper, span(raw("m ")),
-            span(EPStyle.inlineLabel, t.longRange),
-            char.rangedWeapons.longRangeLower, span(raw("-")), char.rangedWeapons.longRangeUpper, span(raw("m ")),
-            span(EPStyle.inlineLabel, t.extremeRange),
-            char.rangedWeapons.extremeRangeLower, span(raw("-")), char.rangedWeapons.extremeRangeUpper, span(raw("m")),
+            range(t.shortRange, char.rangedWeapons.shortRangeLower, char.rangedWeapons.shortRangeUpper, "m"),
+            range(t.mediumRange, char.rangedWeapons.mediumRangeLower, char.rangedWeapons.mediumRangeUpper, "m"),
+            range(t.longRange, char.rangedWeapons.longRangeLower, char.rangedWeapons.longRangeUpper, "m"),
+            range(t.extremeRange, char.rangedWeapons.extremeRangeLower, char.rangedWeapons.extremeRangeUpper, "m"),
             flexFill),
           tightfrow(
             span(EPStyle.lineLabel, t.magazine),

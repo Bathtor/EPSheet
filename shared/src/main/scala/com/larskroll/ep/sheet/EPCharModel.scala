@@ -240,6 +240,8 @@ object CharacterTraitSection extends RepeatingSection {
   def name = "charactertrait";
 
   val traitName = text("name");
+  val traitType = "type".options(TraitType).default(TraitType.Neutral);
+  val traitTypeShort = text("type_short").editable(false);
   val description = text("description");
 }
 

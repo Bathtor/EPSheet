@@ -200,8 +200,10 @@ textarea {
     width: 100%!important;
 }
 
+input[type=number],
+input[type=text],
 select {
-    height: auto;
+    height: 1.5em;
     line-height: normal;
 }
 
@@ -420,6 +422,11 @@ span.sheet-cat-tag-field {
   padding-right: 1px;
   position: relative;
   top: -0.5em;
+}
+
+span.sheet-trait-tag-field {
+    font-family: monospace;
+    font-size: 1em;
 }
 
 span.sheet-skillName {

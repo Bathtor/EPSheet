@@ -48,6 +48,24 @@ object EPTranslation extends SheetI18N {
   val traitName = text("trait-name", "Name");
   val traitDescription = text("trait-description", "Description");
   val characterTraits = text("character-traits", "Character Traits");
+  val traitTypeOptions = {
+    import TraitType._
+    val opts = TraitType.values.map {
+      case Positive => (Positive.toString() -> "Positive")
+      case Neutral  => (Neutral.toString() -> "Neutral")
+      case Negative => (Negative.toString() -> "Negative")
+    }.toMap;
+    enum(TraitType.labelPrefix, opts)
+  }
+  val traitTypeOptionsShort = {
+    import TraitType._
+    val opts = TraitType.values.map {
+      case Positive => (Positive.toString() -> "+")
+      case Neutral  => (Neutral.toString() -> "\u25E6")
+      case Negative => (Negative.toString() -> "-")
+    }.toMap;
+    enum(TraitType.labelShortPrefix, opts)
+  }
   val specialRolls = text("special-rolls", "Special Rolls");
   val successRoll = text("success-roll", "Success Roll");
   val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
@@ -199,12 +217,14 @@ object EPTranslation extends SheetI18N {
     Skills.SortBy -> skillSortOptions,
     DamageType -> dmgType,
     PsiType -> psiType,
-    DerangementSeverity -> derangementSeverityOptions);
+    DerangementSeverity -> derangementSeverityOptions,
+    TraitType -> traitTypeOptions);
 
   lazy val allShortOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptionsShort,
     DamageType -> dmgTypeShort,
-    PsiType -> psiTypeShort);
+    PsiType -> psiTypeShort,
+    TraitType -> traitTypeOptionsShort);
   //Skills.SkillClass -> skillClassOptionsShort);
 
   val skillsGenerate = text("generate-skills", "Generate Default Skills");

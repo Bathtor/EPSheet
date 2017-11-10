@@ -251,9 +251,9 @@ case class TightRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends GroupRen
     div(sepStyle, tags)
   };
 
-  override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
-  }
+  override def renderUnlabelled(e: Tag): Tag = div(EPStyle.inlineContentGroup, e);
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
     div(EPStyle.inlineLabelGroup,
@@ -269,9 +269,9 @@ case class TightFlexRow(sepStyle: Option[scalatags.stylesheet.Cls]) extends Grou
     div(EPStyle.flexRow, EPStyle.`flex-container`, sepStyle, tags)
   };
 
-  override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
-  }
+  override def renderUnlabelled(e: Tag): Tag = div(EPStyle.inlineContentGroup, e);
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
     div(EPStyle.inlineLabelGroup,
@@ -287,9 +287,9 @@ case object TightCol extends GroupRenderer {
     div(EPStyle.tcol, tags)
   };
 
-  override def fieldRenderers: FieldRenderer = {
-    case (f, mode) => div(EPStyle.inlineContentGroup, CoreTabRenderer.fieldRenderers(f, mode))
-  }
+  override def renderUnlabelled(e: Tag): Tag = div(EPStyle.inlineContentGroup, e);
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 }
 
 case class PseudoButton(toggle: FlagField, buttonLabel: Either[FieldLike[_], LabelI18N]) extends FieldGroup {

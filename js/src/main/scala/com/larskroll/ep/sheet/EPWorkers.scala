@@ -202,6 +202,16 @@ object EPWorkers extends SheetWorker {
 
   val museSkillTotalCalc = museSkillTotalCalcOp.all(museSkills);
 
+  val traitTypeCalc = bind(op(characterTraits.traitType)) update {
+    case (traitTypeName) => {
+      import TraitType._
+
+      val traitType = TraitType.withName(traitTypeName);
+      val traitTypeLabel = TraitType.dynamicLabelShort(traitType);
+      Seq(characterTraits.traitTypeShort <<= traitTypeLabel)
+    }
+  }
+
   val skillCategoryCalc = bind(op(activeSkills.category)) update {
     case (catName) => {
       import Skills._

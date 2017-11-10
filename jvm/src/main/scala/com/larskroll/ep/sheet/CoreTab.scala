@@ -52,14 +52,20 @@ object CoreTab extends FieldGroup {
     (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))),
     char.charTraits.hidden);
 
+  val traitTypeRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
+    span(EPStyle.`trait-tag-field`, name := f.name, SheetI18N.datai18nDynamic)
+  }
+
   val characterTraits = block(t.characterTraits,
     char.characterTraits {
       TightRepRow(
         presOnly(flowpar(
+          char.characterTraits.traitTypeShort.like(traitTypeRenderer),
           char.characterTraits.traitName.like(GearTab.rowItemName),
           char.characterTraits.description.like(CoreTabRenderer.description),
           flexFill)),
         editOnly(tightfrow(
+          char.characterTraits.traitType,
           char.characterTraits.traitName.like(CoreTabRenderer.textWithPlaceholder(t.traitName.placeholder)),
           (t.traitDescription -> char.characterTraits.description.like(CoreTabRenderer.textareaField)),
           flexFill)))
@@ -306,7 +312,7 @@ object CoreTabRenderer extends GroupRenderer {
   }
 
   def textWithPlaceholder(placeholder: PlaceholderLabel): FieldSingleRenderer = (f) =>
-    div(EPStyle.inlineLabelGroup, input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs))
+    input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs)
 
   val description: FieldSingleRenderer = (f) => {
     span(EPStyle.description, raw(" &mdash; "), span(name := f.name))

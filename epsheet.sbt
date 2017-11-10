@@ -16,9 +16,15 @@ resolvers += Resolver.mavenLocal
 
 lazy val submitSheet = taskKey[Unit]("Submit the script that assembled and uploads the sheet");
 lazy val submit = taskKey[Unit]("Assemble and fastOpt, and then upload the sheet");
+lazy val submitSheetFull = taskKey[Unit]("Submit the script that assembled and uploads the sheet in fullOpt");
+lazy val submitFull = taskKey[Unit]("Assemble and fullOpt, and then upload the sheet");
 
 submitSheet := {
   "./assemble.sc" !
+}
+
+submitSheetFull := {
+  "./assemble.sc --full true" !
 }
 
 lazy val root = project.in(file(".")).
@@ -30,6 +36,11 @@ lazy val root = project.in(file(".")).
       assembly in Compile in epsheetJVM,
       fastOptJS in Compile in epsheetJS,
       submitSheet in Compile
+    ).value,
+    submitFull in Compile := Def.sequential(
+      assembly in Compile in epsheetJVM,
+      fullOptJS in Compile in epsheetJS,
+      submitSheetFull in Compile
     ).value
   )
 
@@ -38,7 +49,7 @@ lazy val epsheet = crossProject.in(file(".")).
   settings(
     name := "EP Sheet Shared",
     libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.3",
-    libraryDependencies += "com.larskroll.roll20" %%% "roll20-sheet-framework" % "0.2-SNAPSHOT", //sheetVersion.value
+    libraryDependencies += "com.larskroll.roll20" %%% "roll20-sheet-framework" % "0.3-SNAPSHOT", //sheetVersion.value
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
     //libraryDependencies += "be.doeraene" %%% "scalajs-pickling-core" % "0.4.0",
     EclipseKeys.useProjectId := true,

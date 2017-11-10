@@ -212,7 +212,7 @@ object EPStyle extends SheetStyle {
     display.`inline-flex`,
     marginLeft := 2.px,
     marginRight := 2.px,
-    marginTop := 0.px,
+    marginTop := 2.px,
     whiteSpace.nowrap);
 
   val flowPar = cls(
@@ -360,6 +360,7 @@ object EPStyle extends SheetStyle {
 
   val `class-tag-field` = cls();
   val `cat-tag-field` = cls();
+  val `trait-tag-field` = cls();
   val `h2hr` = cls();
   val `checklabel` = cls();
 
