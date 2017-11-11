@@ -57,9 +57,9 @@ object Blocks {
   def arrowList(elems: SheetElement*) = GroupWithRenderer(ArrowList, elems);
   def rwd(roll: RollElement, descriptions: LabelI18N*) = RollWithDescription(roll, descriptions);
 
-  val flexFill = span(EPStyle.`flex-grow`, EPStyle.min1rem);
-  val flexFillNarrow = span(EPStyle.`flex-grow`, EPStyle.min02rem);
-  val flexBreak = div(width := "100%");
+  val flexFill = MarkupElement(span(EPStyle.`flex-grow`, EPStyle.min1rem));
+  val flexFillNarrow = MarkupElement(span(EPStyle.`flex-grow`, EPStyle.min02rem));
+  val flexBreak = MarkupElement(div(width := "100%"));
   //def roll(roll: Button, members: SheetElement*): RollContent = RollContent(roll, members);
 }
 

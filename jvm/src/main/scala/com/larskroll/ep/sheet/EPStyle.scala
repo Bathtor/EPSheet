@@ -103,29 +103,24 @@ object EPStyle extends SheetStyle {
     tableLayout.fixed,
     width := "100%",
     minWidth := "20rem",
-    td(width := "20%",
-      span(textAlign.right,
-        display.block,
-        paddingRight := "5px")));
+    th(width := "11%"),
+    td(span(textAlign.right,
+      display.block,
+      paddingRight := "2px")));
 
   val repTable = cls(
     tableLayout.fixed,
-    width := "50%",
-    minWidth := "20rem",
-    td(width := "35%",
-      textAlign.center,
-      span(textAlign.right,
-        display.block,
-        paddingRight := "5px")));
-
-  val skillTable = cls(
-    tableLayout.fixed,
     width := "100%",
-    minWidth := "40rem",
-    td(width := "20%",
+    minWidth := "20rem",
+    td(textAlign.center,
       span(textAlign.right,
         display.block,
-        paddingRight := "5px")));
+        paddingRight := "2px")));
+
+  val yLabelCol = cls();
+  val spacerCol = cls(width := "12%");
+  val repScoreCol = cls(width := "14%");
+  val favLvlCol = cls(width := "10%");
 
   val skillName = cls(
     fontWeight.bold);

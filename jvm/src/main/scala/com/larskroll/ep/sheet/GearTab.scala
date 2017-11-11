@@ -116,9 +116,9 @@ object GearTab extends FieldGroup {
             span(" / "),
             (t.ap -> char.meleeWeapons.armourPenetration),
             flexFill),
-          tightrow(sty.halfRemRowSeparator,
+          tightfrow(sty.halfRemRowSeparator,
             span(sty.lineLabel, t.weaponDescription),
-            char.meleeWeapons.description.like(CoreTabRenderer.textareaField)))))
+            MarkupElement(char.meleeWeapons.description.like(CoreTabRenderer.textareaFieldGrow))))))
     });
 
   val rangedDamageConcExtraBF = roll(char, "ranged_damage_conc_extra_bf", Chat.Default, EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcBFXDmg));
@@ -213,9 +213,9 @@ object GearTab extends FieldGroup {
             char.rangedWeapons.magazineCurrent, span("/"), char.rangedWeapons.magazineSize,
             (t.ammoType -> char.rangedWeapons.magazineType),
             flexFill),
-          tightrow(sty.halfRemRowSeparator,
+          tightfrow(sty.halfRemRowSeparator,
             span(sty.lineLabel, t.weaponDescription),
-            char.rangedWeapons.description.like(CoreTabRenderer.textareaField)))))
+            MarkupElement(char.rangedWeapons.description.like(CoreTabRenderer.textareaFieldGrow))))))
     });
 
   val armourWorn: SheetElement = block(t.armourWorn,
@@ -258,8 +258,8 @@ object GearTab extends FieldGroup {
         editOnly(tightfrow(
           char.equipment.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           char.equipment.amount,
-          (t.equipmentDescription -> char.equipment.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(sty.inlineLabel, t.equipmentDescription),
+          MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val fireModes: SheetElement = block(t.firingModes,

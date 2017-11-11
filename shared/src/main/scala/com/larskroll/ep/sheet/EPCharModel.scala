@@ -459,8 +459,8 @@ object ArmourItemSection extends RepeatingSection {
   val itemName = text("item_name");
   val active = flag("active").default(false);
   val accessory = flag("accessory").default(false);
-  val energyBonus = "energy_bonus".default(0);
-  val kineticBonus = "kinetic_bonus".default(0);
+  val energyBonus = "energy_bonus".default(0).validIn(0, 999, 1);
+  val kineticBonus = "kinetic_bonus".default(0).validIn(0, 999, 1);
   val description = text("description");
 }
 

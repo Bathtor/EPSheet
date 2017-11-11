@@ -67,8 +67,8 @@ object CoreTab extends FieldGroup {
         editOnly(tightfrow(
           char.characterTraits.traitType,
           char.characterTraits.traitName.like(CoreTabRenderer.textWithPlaceholder(t.traitName.placeholder)),
-          (t.traitDescription -> char.characterTraits.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(EPStyle.inlineLabel, t.traitDescription),
+          MarkupElement(char.characterTraits.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val derangements = block(t.derangements,
@@ -84,8 +84,8 @@ object CoreTab extends FieldGroup {
           char.derangements.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           (t.derangementDuration -> char.derangements.duration), span(t.hours),
           (t.derangementSeverity -> char.derangements.severity),
-          (t.derangementDescription -> char.derangements.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(EPStyle.inlineLabel, t.derangementDescription),
+          MarkupElement(char.derangements.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val disorders = block(t.disorders,
@@ -100,8 +100,8 @@ object CoreTab extends FieldGroup {
         editOnly(tightfrow(
           char.disorders.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           (t.disorderRemainingTreatment -> char.disorders.treatmentRemaining), span(t.hours),
-          (t.derangementDescription -> char.disorders.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(EPStyle.inlineLabel, t.derangementDescription),
+          MarkupElement(char.disorders.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val specialRolls = block(t.specialRolls, arrowList(
@@ -237,6 +237,18 @@ object CoreTabRenderer extends GroupRenderer {
 
   }
 
+  def renderNumberFieldNoWidth[N](f: NumberField[N]): Tag = {
+    f.valid match {
+      case Some(NumberValidity(minV, maxV, stepV)) => {
+        input(`type` := "number", name := f.name, value := f.initialValue,
+          min := minV.toString(), max := maxV.toString(), step := stepV.toString())
+      }
+      case None => {
+        input(`type` := "number", name := f.name, value := f.initialValue)
+      }
+    }
+  }
+
   private def enumRender(ef: EnumField): Tag = {
 
     val selector: String => Option[Modifier] = ef.defaultValue match {
@@ -293,6 +305,13 @@ object CoreTabRenderer extends GroupRenderer {
   val textareaField: FieldDualRenderer = (f, mode) => {
     mode match {
       case RenderMode.Edit | RenderMode.Normal => textarea(EPStyle.`two-line-textarea`, name := f.name, f.initialValue)
+      case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
+    }
+  }
+
+  val textareaFieldGrow: FieldDualRenderer = (f, mode) => {
+    mode match {
+      case RenderMode.Edit | RenderMode.Normal => div(EPStyle.`flex-grow`, EPStyle.inlineContentGroup, textarea(EPStyle.`two-line-textarea`, name := f.name, f.initialValue))
       case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
     }
   }

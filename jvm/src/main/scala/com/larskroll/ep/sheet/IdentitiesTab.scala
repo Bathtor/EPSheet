@@ -39,15 +39,15 @@ object IdentitiesTab extends FieldGroup {
   val ci = char.identities;
 
   val repTable = RepTable(Seq(
-    RepRow(t.atRep, Seq(ci.atRepScore, ci.atRepFavour1, ci.atRepFavour2, ci.atRepFavour3, ci.atRepFavour4, ci.atRepFavour5)),
-    RepRow(t.cRep, Seq(ci.cRepScore, ci.cRepFavour1, ci.cRepFavour2, ci.cRepFavour3, ci.cRepFavour4, ci.cRepFavour5)),
-    RepRow(t.eRep, Seq(ci.eRepScore, ci.eRepFavour1, ci.eRepFavour2, ci.eRepFavour3, ci.eRepFavour4, ci.eRepFavour5)),
-    RepRow(t.fRep, Seq(ci.fRepScore, ci.fRepFavour1, ci.fRepFavour2, ci.fRepFavour3, ci.fRepFavour4, ci.fRepFavour5)),
-    RepRow(t.gRep, Seq(ci.gRepScore, ci.gRepFavour1, ci.gRepFavour2, ci.gRepFavour3, ci.gRepFavour4, ci.gRepFavour5)),
-    RepRow(t.iRep, Seq(ci.iRepScore, ci.iRepFavour1, ci.iRepFavour2, ci.iRepFavour3, ci.iRepFavour4, ci.iRepFavour5)),
-    RepRow(t.rRep, Seq(ci.rRepScore, ci.rRepFavour1, ci.rRepFavour2, ci.rRepFavour3, ci.rRepFavour4, ci.rRepFavour5)),
-    RepRow(t.uRep, Seq(ci.uRepScore, ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
-    RepRow(t.xRep, Seq(ci.xRepScore, ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
+    RepRow(t.atRep, Seq(ci.atRepScore, td(raw(" ")), ci.atRepFavour1, ci.atRepFavour2, ci.atRepFavour3, ci.atRepFavour4, ci.atRepFavour5)),
+    RepRow(t.cRep, Seq(ci.cRepScore, td(raw(" ")), ci.cRepFavour1, ci.cRepFavour2, ci.cRepFavour3, ci.cRepFavour4, ci.cRepFavour5)),
+    RepRow(t.eRep, Seq(ci.eRepScore, td(raw(" ")), ci.eRepFavour1, ci.eRepFavour2, ci.eRepFavour3, ci.eRepFavour4, ci.eRepFavour5)),
+    RepRow(t.fRep, Seq(ci.fRepScore, td(raw(" ")), ci.fRepFavour1, ci.fRepFavour2, ci.fRepFavour3, ci.fRepFavour4, ci.fRepFavour5)),
+    RepRow(t.gRep, Seq(ci.gRepScore, td(raw(" ")), ci.gRepFavour1, ci.gRepFavour2, ci.gRepFavour3, ci.gRepFavour4, ci.gRepFavour5)),
+    RepRow(t.iRep, Seq(ci.iRepScore, td(raw(" ")), ci.iRepFavour1, ci.iRepFavour2, ci.iRepFavour3, ci.iRepFavour4, ci.iRepFavour5)),
+    RepRow(t.rRep, Seq(ci.rRepScore, td(raw(" ")), ci.rRepFavour1, ci.rRepFavour2, ci.rRepFavour3, ci.rRepFavour4, ci.rRepFavour5)),
+    RepRow(t.uRep, Seq(ci.uRepScore, td(raw(" ")), ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
+    RepRow(t.xRep, Seq(ci.xRepScore, td(raw(" ")), ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
 
   val identityInfo = fblock(t.identity, EPStyle.min5rem,
     editOnly((t.identity -> ci.identity)),
@@ -79,8 +79,11 @@ case class RepTable(rows: Seq[RepRow]) extends FieldGroup {
   override def renderer = new GroupRenderer() {
     override def fieldCombiner = { tags =>
       table(EPStyle.repTable,
-        tr(td(colspan := 2), th(colspan := 5, EPStyle.secondTableHeader, t.calledInFavours)),
-        tr(td(EPStyle.`left-top-corner`), th(lsty, t.repScore), th(lsty, t.lvl1), th(lsty, t.lvl2), th(lsty, t.lvl3), th(lsty, t.lvl4, th(lsty, t.lvl5))),
+        // roll20 deletes colgroup during sheet parsing -.-
+        //colgroup(col(EPStyle.yLabelCol), col(EPStyle.repScoreCol), col(EPStyle.favLvlCol), col(EPStyle.favLvlCol), col(EPStyle.favLvlCol), col(EPStyle.favLvlCol), col(EPStyle.favLvlCol)),
+        tr(height := "1px", td(EPStyle.yLabelCol, raw(" ")), td(EPStyle.repScoreCol, raw(" ")), td(EPStyle.spacerCol, raw(" ")), td(EPStyle.favLvlCol, raw(" ")), td(EPStyle.favLvlCol, raw(" ")), td(EPStyle.favLvlCol, raw(" ")), td(EPStyle.favLvlCol, raw(" ")), td(EPStyle.favLvlCol, raw(" "))),
+        tr(td(colspan := 3), th(colspan := 5, EPStyle.secondTableHeader, t.calledInFavours)),
+        tr(td(EPStyle.`left-top-corner`), th(lsty, t.repScore), th(lsty, raw(" ")), th(lsty, t.lvl1), th(lsty, t.lvl2), th(lsty, t.lvl3), th(lsty, t.lvl4, th(lsty, t.lvl5))),
         tags)
     };
     override def fieldRenderers = CoreTabRenderer.fieldRenderers;
@@ -96,8 +99,8 @@ case class RepRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends Field
       case (f, _) if !f.editable() => td(
         span(name := f.name), input(`type` := "hidden", name := f.name, value := f.initialValue))
       case (f: NumberField[_], _) if f.editable => td(
-        div(span(TabbedStyle.presentation, name := f.name)),
-        div(span(TabbedStyle.edit, CoreTabRenderer.renderNumberField(f))))
+        span(TabbedStyle.presentation, name := f.name),
+        span(TabbedStyle.edit, CoreTabRenderer.renderNumberFieldNoWidth(f)))
       case (ff: FlagField, _) => td(input(`type` := "checkbox", name := ff.name, ff.defaultValue))
     };
 

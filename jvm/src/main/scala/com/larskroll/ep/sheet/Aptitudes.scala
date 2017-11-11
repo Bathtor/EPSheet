@@ -148,11 +148,11 @@ case class AptitudeRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends 
   val aptitudeRowRenderer = new GroupRenderer {
 
     override def fieldRenderers: GroupRenderer.FieldRenderer = {
-      case (f, _) if !f.editable() => td(
+      case (f, _) if !f.editable => td(
         span(name := f.name), input(`type` := "hidden", name := f.name, value := f.initialValue))
-      case (f, _) if f.editable() => td(
-        div(span(TabbedStyle.presentation, name := f.name)),
-        div(span(TabbedStyle.edit, input(`type` := "number", name := f.name, value := f.initialValue, max := "99"))))
+      case (f: NumberField[_], _) if f.editable => td(
+        span(TabbedStyle.presentation, name := f.name),
+        span(TabbedStyle.edit, CoreTabRenderer.renderNumberFieldNoWidth(f)))
     };
 
     override def fieldCombiner = { tags =>

@@ -32,7 +32,7 @@ object PsiTab extends FieldGroup {
           char.psiChi.duration,
           char.psiChi.description.like(CoreTabRenderer.description),
           flexFill)),
-        editOnly(tightfrow(
+        editOnly(tightfrow(sty.halfRemRowSeparator,
           char.psiChi.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
           char.psiChi.psiType,
           char.psiChi.psiTypeShort.hidden,
@@ -40,8 +40,8 @@ object PsiTab extends FieldGroup {
           (t.psiAction -> char.psiChi.action),
           (t.psiDuration -> char.psiChi.duration),
           (t.strainMod -> char.psiChi.strainMod),
-          (t.sleightDescription -> char.psiChi.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(EPStyle.inlineLabel, t.sleightDescription),
+          MarkupElement(char.psiChi.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
   val psiGamma = block(t.psiGamma,
     char.psiGamma {
@@ -62,7 +62,7 @@ object PsiTab extends FieldGroup {
           char.psiGamma.duration,
           char.psiGamma.description.like(CoreTabRenderer.description),
           flexFill)),
-        editOnly(tightfrow(
+        editOnly(tightfrow(sty.halfRemRowSeparator,
           char.psiGamma.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
           char.psiGamma.psiType,
           char.psiGamma.psiTypeShort.hidden,
@@ -71,8 +71,8 @@ object PsiTab extends FieldGroup {
           (t.psiAction -> char.psiGamma.action),
           (t.psiDuration -> char.psiGamma.duration),
           (t.strainMod -> char.psiGamma.strainMod),
-          (t.sleightDescription -> char.psiGamma.description.like(CoreTabRenderer.textareaField)),
-          flexFill)))
+          span(EPStyle.inlineLabel, t.sleightDescription),
+          MarkupElement(char.psiGamma.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val members: Seq[SheetElement] = Seq(
