@@ -49,8 +49,7 @@ object CoreTab extends FieldGroup {
     (t.faction -> dualMode(char.faction)),
     (t.genderId -> dualMode(char.genderId)),
     (t.actualAge -> dualMode(char.actualAge)),
-    (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))),
-    char.charTraits.hidden);
+    (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))));
 
   val traitTypeRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
     span(EPStyle.`trait-tag-field`, name := f.name, SheetI18N.datai18nDynamic)
@@ -154,6 +153,7 @@ object CoreTab extends FieldGroup {
     (t.dr -> char.deathRating),
     roll(char, "initiative-roll", Chat.Default, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
     (t.spd -> dualMode(char.speed)),
+    (t.moa -> dualMode(char.mentalOnlyActions)),
     (t.db -> char.damageBonus));
 
   val topRow = eprow(frow(sty.`flex-centre`,

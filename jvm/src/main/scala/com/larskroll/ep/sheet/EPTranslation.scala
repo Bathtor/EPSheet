@@ -117,6 +117,7 @@ object EPTranslation extends SheetI18N {
   val dr = abbr("dr", "DR", "death-rating", "Death Rating");
   val init = abbr("init", "INIT", "initiative", "Initiative");
   val spd = abbr("spd", "SPD", "speed", "Speed");
+  val moa = abbr("moa", "MOA", "mental-only-actions", "Mental Only Actions");
   val db = abbr("db", "DB", "damage-bonus", "Damage Bonus");
 
   val mentalHealth = text("mental-health", "Mental Health");

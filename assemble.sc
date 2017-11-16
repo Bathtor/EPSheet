@@ -7,7 +7,7 @@ import scalaj.http._
 
 case class Roll20Config(roll20: String, campaignId: String)
 
-val javacp = pwd/RelPath("jvm/target/scala-2.11/EP Sheet JVM-assembly-0.1.0.jar"); 
+def javacp(version: String): Path = pwd/RelPath(s"jvm/target/scala-2.11/EP Sheet JVM-assembly-${version}.jar"); 
 val jsfileFast = "js/target/scala-2.11/ep-sheet-js-fastopt.js";
 val jsfileFull = "js/target/scala-2.11/ep-sheet-js-opt.js";
 val sheetworkers = "com.larskroll.ep.sheet.EPWorkers";
@@ -21,19 +21,19 @@ val epdev = Roll20Config("roll20", "<campaign id>");
 val campaign = epdev;
 val rackSessionId = "<insert me>";
 
-
 val maxRetries = 3;
 
 @main
-def main(full: Boolean = false): Unit = {
+def main(version: String, full: Boolean = false): Unit = {
+	val javacppath = javacp(version);
 	if (full) {
-		assemble(jsfileFull);
+		assemble(javacppath, jsfileFull);
 	} else {
-		assemble(jsfileFast);
+		assemble(javacppath, jsfileFast);
 	}
 }
 
-def assemble(jsfile: String) {
+def assemble(javacp: Path, jsfile: String) {
 	try {
 		println("Assembling...");
 		val cmd = %%('java, "-jar", javacp.toString, "--sheet", sheet, "--javascript", jsfile, "--sheetworkers", sheetworkers, "--html", htmlfile, "--css", cssfile, "--translation", translationfile);

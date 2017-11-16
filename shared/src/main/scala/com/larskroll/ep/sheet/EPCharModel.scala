@@ -67,7 +67,6 @@ object EPCharModel extends SheetModel {
   val currentMoxie = "current_moxie".default(0);
   val rezPoints = "rez_points".default(0);
   val motivations = text("motivations");
-  val charTraits = text("character_traits").editable(false); // TODO write update mechanism and delete in next version
   // aptitudes
   val cogBase = "cog_base".default(0);
   val cogTemp = "cog_temp".default(0);
@@ -125,6 +124,7 @@ object EPCharModel extends SheetModel {
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
   lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - trauma + miscInitiativeMod & RollOptions.Tracker);
   val speed = "speed".default(1);
+  val mentalOnlyActions = "mental_only_actions".default(0);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
   val trauma = "trauma".default(0).validIn(0, 99, 1);

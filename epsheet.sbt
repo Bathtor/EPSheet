@@ -6,7 +6,7 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.larskroll.ep"
 
-version in ThisBuild := "0.1.0"
+version in ThisBuild := "0.2.0"
 
 scalaVersion in ThisBuild := "2.11.8"
 
@@ -20,11 +20,11 @@ lazy val submitSheetFull = taskKey[Unit]("Submit the script that assembled and u
 lazy val submitFull = taskKey[Unit]("Assemble and fullOpt, and then upload the sheet");
 
 submitSheet := {
-  "./assemble.sc" !
+  s"./assemble.sc --version ${version.value}" !
 }
 
 submitSheetFull := {
-  "./assemble.sc --full true" !
+  s"./assemble.sc --version ${version.value} --full true" !
 }
 
 lazy val root = project.in(file(".")).
