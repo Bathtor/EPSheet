@@ -33,7 +33,9 @@ import util.{ Success, Failure }
 import concurrent.{ Future, Promise, ExecutionContext }
 import scala.scalajs.js
 
-object EPWorkers extends SheetWorker {
+object EPWorkers extends SheetWorkerRoot {
+
+  override def children: Seq[SheetWorker] = Seq(SkillWorkers, MorphWorkers, GearWorkers);
 
   import EPCharModel._
 
@@ -42,7 +44,7 @@ object EPWorkers extends SheetWorker {
   register(morphs.reporder, ReporderSer);
 
   onOpen {
-    log("TestSheet: Sheet workers loading...");
+    log("EPSheet: Sheet workers loading...");
     versionLoadOp();
     ()
   };
@@ -136,72 +138,6 @@ object EPWorkers extends SheetWorker {
     }
   };
 
-  val activeSkillTotalCalc = bind(op(activeSkills.noDefaulting, activeSkills.linkedAptitude, activeSkills.morphBonus, activeSkills.ranks, cogTotal, cooTotal, intTotal, refTotal, savTotal, somTotal, wilTotal)) update {
-    case (nodef, apt, morph, ranks, cog, coo, int, ref, sav, som, wil) => {
-      import Aptitude._
-
-      val aptTotal = ValueParsers.aptFrom(apt) match {
-        case COO => coo
-        case COG => cog
-        case INT => int
-        case REF => ref
-        case SAV => sav
-        case SOM => som
-        case WIL => wil
-      };
-      val total = if (nodef) {
-        if (ranks == 0) 0 else aptTotal + ranks + morph
-      } else {
-        aptTotal + ranks + morph
-      };
-      Seq(activeSkills.total <<= total)
-    }
-  }
-
-  val knowledgeSkillTotalCalc = bind(op(knowledgeSkills.noDefaulting, knowledgeSkills.linkedAptitude, knowledgeSkills.morphBonus, knowledgeSkills.ranks, cogTotal, cooTotal, intTotal, refTotal, savTotal, somTotal, wilTotal)) update {
-    case (nodef, apt, morph, ranks, cog, coo, int, ref, sav, som, wil) => {
-      import Aptitude._
-
-      val aptTotal = ValueParsers.aptFrom(apt) match {
-        case COO => coo
-        case COG => cog
-        case INT => int
-        case REF => ref
-        case SAV => sav
-        case SOM => som
-        case WIL => wil
-      };
-      val total = if (nodef) {
-        if (ranks == 0) 0 else aptTotal + ranks + morph
-      } else {
-        aptTotal + ranks + morph
-      };
-      Seq(knowledgeSkills.total <<= total)
-    }
-  }
-
-  val skillTotalCalc = activeSkillTotalCalc.all(activeSkills).andThen(knowledgeSkillTotalCalc.all(knowledgeSkills));
-
-  val museSkillTotalCalcOp = bind(op(museSkills.linkedAptitude, museSkills.ranks, museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) update {
-    case (apt, ranks, cog, coo, int, ref, sav, som, wil) => {
-      import Aptitude._
-
-      val aptTotal = ValueParsers.aptFrom(apt) match {
-        case COO => coo
-        case COG => cog
-        case INT => int
-        case REF => ref
-        case SAV => sav
-        case SOM => som
-        case WIL => wil
-      };
-      val total = aptTotal + ranks;
-      Seq(museSkills.total <<= total)
-    }
-  }
-
-  val museSkillTotalCalc = museSkillTotalCalcOp.all(museSkills);
-
   val traitTypeCalc = bind(op(characterTraits.traitType)) update {
     case (traitTypeName) => {
       import TraitType._
@@ -212,295 +148,23 @@ object EPWorkers extends SheetWorker {
     }
   }
 
-  val skillCategoryCalc = bind(op(activeSkills.category)) update {
-    case (catName) => {
-      import Skills._
+  val cogTotalCalc = bind(op(cogBase, cogTemp, cogMorph, cogMorphMax)) update (aptTotalCalc(cogTotal), SkillWorkers.skillTotalCalc);
 
-      val cat = SkillCategory.withName(catName);
-      val catLabel = SkillCategory.dynamicLabelShort(cat);
-      val globalModsExpression = modsForSkillCategory(cat);
-      Seq(activeSkills.categoryShort <<= catLabel,
-        activeSkills.globalMods <<= activeSkills.globalMods.valueFrom(globalModsExpression))
-    }
-  }
-  val setSkillsGenerating = nop update { _ =>
-    Seq(generateSkillsLabel <<= "generating-skills",
-      generateMuseSkillsLabel <<= "generating-skills")
-  };
-  val unsetSkillsGenerating = nop update { _ =>
-    Seq(generateSkillsLabel <<= "generate-skills",
-      generateSkills <<= false,
-      generateMuseSkillsLabel <<= "generate-skills",
-      generateMuseSkills <<= false)
-  }
-  val unsetSkillsSorting = nop update { _ =>
-    Seq(sortSkills <<= false)
-  }
+  val cooTotalCalc = bind(op(cooBase, cooTemp, cooMorph, cooMorphMax)) update (aptTotalCalc(cooTotal), SkillWorkers.skillTotalCalc);
 
-  private def getActiveSkills(): Future[List[Skills.ActiveSkillTuple]] = {
-    import Skills.ActiveSkillTuple;
-    getRowAttrs(activeSkills, Seq(activeSkills.rowId, activeSkills.skillName, activeSkills.category, activeSkills.linkedAptitude, activeSkills.field)).map(_.map {
-      case (k, v) => ActiveSkillTuple(k, v(activeSkills.rowId), v(activeSkills.skillName), v(activeSkills.category), v(activeSkills.linkedAptitude), v(activeSkills.field))
-    }.toList)
-  }
+  val intTotalCalc = bind(op(intBase, intTemp, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(SkillWorkers.skillTotalCalc));
 
-  private def getKnowledgeSkills(): Future[List[Skills.KnowledgeSkillTuple]] = {
-    import Skills.KnowledgeSkillTuple;
-    getRowAttrs(knowledgeSkills, Seq(knowledgeSkills.rowId, knowledgeSkills.skillName, knowledgeSkills.linkedAptitude, knowledgeSkills.field)).map(_.map {
-      case (k, v) => KnowledgeSkillTuple(k, v(knowledgeSkills.rowId), v(knowledgeSkills.skillName), v(knowledgeSkills.linkedAptitude), v(knowledgeSkills.field))
-    }.toList)
-  }
+  val refTotalCalc = bind(op(refBase, refTemp, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(SkillWorkers.skillTotalCalc));
 
-  val sortSkillsOp = op(sortSkillsBy) { sortByO: Option[String] =>
-    import Skills.{ SortBy, ActiveSkillTuple, KnowledgeSkillTuple };
-    import js.JSConverters._;
+  val savTotalCalc = bind(op(savBase, savTemp, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), SkillWorkers.skillTotalCalc);
 
-    sortByO match {
-      case Some(sortByS) => {
-        val sortBy = Skills.SortBy.withName(sortByS);
-        if (sortBy == SortBy.None) {
-          log(s"Field ${sortSkillsBy.name} is set to None. Not sorting."); Future.successful(())
-        } else {
-          val activeTuplesF = getActiveSkills();
-          val knowledgeTuplesF = getKnowledgeSkills();
-          val r = for {
-            activeTuples <- activeTuplesF
-            knowledgeTuples <- knowledgeTuplesF
-          } yield {
-            //debug(s"Sorting with $sortBy (${SortBy.activeOrdering(sortBy)} , ${SortBy.knowledgeOrdering(sortBy)}");
-            val activeSorted = activeTuples.sorted(SortBy.activeOrdering(sortBy));
-            //            val differenceActive = activeSorted.zip(activeTuples).filterNot(t => t._1 == t._2);
-            //            debug(s"Difference after sorting:\n${differenceActive.mkString(";")}");
-            val knowledgeSorted = knowledgeTuples.sorted(SortBy.knowledgeOrdering(sortBy));
-            //            val differenceKnowledge = knowledgeSorted.zip(knowledgeTuples).filterNot(t => t._1 == t._2);
-            //            debug(s"Difference after sorting:\n${differenceKnowledge.mkString(";")}");
-            val activeSortedIds = activeSorted.map { x => x.sortId }.toArray;
-            val knowledgeSortedIds = knowledgeSorted.map { x => x.sortId }.toArray;
-            val data = Seq(activeSkills.reporder <<= activeSortedIds,
-              knowledgeSkills.reporder <<= knowledgeSortedIds).toMap;
-            setAttrs(data)
-          };
-          r flatMap identity
-        }
-      }
-      case None => error(s"Field ${sortSkillsBy.name} has no value. Not sorting."); Future.successful(())
-    }
-  }
+  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(SkillWorkers.skillTotalCalc));
 
-  val generateDefaultSkills = nop { _: Option[Unit] =>
-
-    val activeNamesF = getRowAttrs(activeSkills, Seq(activeSkills.skillName)).map(_.flatMap {
-      case (k, v) => v.apply(activeSkills.skillName)
-    } toSet);
-    val knowledgeNamesF = getRowAttrs(knowledgeSkills, Seq(knowledgeSkills.skillName)).map(_.flatMap {
-      case (k, v) => v.apply(knowledgeSkills.skillName)
-    } toSet);
-
-    val r = for {
-      activeNames <- activeNamesF;
-      knowledgeNames <- knowledgeNamesF
-    } yield {
-      // double check there are no duplicate row ids generated (Roll20 seems to be doing that sometimes...)
-      val dataNoDuplicates = Skills.pregen.foldLeft((Set.empty[String], Map.empty[FieldLike[Any], Any]))((acc, skill) => {
-        acc match {
-          case (ids, valueAcc) => {
-            val ignore = if (skill.cls == Skills.SkillClass.Active) ignoreSkill(skill, activeNames) else ignoreSkill(skill, knowledgeNames);
-            if (ignore) {
-              (ids, valueAcc)
-            } else {
-              var curId: String = null;
-              do {
-                curId = Roll20.generateRowID();
-              } while (ids.contains(curId))
-              val skillValues = generateSkillWithId(curId, skill);
-              (ids + curId, valueAcc ++ skillValues)
-            }
-          }
-        }
-      });
-      //.flatten.toMap;
-      setAttrs(dataNoDuplicates._2)
-    };
-    r flatMap identity
-  };
-
-  private def ignoreSkill(skill: Skill, existingNames: Set[String]): Boolean = {
-    skill.field match {
-      case Some("???") => false
-      case _           => existingNames.contains(skill.name)
-    }
-  }
-
-  val generateMuseDefaultSkills = nop { _: Option[Unit] =>
-
-    val namesF = getRowAttrs(museSkills, Seq(museSkills.skillName)).map(_.flatMap {
-      case (k, v) => v.apply(museSkills.skillName)
-    } toSet);
-
-    val defaultSkills = Map(
-      "Academics" -> 50,
-      "Hardware" -> 20,
-      "Infosec" -> 20,
-      "Interfacing" -> 30,
-      "Profession" -> 50,
-      "Research" -> 20,
-      "Programming" -> 10,
-      "Perception" -> 10,
-      "[Custom]" -> 30);
-    val defaultFields = Map(
-      "Academics" -> "Psychology",
-      "Hardware" -> "Electronics",
-      "Profession" -> "Accounting");
-    val customSkill = Skill("[Custom]", None, null, null, Aptitude.COG);
-
-    val r = for {
-      names <- namesF
-    } yield {
-      // double check there are no duplicate row ids generated (Roll20 seems to be doing that sometimes...)
-      val dataNoDuplicates = (Skills.pregen ++ Seq(customSkill, customSkill, customSkill)).foldLeft((Set.empty[String], Map.empty[FieldLike[Any], Any]))((acc, skill) => {
-        acc match {
-          case (ids, valueAcc) => {
-            val ignore = filterSkill(skill, names, defaultSkills.keySet);
-            if (ignore) {
-              (ids, valueAcc)
-            } else {
-              var curId: String = null;
-              do {
-                curId = Roll20.generateRowID();
-              } while (ids.contains(curId))
-              val skillValues = generateMuseSkillWithId(curId, skill, defaultSkills, defaultFields);
-              (ids + curId, valueAcc ++ skillValues)
-            }
-          }
-        }
-      });
-      //.flatten.toMap;
-      setAttrs(dataNoDuplicates._2)
-    };
-    r flatMap identity
-  };
-
-  private def filterSkill(skill: Skill, exclude: Set[String], include: Set[String]): Boolean = {
-    if (include.contains(skill.name)) {
-      skill.field match {
-        case Some("???") => false
-        case _           => exclude.contains(skill.name) || !include.contains(skill.name)
-      }
-    } else {
-      true
-    }
-  }
-
-  private def generateMuseSkillWithId(id: String, skill: Skill, defaultValues: Map[String, Int], defaultFields: Map[String, String]): Seq[(FieldLike[Any], Any)] = {
-    import museSkills._;
-    Seq(
-      museSkills.at(id, skillName) <<= skill.name,
-      museSkills.at(id, field) <<= defaultFields.getOrElse(skill.name, field.resetValue),
-      museSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
-      museSkills.at(id, ranks) <<= defaultValues.getOrElse(skill.name, ranks.resetValue),
-      museSkills.at(id, total) <<= total.resetValue)
-  }
-
-  private def modsForSkillCategory(c: Skills.SkillCategory.SkillCategory): ArithmeticExpression[Int] = {
-    import Skills.SkillCategory._;
-    c match {
-      case Combat | Physical => EPCharModel.globalPhysicalMods
-      case _                 => EPCharModel.globalMods
-    }
-  }
-
-  private def generateSkillWithId(id: String, skill: Skill): Seq[(FieldLike[Any], Any)] = {
-    if (skill.cls == Skills.SkillClass.Active) {
-      import activeSkills._;
-      val globalModsExpression = modsForSkillCategory(skill.category);
-      Seq(
-        activeSkills.at(id, rowId) <<= id,
-        activeSkills.at(id, skillName) <<= skill.name,
-        activeSkills.at(id, field) <<= skill.field.getOrElse(field.resetValue),
-        activeSkills.at(id, category) <<= skill.category.toString(),
-        activeSkills.at(id, categoryShort) <<= Skills.SkillCategory.dynamicLabelShort(skill.category),
-        activeSkills.at(id, specialisations) <<= specialisations.resetValue,
-        activeSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
-        activeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
-        activeSkills.at(id, ranks) <<= ranks.resetValue,
-        activeSkills.at(id, morphBonus) <<= morphBonus.resetValue,
-        activeSkills.at(id, total) <<= total.resetValue,
-        activeSkills.at(id, globalMods) <<= globalMods.valueFrom(globalModsExpression))
-    } else {
-      import knowledgeSkills._;
-      Seq(
-        knowledgeSkills.at(id, rowId) <<= id,
-        knowledgeSkills.at(id, skillName) <<= skill.name,
-        knowledgeSkills.at(id, field) <<= skill.field.getOrElse(field.resetValue),
-        knowledgeSkills.at(id, specialisations) <<= specialisations.resetValue,
-        knowledgeSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
-        knowledgeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
-        knowledgeSkills.at(id, ranks) <<= ranks.resetValue,
-        knowledgeSkills.at(id, morphBonus) <<= morphBonus.resetValue,
-        knowledgeSkills.at(id, total) <<= total.resetValue)
-    }
-  }
-
-  onChange(generateSkills, (ei: EventInfo) => {
-    for {
-      _ <- setSkillsGenerating();
-      _ <- generateDefaultSkills();
-      _ <- skillTotalCalc();
-      _ <- sortSkillsOp();
-      _ <- setFrayHalved();
-      _ <- unsetSkillsGenerating()
-    } yield ();
-    ()
-  })
-
-  onChange(generateMuseSkills, (ei: EventInfo) => {
-    for {
-      _ <- setSkillsGenerating();
-      _ <- generateMuseDefaultSkills();
-      _ <- museSkillTotalCalc();
-      _ <- unsetSkillsGenerating()
-    } yield ();
-    ()
-  })
-
-  onChange(sortSkills, (ei: EventInfo) => {
-    for {
-      _ <- sortSkillsOp();
-      _ <- unsetSkillsSorting()
-    } yield ();
-    ()
-  })
-
-  onChange(activeSkills, (ei: EventInfo) => {
-    val rowId = Roll20.getActiveRepeatingField();
-    if (js.isUndefined(rowId)) {
-      error(s"Ignoring active skills event as rowId is undefined:\n${js.JSON.stringify(ei)}");
-      ()
-    } else {
-      debug(s"Updated rowId=${rowId} caused by:\n${js.JSON.stringify(ei)}");
-      val data = Seq(activeSkills.at(rowId, activeSkills.rowId) <<= rowId).toMap;
-      setAttrs(data);
-      ()
-    }
-  })
-
-  val cogTotalCalc = bind(op(cogBase, cogTemp, cogMorph, cogMorphMax)) update (aptTotalCalc(cogTotal), skillTotalCalc);
-
-  val cooTotalCalc = bind(op(cooBase, cooTemp, cooMorph, cooMorphMax)) update (aptTotalCalc(cooTotal), skillTotalCalc);
-
-  val intTotalCalc = bind(op(intBase, intTemp, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(skillTotalCalc));
-
-  val refTotalCalc = bind(op(refBase, refTemp, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(skillTotalCalc));
-
-  val savTotalCalc = bind(op(savBase, savTemp, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), skillTotalCalc);
-
-  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(skillTotalCalc));
-
-  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(traumaThresholdCalc).andThen(skillTotalCalc));
+  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(traumaThresholdCalc).andThen(SkillWorkers.skillTotalCalc));
 
   val aptTotals = cogTotalCalc ++ List(cooTotalCalc, intTotalCalc, refTotalCalc, savTotalCalc, somTotalCalc, wilTotalCalc);
 
-  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, skillTotalCalc);
+  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, SkillWorkers.skillTotalCalc);
 
   val durStatsCalc = op(durabilityBonus, morphDurability, morphType) update {
     case (bonus, morphDur, mt) => {
@@ -511,213 +175,13 @@ object EPWorkers extends SheetWorker {
     }
   }
 
-  val nop7: Option[Tuple7[Int, Int, Int, Int, Int, Int, Int]] => ChainingDecision = (f) => ExecuteChain;
-
-  val museAptSkillCalc = bind(op(museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) apply (nop7, museSkillTotalCalc);
-
   // TODO ongoing updates notification
 
-  private def extractSimpleRowId(id: String): String = id.split('_').last;
-
-  onChange(morphs.active, (e: EventInfo) => {
-    import scalajs.js;
-    log(s"Morph Active info: ${e.sourceAttribute}");
-    val rowId = Roll20.getActiveRepeatingField();
-    val simpleRowId = extractSimpleRowId(rowId);
-    val rowAttrsF = getRowAttrs(morphs, Seq(morphs.active));
-    val currentF = getAttr(currentMorph);
-    log("Fetching rows...");
-    val doF = for {
-      rowAttrs <- rowAttrsF;
-      current <- currentF
-    } yield {
-      log(s"Got rows:\n${rowAttrs.mkString(",")}");
-      val activeRow = rowAttrs(simpleRowId);
-      val activeActive = activeRow(morphs.active);
-      (current, activeActive) match {
-        case (_, None) => log(s"No active value. Probably deleted a row?");
-        case (Some(currentId), Some(true)) if (currentId == rowId) => log("Active morph is already current. What triggered the change?");
-        case (Some(currentId), Some(true)) if (currentId != rowId) => {
-          log(s"Active morph changed to ${rowId}");
-          val updates = rowAttrs.filterKeys(_ != simpleRowId).mapValues(attrs => attrs(morphs.active) match {
-            case Some(b) => b
-            case None    => false
-          }).filter({
-            case (_, active) => active
-          }).flatMap({
-            case (row, _) => Seq(
-              morphs.at(row, morphs.active) <<= false,
-              morphs.at(row, morphs.morphLocation) <<= morphs.morphLocation.resetValue)
-          });
-          log(s"Deactivating other morphs: ${updates.mkString(",")}");
-          val setF = setAttrs(updates.toMap);
-          setF.onComplete {
-            case Success(_) => log("All other morphs deactivated.");
-            case Failure(e) => error(e);
-          }
-        }
-        case (Some(currentId), Some(false)) if (currentId == rowId) => {
-          log("All morphs deactivated.");
-          resetMorphDefaults(Seq(morphs.at(simpleRowId, morphs.morphLocation) <<= morphs.morphLocation.resetValue));
-        }
-        case (Some(currentId), Some(false)) if (currentId != rowId) => log("Morph was already deactivated. What triggered the change?");
-        case x => log(s"Got something unexpected: ${x}");
-      }
-    };
-    doF.onFailure {
-      case e: Throwable => error(e)
-    }
-  });
-
-  private val morphSkillBoniCalc = op(morphSkillBoni) { skillBoniO: Option[String] =>
-    val activeTuplesF = getActiveSkills();
-    val knowledgeTuplesF = getKnowledgeSkills();
-    val r = for {
-      activeTuples <- activeTuplesF
-      knowledgeTuples <- knowledgeTuplesF
-    } yield {
-      val data = skillBoniO match {
-        case Some(skillBoniS) if !skillBoniS.isEmpty() => {
-          val skillBoni = ValueParsers.skillsFrom(skillBoniS);
-          debug(s"Applying Skill Boni:\n${skillBoni.mkString(",")}");
-          val activeUpdates = activeTuples.map { t =>
-            val bonus = skillBoni.flatMap { sm =>
-              t.name.flatMap { tname =>
-                if (sm.skill.equalsIgnoreCase(tname)) {
-                  val fieldMatch = for {
-                    smField <- sm.field;
-                    tField <- t.field
-                  } yield smField.equalsIgnoreCase(tField);
-                  fieldMatch match {
-                    case Some(true) | None => Some(sm.mod)
-                    case Some(false)       => None
-                  }
-                } else None
-              }
-            }.sum;
-            activeSkills.at(t.id, activeSkills.morphBonus) <<= bonus
-          };
-          val knowledgeUpdates = knowledgeTuples.map { t =>
-            val bonus = skillBoni.flatMap { sm =>
-              t.name.flatMap { tname =>
-                if (sm.skill.equalsIgnoreCase(tname)) {
-                  val fieldMatch = for {
-                    smField <- sm.field;
-                    tFieldRaw <- t.field;
-                    tField <- if (tFieldRaw == "???") None else Some(tFieldRaw)
-                  } yield smField.equalsIgnoreCase(tField);
-                  fieldMatch match {
-                    case Some(true) | None => Some(sm.mod)
-                    case Some(false)       => None
-                  }
-                } else None
-              }
-            }.sum;
-            knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= bonus
-          };
-          (activeUpdates ++ knowledgeUpdates).toMap
-        }
-        case _ => {
-          debug("No skill boni to apply. Resetting.");
-          val activeUpdates = activeTuples.map { t =>
-            activeSkills.at(t.id, activeSkills.morphBonus) <<= activeSkills.morphBonus.resetValue
-          }
-          val knowledgeUpdates = knowledgeTuples.map { t =>
-            knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= knowledgeSkills.morphBonus.resetValue
-          }
-          (activeUpdates ++ knowledgeUpdates).toMap
-        }
-      };
-      setAttrs(data)
-    };
-    r flatMap identity
-
-  }
-
-  private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty) {
-    val updates = Seq(currentMorph, morphType,
-      morphName, morphDescription, morphTraits,
-      morphImplants, morphMobilitySystem, morphDurability,
-      morphArmourEnergy, morphArmourKinetic, morphSkillBoni).map({ case f: Field[Any] => (f -> f.resetValue) }) ++ morphAptBoni("") ++ morphAptMax("");
-    val setF = setAttrs((extraUpdates ++ updates).toMap);
-    setF.onComplete {
-      case Success(_) => aptTotalsAll.andThen(durStatsCalc).andThen(morphSkillBoniCalc)()
-      case Failure(e) => error(e)
-    }
-  }
-
-  private val armourTotalCalc = op(armourEnergyBonus, armourKineticBonus, morphArmourEnergy, morphArmourKinetic, durability) update {
-    case (energyBonus, kineticBonus, energyMorph, kineticMorph, dur) => Seq(
-      armourEnergyTotal <<= (Math.min(dur, energyMorph + energyBonus)),
-      armourKineticTotal <<= (Math.min(dur, kineticMorph + kineticBonus)))
-  }
-
-  private val morphAttrsCalc: Tuple15[Boolean, String, String, String, String, Int, String, Int, Int, String, String, String, String, String, String] => UpdateDecision = {
-    case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB) => if (active) {
-      val rowId = Roll20.getActiveRepeatingField();
-      log(s"Current row: ${rowId}");
-      val updates = Seq(morphs.id <<= rowId, morphs.morphLocation <<= "ACTIVE",
-        currentMorph <<= rowId, morphType <<= tpe,
-        morphVisibleGender <<= gender, morphVisibleAge <<= age,
-        morphName <<= name, morphDescription <<= descr, morphTraits <<= traits,
-        morphImplants <<= imp, morphMobilitySystem <<= mob, morphDurability <<= dur,
-        morphArmourEnergy <<= ae, morphArmourKinetic <<= ak, morphSkillBoni <<= skillB) ++ morphAptBoni(aptB) ++ morphAptMax(aptMax);
-      (updates, ExecuteChain)
-    } else {
-      log("********** No updates, skipping chain **********")
-      (emptyUpdates, SkipChain)
-    }
-  }
-
-  val morphAttrs = bind(
-    op(morphs.active, morphs.morphName, morphs.morphType, morphs.visibleGender, morphs.visibleAge, morphs.durability, morphs.mobilitySystem,
-      morphs.armourEnergy, morphs.armourKinetic, morphs.implants, morphs.traits,
-      morphs.description, morphs.aptitudeBoni, morphs.aptitudeMax, morphs.skillBoni)).
-    update(morphAttrsCalc, aptTotalsAll ++ List(durStatsCalc, armourTotalCalc, morphSkillBoniCalc));
-
-  private val armourBonusFields = op(armourItems.active, armourItems.accessory,
-    armourItems.energyBonus, armourItems.kineticBonus);
-
-  private val layeringPenaltyPerLayer = -20;
-
-  private val armourBonusSum = armourBonusFields.fold(armourItems, (0, 0, 20))((acc: (Int, Int, Int), v: (String, (Boolean, Boolean, Int, Int))) => v match {
-    case (_, ((active, accessory, energyBonus, kineticBonus))) => if (active) {
-      (acc._1 + energyBonus, acc._2 + kineticBonus, if (accessory) { acc._3 } else { acc._3 + layeringPenaltyPerLayer })
-    } else {
-      acc
-    }
-  })(t => Seq(armourEnergyBonus <<= t._1, armourKineticBonus <<= t._2, layeringPenalty <<= (if (t._3 > 0) 0 else t._3)));
-
-  private val armourBonusCalc: Tuple4[Boolean, Boolean, Int, Int] => UpdateDecision = {
-    case (active, accessory, energyBonus, kineticBonus) => (emptyUpdates, ExecuteChain)
-    case _ => (emptyUpdates, SkipChain)
-  }
-
-  val armourBonus = bind(armourBonusFields).update(armourBonusCalc, armourBonusSum.andThen(armourTotalCalc));
-
-  val skillSearchOpMelee = bind(op(meleeWeapons.skillSearch)) { (o: Option[String]) =>
-    o match {
-      case Some(needle) => {
-        searchSkillAndSetNameTotal(needle, meleeWeapons, meleeWeapons.skillName, meleeWeapons.skillTotal)
-      }
-      case None => Future.successful(()) // ignore
-    }
-  };
-
-  val skillSearchOpRanged = bind(op(rangedWeapons.skillSearch)) { (o: Option[String]) =>
-    o match {
-      case Some(needle) => {
-        searchSkillAndSetNameTotal(needle, rangedWeapons, rangedWeapons.skillName, rangedWeapons.skillTotal)
-      }
-      case None => Future.successful(()) // ignore
-    }
-  };
-
-  private def searchSkillAndSetNameTotal(needle: String, weaponSection: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
+  private[sheet] def searchSkillAndSetNameTotal(needle: String, section: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
     val rowId = Roll20.getActiveRepeatingField();
     val simpleRowId = rowId.split('_').last;
     val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
-    log(s"Searching for skill name for ${weaponSection.name} ($simpleRowId). Fetching rows...");
+    log(s"Searching for skill name for ${section.name} ($simpleRowId). Fetching rows...");
     val doF = for {
       rowAttrs <- rowAttrsF
     } yield {
@@ -741,23 +205,23 @@ object EPWorkers extends SheetWorker {
       if (ratings.isEmpty) {
         log(s"No match found for $needle");
         setAttrs(Map(
-          weaponSection.at(simpleRowId, nameField) <<= nameField.resetValue,
-          weaponSection.at(simpleRowId, totalField) <<= totalField.resetValue))
+          section.at(simpleRowId, nameField) <<= nameField.resetValue,
+          section.at(simpleRowId, totalField) <<= totalField.resetValue))
       } else {
         val sorted = ratings.sorted;
         val selection = sorted.last;
         log(s"Selected $selection as best fit for $needle");
         val selectionId = nameToId(selection._2);
         setAttrs(Map(
-          weaponSection.at(simpleRowId, nameField) <<= selection._2,
-          weaponSection.at(simpleRowId, totalField) <<= totalField.valueAt(selectionId)))
+          section.at(simpleRowId, nameField) <<= selection._2,
+          section.at(simpleRowId, totalField) <<= totalField.valueAt(selectionId)))
       }
     };
     doF.onFailure {
       case e: Throwable =>
         error(e); setAttrs(Map(
-          weaponSection.at(simpleRowId, nameField) <<= nameField.resetValue,
-          weaponSection.at(simpleRowId, totalField) <<= totalField.resetValue))
+          section.at(simpleRowId, nameField) <<= nameField.resetValue,
+          section.at(simpleRowId, totalField) <<= totalField.resetValue))
     }
     doF.flatMap(identity)
   }
@@ -766,7 +230,7 @@ object EPWorkers extends SheetWorker {
     searchFrayAndSetHalved()
   }
 
-  private def searchFrayAndSetHalved(): Future[Unit] = {
+  private[sheet] def searchFrayAndSetHalved(): Future[Unit] = {
     val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
     val doF = for {
       rowAttrs <- rowAttrsF
@@ -790,93 +254,6 @@ object EPWorkers extends SheetWorker {
     doF.flatMap(identity)
   }
 
-  onRemove(activeSkills, (_: Roll20.EventInfo) => { searchFrayAndSetHalved(); () });
-
-  val weaponRangeLimits = bind(op(rangedWeapons.shortRangeUpper, rangedWeapons.mediumRangeUpper, rangedWeapons.longRangeUpper)) update {
-    case (sru, mru, lru) => {
-      val mrl = sru + 1;
-      val lrl = mru + 1;
-      val xrl = lru + 1;
-      Seq(rangedWeapons.mediumRangeLower <<= mrl,
-        rangedWeapons.longRangeLower <<= lrl,
-        rangedWeapons.extremeRangeLower <<= xrl)
-    }
-  }
-
-  val meleeDamageTypeCalc = bind(op(meleeWeapons.damageType)) update {
-    case (dtName) => {
-      import DamageType._
-
-      val dt = withName(dtName);
-      val dtLabel = dynamicLabelShort(dt);
-      Seq(meleeWeapons.damageTypeShort <<= dtLabel)
-    }
-  }
-  val rangedDamageTypeCalc = bind(op(rangedWeapons.damageType)) update {
-    case (dtName) => {
-      import DamageType._
-
-      val dt = withName(dtName);
-      val dtLabel = dynamicLabelShort(dt);
-      Seq(rangedWeapons.damageTypeShort <<= dtLabel)
-    }
-  }
-
-  val psiSustainedCalc = bind(op(psiCurrentSustained)) update {
-    case (sustained) => {
-      Seq(
-        psiSustainedMod <<= -sustained * 10)
-    }
-  }
-
-  val psiChiTypeCalc = bind(op(psiChi.psiType)) update {
-    case (ptName) => {
-      import PsiType._
-
-      val pt = withName(ptName);
-      val ptLabel = dynamicLabelShort(pt);
-      Seq(psiChi.psiTypeShort <<= ptLabel)
-    }
-  }
-
-  val psiGammaTypeCalc = bind(op(psiGamma.psiType)) update {
-    case (ptName) => {
-      import PsiType._
-
-      val pt = withName(ptName);
-      val ptLabel = dynamicLabelShort(pt);
-      Seq(psiGamma.psiTypeShort <<= ptLabel)
-    }
-  }
-
-  private def morphAptBoni(s: String): Seq[(FieldLike[Any], Any)] = {
-    val ab = ValueParsers.aptitudesFrom(s);
-    val default = cogMorph.defaultValue.orElse(Some(0));
-    log(s"Got Aptitude Bonus: $ab");
-    val cog = ab.cog.orElse(default).map(v => cogMorph <<= v);
-    val coo = ab.coo.orElse(default).map(v => cooMorph <<= v);
-    val int = ab.int.orElse(default).map(v => intMorph <<= v);
-    val ref = ab.ref.orElse(default).map(v => refMorph <<= v);
-    val sav = ab.sav.orElse(default).map(v => savMorph <<= v);
-    val som = ab.som.orElse(default).map(v => somMorph <<= v);
-    val wil = ab.wil.orElse(default).map(v => wilMorph <<= v);
-    Seq(cog, coo, int, ref, sav, som, wil).flatten
-  }
-
-  private def morphAptMax(s: String): Seq[(FieldLike[Any], Any)] = {
-    val ab = ValueParsers.aptitudesFrom(s);
-    val default = cogMorphMax.defaultValue.orElse(Some(0));
-    log(s"Got Aptitude Max: $ab");
-    val cog = ab.cog.orElse(default).map(v => cogMorphMax <<= v);
-    val coo = ab.coo.orElse(default).map(v => cooMorphMax <<= v);
-    val int = ab.int.orElse(default).map(v => intMorphMax <<= v);
-    val ref = ab.ref.orElse(default).map(v => refMorphMax <<= v);
-    val sav = ab.sav.orElse(default).map(v => savMorphMax <<= v);
-    val som = ab.som.orElse(default).map(v => somMorphMax <<= v);
-    val wil = ab.wil.orElse(default).map(v => wilMorphMax <<= v);
-    Seq(cog, coo, int, ref, sav, som, wil).flatten
-  }
-
   private def drCalc(dur: Int, mType: MorphType.MorphType): Int = {
     mType match {
       case MorphType.Biomorph | MorphType.Pod => Math.ceil(dur * 1.5f).toInt
@@ -888,8 +265,4 @@ object EPWorkers extends SheetWorker {
   private def aptTotal(base: Int, tmp: Int, morph: Int, max: Int): Int = {
     Math.min(base + morph, max) + tmp // or Math.min(base + morph + tmp, max) the rules are unclear on this
   }
-
-  //  onChange(skills.mod, (e: EventInfo) => {
-  //    log(s"Skill Mod info: ${e.sourceAttribute}");
-  //  });
 }

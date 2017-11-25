@@ -103,7 +103,7 @@ object EPStyle extends SheetStyle {
     tableLayout.fixed,
     width := "100%",
     minWidth := "20rem",
-    th(width := "11%"),
+    th(width := 2.9.em),
     td(span(textAlign.right,
       display.block,
       paddingRight := "2px")));
