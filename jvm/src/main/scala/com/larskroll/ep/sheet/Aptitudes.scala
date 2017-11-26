@@ -49,37 +49,37 @@ object AptitudeRenderer extends GroupRenderer {
   };
 
   val cog = renderElement(
-    roll(char, "cog-roll", Chat.Default,
+    roll(char, "cog-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.cog.fullLabel, char.epRoll, char.cogTarget),
       span(fontWeight.bold, t.cog)),
     RenderMode.Normal);
   val coo = renderElement(
-    roll(char, "coo-roll", Chat.Default,
+    roll(char, "coo-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.coo.fullLabel, char.epRoll, char.cooTarget),
       span(fontWeight.bold, t.coo)),
     RenderMode.Normal);
   val int = renderElement(
-    roll(char, "int-roll", Chat.Default,
+    roll(char, "int-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.int.fullLabel, char.epRoll, char.intTarget),
       span(fontWeight.bold, t.int)),
     RenderMode.Normal);
   val ref = renderElement(
-    roll(char, "ref-roll", Chat.Default,
+    roll(char, "ref-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.ref.fullLabel, char.epRoll, char.refTarget),
       span(fontWeight.bold, t.ref)),
     RenderMode.Normal);
   val sav = renderElement(
-    roll(char, "sav-roll", Chat.Default,
+    roll(char, "sav-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.sav.fullLabel, char.epRoll, char.savTarget),
       span(fontWeight.bold, t.sav)),
     RenderMode.Normal);
   val som = renderElement(
-    roll(char, "som-roll", Chat.Default,
+    roll(char, "som-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.som.fullLabel, char.epRoll, char.somTarget),
       span(fontWeight.bold, t.som)),
     RenderMode.Normal);
   val wil = renderElement(
-    roll(char, "will-roll", Chat.Default,
+    roll(char, "will-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.wil.fullLabel, char.epRoll, char.wilTarget),
       span(fontWeight.bold, t.wil)),
     RenderMode.Normal);
@@ -105,37 +105,37 @@ object MuseAptitudeRenderer extends GroupRenderer {
   };
 
   val cog = renderElement(
-    roll(char, "cog-roll", Chat.Default,
+    roll(char, "cog-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.cog.fullLabel, char.epRoll, char.museCogTarget),
       span(fontWeight.bold, t.cog)),
     RenderMode.Normal);
   val coo = renderElement(
-    roll(char, "coo-roll", Chat.Default,
+    roll(char, "coo-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.coo.fullLabel, char.epRoll, char.museCooTarget),
       span(fontWeight.bold, t.coo)),
     RenderMode.Normal);
   val int = renderElement(
-    roll(char, "int-roll", Chat.Default,
+    roll(char, "int-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.int.fullLabel, char.epRoll, char.museIntTarget),
       span(fontWeight.bold, t.int)),
     RenderMode.Normal);
   val ref = renderElement(
-    roll(char, "ref-roll", Chat.Default,
+    roll(char, "ref-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.ref.fullLabel, char.epRoll, char.museRefTarget),
       span(fontWeight.bold, t.ref)),
     RenderMode.Normal);
   val sav = renderElement(
-    roll(char, "sav-roll", Chat.Default,
+    roll(char, "sav-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.sav.fullLabel, char.epRoll, char.museSavTarget),
       span(fontWeight.bold, t.sav)),
     RenderMode.Normal);
   val som = renderElement(
-    roll(char, "som-roll", Chat.Default,
+    roll(char, "som-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.som.fullLabel, char.epRoll, char.museSomTarget),
       span(fontWeight.bold, t.som)),
     RenderMode.Normal);
   val wil = renderElement(
-    roll(char, "will-roll", Chat.Default,
+    roll(char, "will-roll", char.chatOutput,
       EPDefaultTemplate(char.museName, t.wil.fullLabel, char.epRoll, char.museWilTarget),
       span(fontWeight.bold, t.wil)),
     RenderMode.Normal);

@@ -35,13 +35,14 @@ import scala.scalajs.js
 
 object EPWorkers extends SheetWorkerRoot {
 
-  override def children: Seq[SheetWorker] = Seq(SkillWorkers, MorphWorkers, GearWorkers);
+  override def children: Seq[SheetWorker] = Seq(SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
 
   import EPCharModel._
 
   register(activeSkills.reporder, ReporderSer);
   register(knowledgeSkills.reporder, ReporderSer);
   register(morphs.reporder, ReporderSer);
+  register[ChatCommand](ChatSer);
 
   onOpen {
     log("EPSheet: Sheet workers loading...");
@@ -175,11 +176,23 @@ object EPWorkers extends SheetWorkerRoot {
     }
   }
 
+  val chatOutputCalc = bind(op(chatOutputSelect)) update {
+    case (targetS) => {
+      import ChatOutput._;
+      val target = ChatOutput.withName(targetS);
+      val cc = target match {
+        case Public => Chat.Default
+        case GM     => Chat.GM
+      };
+      Seq(chatOutput <<= cc)
+    }
+  }
+
   // TODO ongoing updates notification
 
   private[sheet] def searchSkillAndSetNameTotal(needle: String, section: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
     val rowId = Roll20.getActiveRepeatingField();
-    val simpleRowId = rowId.split('_').last;
+    val simpleRowId = extractSimpleRowId(rowId);
     val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
     log(s"Searching for skill name for ${section.name} ($simpleRowId). Fetching rows...");
     val doF = for {

@@ -219,7 +219,8 @@ object EPTranslation extends SheetI18N {
     DamageType -> dmgType,
     PsiType -> psiType,
     DerangementSeverity -> derangementSeverityOptions,
-    TraitType -> traitTypeOptions);
+    TraitType -> traitTypeOptions,
+    ChatOutput -> chatOutputOptions);
 
   lazy val allShortOptions = Map[Enumeration, OptionLabel](
     Skills.SkillCategory -> skillCategoryOptionsShort,
@@ -371,6 +372,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val psiAction = text("psi-action", "Action");
   val psiDuration = text("psi-duration", "Duration");
   val strainMod = text("psi-strain-mod", "Strain Mod");
+  val strain = text("strain", "Strain");
   val psiSkill = text("psi-skill", "Skill");
   val psiType = {
     import PsiType._;
@@ -426,6 +428,15 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscNotes = text("misc-notes", "Misc. Notes");
   val miscPhysicalMod = text("misc-physical-mod", "Misc. Physical Modifier");
   val miscInitiativeMod = text("misc-initiative-mod", "Misc. Initiative Modifier");
+  val chatOutput = text("chat-output", "Chat Output");
+  val chatOutputOptions = {
+    import ChatOutput._;
+    val opts = ChatOutput.values.map {
+      case Public => (Public.toString() -> "Public")
+      case GM     => (GM.toString() -> "Whisper to GM")
+    }.toMap;
+    enum(ChatOutput.labelPrefix, opts)
+  }
 
   // templates
   val rollsfor = text("rolls-for", "rolls for");

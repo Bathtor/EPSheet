@@ -188,6 +188,10 @@ object EPCharModel extends SheetModel {
   val psiTempTime = "psi_temp_time".editable(false).default(0);
   val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 10, 1);
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
+  val targetQuery = LabelledSelectQuery("Target Type",
+    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> -20, "Non-sapient Animals" -> -30));
+  val targetStrainQuery = LabelledSelectQuery("Target Type",
+    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> 1, "Non-sapient Animals" -> 3));
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
 
@@ -228,6 +232,8 @@ object EPCharModel extends SheetModel {
   val miscActionMod = "misc_action_mod".default(0);
   val miscPhysicalMod = "misc_physical_mod".default(0);
   val miscInitiativeMod = "misc_initiative_mod".default(0);
+  val chatOutput = "chat_output".default(Chat.Default);
+  val chatOutputSelect = "chat_output_select".options(ChatOutput).default(ChatOutput.Public);
 
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;
@@ -295,6 +301,7 @@ object PsiChiSection extends RepeatingSection {
   val action = "action".default("Automatic");
   val duration = "duration".default("Constant");
   val strainMod = "strain_mod".default(0);
+  val strainDamage = roll("strain_damage", ceil(Dice.d10.arith / 2) + strainMod); // Chi never targets others, and the user can hardly be below full sentience, thus no targetStrainQuery
   val description = text("description");
 }
 
@@ -311,7 +318,11 @@ object PsiGammaSection extends RepeatingSection {
   val action = "action".default("Complex");
   val duration = "duration".default("Temp (Action Turns)");
   val strainMod = "strain_mod".default(0);
-  val skill = text("skill");
+  val strainDamage = roll("strain_damage", ceil(Dice.d10.arith / 2) + strainMod + EPCharModel.targetStrainQuery.arith);
+  val skillSearch = "skill_search".options("Control", "Psi Assault", "Sense");
+  val skillName = "skill_name".editable(false).default("None");
+  val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
+  val attackTarget = roll("attack_target", EPCharModel.targetQuery.arith + EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalMods);
   val description = text("description");
 }
 

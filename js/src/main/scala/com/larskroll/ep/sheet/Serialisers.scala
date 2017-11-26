@@ -30,3 +30,7 @@ import com.larskroll.roll20.sheet._
 object ReporderSer extends Serialiser[Array[String]] {
   override def serialise(o: Array[String]): js.Any = o.mkString(",");
 }
+
+object ChatSer extends Serialiser[ChatCommand] {
+  override def serialise(o: ChatCommand): js.Any = o.render;
+}

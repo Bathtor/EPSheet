@@ -61,4 +61,13 @@ object PsiWorkers extends SheetWorker {
       Seq(psiGamma.psiTypeShort <<= ptLabel)
     }
   }
+
+  val skillSearchOpGamma = bind(op(psiGamma.skillSearch)) { (o: Option[String]) =>
+    o match {
+      case Some(needle) => {
+        EPWorkers.searchSkillAndSetNameTotal(needle, psiGamma, psiGamma.skillName, psiGamma.skillTotal)
+      }
+      case None => Future.successful(()) // ignore
+    }
+  };
 }

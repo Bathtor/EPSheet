@@ -35,6 +35,9 @@ object EPDamageTemplate extends RollTemplate {
   val t = EPTranslation;
   val sty = EPStyle;
 
+  def strain(cf: Field[String], af: Field[String], rf: RollField[Int], de: LabelI18N): TemplateApplication =
+    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageExplanation <<= de)
+
   def apply(cf: Field[String], al: LabelI18N, rf: RollField[Int]): TemplateApplication =
     apply(character <<= cf, attributeLabel <<= al, damageRoll <<= rf)
 
@@ -50,6 +53,7 @@ object EPDamageTemplate extends RollTemplate {
   val attributeField = attribute[String]("attribute-field");
   val damageRoll = rollable[Int]("damage-roll");
   val damageType = attribute[String]("damage-type");
+  val damageExplanation = labeli18n("damage-explanation");
   val armourPenetration = attribute[Int]("armour-penetration");
   val concentrateBF = button("concentrate-damage-bf");
   val concentrateFA = button("concentrate-damage-fa");
@@ -69,6 +73,8 @@ object EPDamageTemplate extends RollTemplate {
     p(span(t.damageInflicts), span(raw(" ")), span(fontWeight.bold, t.damageValue), span(": "), damageRoll,
       exists(damageType) {
         Seq(span(raw(" ")), span(damageType))
+      }, exists(damageExplanation) {
+        Seq(span(raw(" ")), span(damageExplanation))
       }),
     exists(armourPenetration) {
       p(span(fontWeight.bold, t.ap), span(": "), span(sty.fieldvalue, armourPenetration), span(" "), span(fontStyle.italic, t.orTotalAP))
