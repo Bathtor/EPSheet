@@ -364,7 +364,7 @@ object EPStyle extends SheetStyle {
 
   val `flex-grow` = cls();
   val `flex-container` = cls();
-  val `flex-start`, `flex-centre`, `flex-end`, `flex-stretch` = cls();
+  val `flex-start`, `flex-centre`, `flex-end`, `flex-stretch`, `flex-header` = cls();
   val `flex-col` = cls();
   val `two-line-textarea`, `eight-line-textarea` = cls();
   val `visible-button` = cls();

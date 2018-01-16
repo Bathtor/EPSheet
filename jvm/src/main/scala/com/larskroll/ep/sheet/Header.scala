@@ -54,7 +54,7 @@ object HeaderRenderer extends GroupRenderer {
   import GroupRenderer._
 
   override def fieldCombiner: FieldCombiner = { tags =>
-    div(EPStyle.headerBox, EPStyle.`flex-container`, EPStyle.`flex-centre`, tags)
+    div(EPStyle.headerBox, EPStyle.`flex-container`, EPStyle.`flex-header`, tags)
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
