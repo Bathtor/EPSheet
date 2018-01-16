@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package com.larskroll.ep.sheet
 
@@ -37,22 +37,29 @@ object OptionsTab extends FieldGroup {
   val sty = EPStyle;
 
   val members: Seq[SheetElement] = Seq(
-    frow(sty.`flex-start`,
-      fcol(Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
+    frow(
+      sty.`flex-start`,
+      fcol(
+        Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         fblock(t.sheetSettings, EPStyle.min5rem,
           (t.chatOutput -> char.chatOutputSelect),
           char.chatOutput.hidden,
           flexFill)),
-      fcol(Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
+      fcol(
+        Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         fblock(t.miscModifiers, EPStyle.min5rem,
           (t.woundsIgnored -> char.woundsIgnored),
           (t.miscActionMod -> char.miscActionMod),
           (t.miscPhysicalMod -> char.miscPhysicalMod),
           (t.miscInitiativeMod -> char.miscInitiativeMod),
+          (t.miscDurBonus -> char.durabilityBonus),
           flexFill))),
-    frow(sty.`flex-stretch`,
-      fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
-        block(t.miscNotes,
+    frow(
+      sty.`flex-stretch`,
+      fcol(
+        Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
+        block(
+          t.miscNotes,
           char.miscNotes.like(CoreTabRenderer.largeTextareaField)))));
 
   override def renderer = CoreTabRenderer;

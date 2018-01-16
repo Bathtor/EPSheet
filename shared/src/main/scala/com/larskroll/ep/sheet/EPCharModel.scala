@@ -64,9 +64,9 @@ object EPCharModel extends SheetModel {
   val faction = text("faction");
   val genderId = text("gender_id");
   val actualAge = number[Int]("actual_age");
-  val moxie = "moxie".default(0);
-  val moxieMax = "moxie_max".default(0);
-  val rezPoints = "rez_points".default(0);
+  val moxie = "moxie".default(0).validIn(0, 99, 1);
+  val moxieMax = "moxie_max".default(0).validIn(0, 99, 1);
+  val rezPoints = "rez_points".default(0).validIn(0, 999, 1);
   val motivations = text("motivations");
   // aptitudes
   val cogBase = "cog_base".default(0);
@@ -118,13 +118,13 @@ object EPCharModel extends SheetModel {
   val insanityRating = "insanity_rating".editable(false).default(0);
   val woundThreshold = "wound_threshold".editable(false).default(0);
   val durability = "durability".editable(false).default(0);
-  val durabilityBonus = "durability_bonus".default(0);
+  val durabilityBonus = "durability_bonus".default(0).validIn(-99, 99, 1);
   val deathRating = "death_rating".editable(false).default(0);
   val initiative = "initiative".editable(false).default(0);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
   lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - trauma + miscInitiativeMod & RollOptions.Tracker);
-  val speed = "speed".default(1);
-  val mentalOnlyActions = "mental_only_actions".default(0);
+  val speed = "speed".default(1).validIn(0, 99, 1);
+  val mentalOnlyActions = "mental_only_actions".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
   val trauma = "trauma".default(0).validIn(0, 99, 1);
@@ -132,7 +132,7 @@ object EPCharModel extends SheetModel {
   val damage = "damage".default(0).validIn(0, 999, 1);
   val wounds = "wounds".default(0).validIn(0, 99, 1);
   val woundMod = "wound_mod".editable(false).default(0);
-  val woundsIgnored = "wounds_ignored".default(0);
+  val woundsIgnored = "wounds_ignored".default(0).validIn(0, 99, 1);
   val woundsApplied = "wounds_applied".editable(false).default(0);
   val woundTraumaMods = (traumaMod + woundMod).paren;
   val armourEnergyTotal = "armour_energy_total".editable(false).default(0);
@@ -415,9 +415,9 @@ object MeleeWeaponSection extends RepeatingSection {
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalPhysicalMods);
-  val armourPenetration = "armour_penetration".default(0);
-  val numDamageDice = "num_damage_dice".default(0);
-  val damageBonus = "damage_bonus".default(0);
+  val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
+  val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
+  val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus);
   val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 5);
   val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 10);
@@ -438,9 +438,9 @@ object RangedWeaponSection extends RepeatingSection {
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val miscMod = "misc_mod".default(0);
   val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods);
-  val armourPenetration = "armour_penetration".default(0);
-  val numDamageDice = "num_damage_dice".default(0);
-  val damageBonus = "damage_bonus".default(0);
+  val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
+  val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
+  val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus);
   val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + 5);
   val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + 10);
@@ -458,8 +458,8 @@ object RangedWeaponSection extends RepeatingSection {
   val longRangeUpper = "long_range_upper".default(0).validIn(0, 99999, 1);
   val extremeRangeLower = "extreme_range_lower".default(0).editable(false);
   val extremeRangeUpper = "extreme_range_upper".default(0).validIn(0, 99999, 1);
-  val magazineSize = "ammo_max".default(0);
-  val magazineCurrent = "ammo".default(0);
+  val magazineSize = "ammo_max".default(0).validIn(0, 999, 1);
+  val magazineCurrent = "ammo".default(0).validIn(0, 999, 1);
   val magazineType = "ammo_type".default("standard");
   val description = text("description");
 }

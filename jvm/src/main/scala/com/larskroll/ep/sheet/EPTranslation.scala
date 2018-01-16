@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -428,6 +428,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscNotes = text("misc-notes", "Misc. Notes");
   val miscPhysicalMod = text("misc-physical-mod", "Misc. Physical Modifier");
   val miscInitiativeMod = text("misc-initiative-mod", "Misc. Initiative Modifier");
+  val miscDurBonus = text("misc-dur-bonus", "Misc. Durability Bonus");
   val chatOutput = text("chat-output", "Chat Output");
   val chatOutputOptions = {
     import ChatOutput._;

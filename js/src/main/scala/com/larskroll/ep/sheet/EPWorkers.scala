@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -170,11 +170,19 @@ object EPWorkers extends SheetWorkerRoot {
   val durStatsCalc = op(durabilityBonus, morphDurability, morphType) update {
     case (bonus, morphDur, mt) => {
       val dur = morphDur + bonus;
-      Seq(durability <<= dur,
+      Seq(
+        durability <<= dur,
         woundThreshold <<= Math.ceil(dur.toFloat / 5.0f).toInt,
         deathRating <<= drCalc(dur, MorphType.withName(mt)))
     }
   }
+
+  onChange(durabilityBonus, (ei: EventInfo) => {
+    val f = for {
+      _ <- durStatsCalc()
+    } yield ();
+    ()
+  })
 
   val chatOutputCalc = bind(op(chatOutputSelect)) update {
     case (targetS) => {
