@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -55,7 +55,8 @@ object CoreTab extends FieldGroup {
     span(EPStyle.`trait-tag-field`, name := f.name, SheetI18N.datai18nDynamic)
   }
 
-  val characterTraits = block(t.characterTraits,
+  val characterTraits = block(
+    t.characterTraits,
     char.characterTraits {
       TightRepRow(
         presOnly(flowpar(
@@ -70,7 +71,8 @@ object CoreTab extends FieldGroup {
           MarkupElement(char.characterTraits.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
-  val derangements = block(t.derangements,
+  val derangements = block(
+    t.derangements,
     char.derangements {
       TightRepRow(
         presOnly(flowpar(
@@ -87,7 +89,8 @@ object CoreTab extends FieldGroup {
           MarkupElement(char.derangements.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
-  val disorders = block(t.disorders,
+  val disorders = block(
+    t.disorders,
     char.disorders {
       TightRepRow(
         presOnly(flowpar(
@@ -107,39 +110,48 @@ object CoreTab extends FieldGroup {
     rwd(roll(char, "simple-success-roll", char.chatOutput,
       EPDefaultTemplate(char.characterName, t.successRoll, char.epRoll, char.customTarget),
       span(sty.rollLabel, t.successRoll))),
-    rwd(roll(char, "fray-halved-roll", char.chatOutput,
+    rwd(
+      roll(char, "fray-halved-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.frayHalvedRoll.fullLabel, char.epRoll, char.frayHalvedTarget),
       span(sty.rollLabel, t.frayHalvedRoll)),
       t.rangedDefence),
-    rwd(roll(char, "willx2-roll", char.chatOutput,
+    rwd(
+      roll(char, "willx2-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.wilx2Roll.fullLabel, char.epRoll, char.willx2Target),
       span(sty.rollLabel, t.wilx2Roll)),
       t.psiDefense),
-    rwd(roll(char, "willx3-roll", char.chatOutput,
+    rwd(
+      roll(char, "willx3-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.wilx3Roll.fullLabel, char.epRoll, char.willx3Target),
       span(sty.rollLabel, t.wilx3Roll)),
       t.continuityTest, t.stressTest, t.resistTraumaDisorientation, t.healTrauma),
-    rwd(roll(char, "somx3-roll", char.chatOutput,
+    rwd(
+      roll(char, "somx3-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.somx3Roll.fullLabel, char.epRoll, char.somx3Target),
       span(sty.rollLabel, t.somx3Roll)),
       t.integrationTest, t.resistWoundKnockdown, t.bruteStrength),
-    rwd(roll(char, "intx3-roll", char.chatOutput,
+    rwd(
+      roll(char, "intx3-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
       span(sty.rollLabel, t.intx3Roll)),
       t.alienationTest, t.havingAnIdea),
-    rwd(roll(char, "cogx3-roll", char.chatOutput,
+    rwd(
+      roll(char, "cogx3-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.cogx3Roll.fullLabel, char.epRoll, char.cogx3Target),
       span(sty.rollLabel, t.cogx3Roll)),
       t.memoriseRecall, t.havingAnIdea),
-    rwd(roll(char, "dur-energy-armour-roll", char.chatOutput,
+    rwd(
+      roll(char, "dur-energy-armour-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.durEnergyRoll.fullLabel, char.epRoll, char.durEnergyArmour),
       span(sty.rollLabel, t.durEnergyRoll)),
       t.resistShock),
-    rwd(roll(char, "ref-coox2-roll", char.chatOutput,
+    rwd(
+      roll(char, "ref-coox2-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.refCoox2Roll.fullLabel, char.epRoll, char.refCoox2Target),
       span(sty.rollLabel, t.refCoox2Roll)),
       t.catchingObjects),
-    rwd(roll(char, "coo-som-roll", char.chatOutput,
+    rwd(
+      roll(char, "coo-som-roll", char.chatOutput,
       EPDefaultTemplate (char.characterName, t.cooSomRoll.fullLabel, char.epRoll, char.cooSomTarget),
       span(sty.rollLabel, t.cooSomRoll)),
       t.escapeArtist)));
@@ -156,12 +168,14 @@ object CoreTab extends FieldGroup {
     (t.moa -> dualMode(char.mentalOnlyActions)),
     (t.db -> char.damageBonus));
 
-  val topRow = eprow(frow(sty.`flex-centre`,
+  val topRow = eprow(frow(
+    sty.`flex-centre`,
     flexFillNarrow,
-    sblock(t.mox,
+    sblock(
+      t.mox,
       roll(char, "moxie-roll", char.chatOutput, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
       sty.max15rem,
-      char.currentMoxie, span(" / "), dualMode(char.moxie)),
+      char.moxie, span(" / "), dualMode(char.moxieMax)),
     flexFillNarrow,
     sblock(t.mentalHealth, sty.max15rem,
       (t.stress -> char.stress),
@@ -178,20 +192,23 @@ object CoreTab extends FieldGroup {
     sblock(t.rezPoints, sty.max5rem, char.rezPoints),
     flexFillNarrow));
 
-  val leftCol = fcol(Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
+  val leftCol = fcol(
+    Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
     characterInfo,
     characterTraits,
     derangements,
     disorders);
 
-  val rightCol = fcol(Seq(EPStyle.exactly23rem),
+  val rightCol = fcol(
+    Seq(EPStyle.exactly23rem),
     block(t.aptitudes, aptitudes),
     stats,
     specialRolls);
 
   val members: Seq[SheetElement] = Seq(
     topRow,
-    frow(sty.`flex-start`,
+    frow(
+      sty.`flex-start`,
       leftCol,
       rightCol));
 
@@ -261,7 +278,7 @@ object CoreTabRenderer extends GroupRenderer {
           //println(s"No match between $dv and $o");
           None
         }
-        case None => println(s"No default value for $ef"); (o: String) => None
+      case None => println(s"No default value for $ef"); (o: String) => None
     }
     ef.enum match {
       case Some(e) => EPTranslation.allFullOptions.get(e) match {

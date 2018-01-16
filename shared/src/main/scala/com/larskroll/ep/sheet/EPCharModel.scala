@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -45,7 +45,7 @@ object EPCharModel extends SheetModel {
   val epRoll = roll("ep-roll", Seq(100, 89, 78, 67, 56, 45, 34, 23, 12, 1).
     foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
   //val justEPRoll = button("just_ep_roll", epRoll);
-  lazy val moxieTarget = roll("moxie-target", modQuery.expr + currentMoxie);
+  lazy val moxieTarget = roll("moxie-target", modQuery.expr + moxie);
   lazy val customTarget = roll("custom-target", modQuery.expr);
   lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2 + globalMods);
   lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3 + globalMods);
@@ -64,7 +64,8 @@ object EPCharModel extends SheetModel {
   val faction = text("faction");
   val genderId = text("gender_id");
   val actualAge = number[Int]("actual_age");
-  val currentMoxie = "current_moxie".default(0);
+  val moxie = "moxie".default(0);
+  val moxieMax = "moxie_max".default(0);
   val rezPoints = "rez_points".default(0);
   val motivations = text("motivations");
   // aptitudes
@@ -111,7 +112,6 @@ object EPCharModel extends SheetModel {
   val wilTotal = "wil_total".editable(false).default(0);
   lazy val wilTarget = roll("wil-target", modQuery.expr + wilTotal + globalMods);
   // base stats
-  val moxie = "moxie".default(0);
   val traumaThreshold = "trauma_threshold".editable(false).default(0);
   val lucidity = "lucidity".editable(false).default(0);
   val lucidityTarget = roll("lucidity-target", modQuery.expr + lucidity); // p. 272 I don't think any other mods apply
@@ -164,7 +164,8 @@ object EPCharModel extends SheetModel {
 
   // gear
   lazy val meleeWeapons = MeleeWeaponSection;
-  val rangeQuery = LabelledSelectQuery("Range",
+  val rangeQuery = LabelledSelectQuery(
+    "Range",
     Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10));
   lazy val rangedWeapons = RangedWeaponSection;
   val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
@@ -188,9 +189,11 @@ object EPCharModel extends SheetModel {
   val psiTempTime = "psi_temp_time".editable(false).default(0);
   val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 10, 1);
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
-  val targetQuery = LabelledSelectQuery("Target Type",
+  val targetQuery = LabelledSelectQuery(
+    "Target Type",
     Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> -20, "Non-sapient Animals" -> -30));
-  val targetStrainQuery = LabelledSelectQuery("Target Type",
+  val targetStrainQuery = LabelledSelectQuery(
+    "Target Type",
     Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> 1, "Non-sapient Animals" -> 3));
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
