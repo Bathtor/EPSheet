@@ -348,6 +348,8 @@ span.sheet-h2hr:after {
 .sheet-flex-centre {
     -webkit-box-align: center;
     -ms-flex-align: center;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
     align-items: center;
 }
 

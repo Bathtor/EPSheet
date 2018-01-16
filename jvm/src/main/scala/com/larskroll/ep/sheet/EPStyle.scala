@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -33,6 +33,12 @@ object EPStyle extends SheetStyle {
   initStyleSheet();
 
   val c = EPPalette;
+
+  val wrapper = cls(
+    backgroundImage := "url('http://files.lars-kroll.com/EclipsePhase_Logo_Black.png')",
+    backgroundRepeat := "no-repeat",
+    backgroundPosition := "right top",
+    backgroundSize := "350px");
 
   val wrapBox = cls(
     backgroundColor := c.boxBackground.css,
@@ -55,6 +61,9 @@ object EPStyle extends SheetStyle {
 
   val logoBox = cls(
     width := "350px");
+
+  val logoPlaceholder = cls(
+    height := "52px");
 
   val aRight = cls(
     textAlign.right);
@@ -89,14 +98,17 @@ object EPStyle extends SheetStyle {
     fontWeight := 700,
     textTransform.uppercase,
     textAlign.center,
-    span(fontSize := "9px",
+    span(
+      fontSize := "9px",
       fontWeight := 700,
       textTransform.uppercase));
 
   val largeText = cls(
-    input(fontSize := "1.4rem",
+    input(
+      fontSize := "1.4rem",
       fontWeight.bold),
-    span(fontSize := "1.4rem",
+    span(
+      fontSize := "1.4rem",
       fontWeight.bold));
 
   val aptTable = cls(
@@ -104,7 +116,8 @@ object EPStyle extends SheetStyle {
     width := "100%",
     minWidth := "20rem",
     th(width := 2.9.em),
-    td(span(textAlign.right,
+    td(span(
+      textAlign.right,
       display.block,
       paddingRight := "2px")));
 
@@ -112,8 +125,10 @@ object EPStyle extends SheetStyle {
     tableLayout.fixed,
     width := "100%",
     minWidth := "20rem",
-    td(textAlign.center,
-      span(textAlign.right,
+    td(
+      textAlign.center,
+      span(
+        textAlign.right,
         display.block,
         paddingRight := "2px")));
 
@@ -264,8 +279,8 @@ object EPStyle extends SheetStyle {
     marginLeft := "5px",
     marginRight := "5px",
     display.block //    ,
-    //    div(display.`inline-block`)
-    );
+  //    div(display.`inline-block`)
+  );
 
   val halfRemRowSeparator = cls(
     borderBottomWidth := 1.px,

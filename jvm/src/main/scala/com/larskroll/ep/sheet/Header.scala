@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 
 package com.larskroll.ep.sheet
@@ -37,14 +37,15 @@ object Header extends FieldGroup {
   val sty = EPStyle;
 
   val members: Seq[SheetElement] = Seq(
-    GroupWithRenderer(CharNameRenderer, Seq(t.charName -> dualMode(char.characterName))),
     GroupWithRenderer(LogoRenderer, Seq(
-      img(src := "http://files.lars-kroll.com/EclipsePhase_Logo_Black.png", alt := "Eclipse Phase"),
+      div(sty.logoPlaceholder),
       char.versionField like { f =>
-        div(EPStyle.aRight,
+        div(
+          sty.aRight,
           input(`type` := "hidden", name := f.name, value := f.initialValue),
           span(t.version), span(name := f.name))
-      })));
+      })),
+    GroupWithRenderer(CharNameRenderer, Seq(t.charName -> dualMode(char.characterName))));
 
   override def renderer = HeaderRenderer;
 }
@@ -57,7 +58,8 @@ object HeaderRenderer extends GroupRenderer {
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
-    div(EPStyle.labelGroup,
+    div(
+      EPStyle.labelGroup,
       e,
       div(EPStyle.subLabel, l));
 
@@ -81,7 +83,8 @@ object CharNameRenderer extends GroupRenderer {
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
-    div(EPStyle.labelGroup,
+    div(
+      EPStyle.labelGroup,
       e,
       div(EPStyle.subLabel, l));
 
