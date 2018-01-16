@@ -6,9 +6,9 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.larskroll.ep"
 
-version in ThisBuild := "0.3.0"
+version in ThisBuild := "1.0.0"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.12.4"
 
 //resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases")
 resolvers += "Apache" at "http://repo.maven.apache.org/maven2"

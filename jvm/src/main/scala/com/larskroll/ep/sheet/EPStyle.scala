@@ -218,7 +218,8 @@ object EPStyle extends SheetStyle {
     textAlign.justify,
     marginRight := 5.px,
     marginLeft := 2.px,
-    fontSize := 0.7.rem);
+    fontSize := 0.7.rem,
+    lineHeight := 1.4);
 
   val note = cls(
     display.`inline-block`,
