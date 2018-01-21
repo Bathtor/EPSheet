@@ -433,8 +433,10 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val chatOutputOptions = {
     import ChatOutput._;
     val opts = ChatOutput.values.map {
-      case Public => (Public.toString() -> "Public")
-      case GM     => (GM.toString() -> "Whisper to GM")
+      case Public       => (Public.toString() -> "Public")
+      case GM           => (GM.toString() -> "Whisper to GM")
+      case PublicScript => (PublicScript.toString() -> "Public via API")
+      case GMScript     => (GMScript.toString() -> "Whisper to GM via API")
     }.toMap;
     enum(ChatOutput.labelPrefix, opts)
   }

@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package com.larskroll.ep.sheet
 
@@ -52,12 +52,14 @@ object EPDefaultTemplate extends RollTemplate {
   val attributeSubField = attribute[String]("attribute-subfield");
   val testRoll = rollable[Int]("test-roll");
   val testTarget = rollable[Int]("test-target"); // attribute plus rollquery
+  val testMoF = rollable[Int]("test-mof");
   val successMacro = button("success-macro");
   val successMacroES30 = button("success-macro-es30");
   val successMacroES60 = button("success-macro-es60");
 
   def rollSuccess(l: LabelI18N) = div(
-    p(sty.`roll-success`,
+    p(
+      sty.`roll-success`,
       span(l), span(raw("! &raquo; ")), span(t.mos), span(": "), testRoll),
     rollLess(testRoll, 30) {
       exists(successMacro) {
@@ -84,12 +86,15 @@ object EPDefaultTemplate extends RollTemplate {
         }
       })
     });
-  def rollFailure(l: LabelI18N) = p(sty.`roll-failure`,
-    span(l), span(raw("... &raquo; ")), span(t.mof), span(": "), testRoll, raw(" - "), testTarget);
+  def rollFailure(l: LabelI18N) = p(
+    sty.`roll-failure`,
+    span(l), span(raw("... &raquo; ")), span(t.mof), span(": "),
+    switchExists(testMoF, { testMoF }, { span(testRoll, raw(" - "), testTarget) }));
   // TODO write API script that replaces the inline math with the result
 
   // **** Layout ****
-  override def content: Tag = div(sty.`template-wrapper`,
+  override def content: Tag = div(
+    sty.`template-wrapper`,
     h3(character),
     exists(attributeLabel) {
       h4(attributeLabel)

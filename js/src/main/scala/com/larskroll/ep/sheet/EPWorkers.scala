@@ -189,8 +189,10 @@ object EPWorkers extends SheetWorkerRoot {
       import ChatOutput._;
       val target = ChatOutput.withName(targetS);
       val cc = target match {
-        case Public => Chat.Default
-        case GM     => Chat.GM
+        case Public       => Chat.Default
+        case GM           => Chat.GM
+        case PublicScript => Chat.API("eproll", "")
+        case GMScript     => Chat.API("eproll", "-o GM")
       };
       Seq(chatOutput <<= cc)
     }
