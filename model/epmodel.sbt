@@ -1,0 +1,46 @@
+enablePlugins(ScalaJSPlugin)
+
+name := "EP Model Root"
+
+organization in ThisBuild := "com.lkroll.ep"
+
+version in ThisBuild := "1.3.0"
+
+scalaVersion in ThisBuild := "2.12.4"
+
+resolvers += "Apache" at "http://repo.maven.apache.org/maven2"
+resolvers += Resolver.bintrayRepo("lkroll", "maven")
+resolvers += Resolver.mavenLocal
+
+lazy val root = project.in(file(".")).
+  aggregate(epmodelJS, epmodelJVM).
+  settings(
+    publish := {},
+    publishLocal := {}
+  )
+
+lazy val epmodel = crossProject.in(file(".")).
+  enablePlugins(BuildInfoPlugin).
+  settings(
+    name := "EP Model",
+    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-model" % "0.6.+", 
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.+" % "test",
+    EclipseKeys.useProjectId := true,
+    EclipseKeys.eclipseOutput := Some("./etarget"),
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.lkroll.ep.model"
+    //EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed
+  ).
+  jvmSettings(
+    // Add JVM-specific settings here
+    //name := "EP Model JVM",
+    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+  ).
+  jsSettings(
+    // Add JS-specific settings here
+    //name := "EP Model JS",
+    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-facade" % "1.+" % "provided"
+  )
+
+lazy val epmodelJVM = epmodel.jvm
+lazy val epmodelJS = epmodel.js

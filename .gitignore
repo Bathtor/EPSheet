@@ -23,15 +23,12 @@ plugin/bin/sbt
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
-/bin/
+bin/
 .project
 .settings
 .classpath
 
-js/etarget/
-js/bin/
-jvm/etarget/
-jvm/bin/
+etarget/
 
 # OS X
 
