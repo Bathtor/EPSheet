@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2017 Lars Kroll <bathtor@googlemail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
 package com.lkroll.ep.api
 
 import com.lkroll.roll20.core._
@@ -7,67 +31,12 @@ import com.lkroll.roll20.api.templates._
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
-import util.Try
+import util.{ Try, Success, Failure }
 
 object EPScripts extends APIScriptRoot {
-  override def children: Seq[APIScript] = Seq(EPRollsScript);
+  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript); //, GroupRollsScript);
 
   onReady {
     info(s"EPScripts v${BuildInfo.version} loaded!");
-  }
-}
-
-object EPRollsScript extends APIScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPRollsCommand);
-}
-
-class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
-  import org.rogach.scallop.singleArgConverter;
-
-  val output = opt[String]("output", descr = "who should receive the final output");
-  val variables = trailArg[TemplateVars]("variables")(TemplateVars);
-  verify();
-}
-
-object EPRollsCommand extends APICommand[EPRollsConf] {
-  override def command = "eproll";
-  override def options = (args) => new EPRollsConf(args);
-  override def apply(config: EPRollsConf, ctx: ChatContext): Unit = {
-    val target = if (config.output.isSupplied) {
-      Chat.Whisper(config.output())
-    } else {
-      Chat.Default
-    };
-    sendChat(ctx.player, target.message("This is how I roll"));
-    if (config.variables.isSupplied) {
-      val vars = config.variables();
-      ctx.rollTemplate match {
-        case Some("ep-default") => {
-          val replacedVars = vars.replaceInlineRolls(ctx.inlineRolls);
-          val mofO = for {
-            target <- replacedVars.lookup("test-target");
-            roll <- replacedVars.lookup("test-roll");
-            targetValueS <- target.stripValue;
-            targetValue <- Try(targetValueS.toInt).toOption;
-            rollValueS <- roll.stripValue;
-            rollValue <- Try(rollValueS.toInt).toOption
-          } yield {
-            val diff = rollValue - targetValue;
-            TemplateVar("test-mof", Some(s"[[${diff.toString()}]]"))
-          };
-          val augmentedVars = mofO match {
-            case Some(mof) => mof :: replacedVars;
-            case None      => replacedVars
-          };
-          val msg = s"&{template:ep-default} ${augmentedVars.render}";
-          log(s"About to send: $msg");
-          sendChat(ctx.player, target.message(msg));
-        }
-        case Some(t) => warn(s"template $t is not supported")
-        case None    => warn("roll must use a roll template")
-      }
-    } else {
-      warn("No variables supplied!");
-    }
   }
 }

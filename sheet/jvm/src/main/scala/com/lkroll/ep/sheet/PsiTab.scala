@@ -42,19 +42,19 @@ object PsiTab extends FieldGroup {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
   }
 
-  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutput, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
+  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputEPRolls, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.strain),
       span(raw("1d10/2+")),
       char.psiChi.strainMod));
 
-  val gammaStrainDamageRoll = roll(char.psiGamma, "strain_damage_roll", char.chatOutput, EPDamageTemplate.strain(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
+  val gammaStrainDamageRoll = roll(char.psiGamma, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.strain(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.strain),
       span(raw("1d10/2+")),
       char.psiGamma.strainMod));
 
-  val gammaSleightRoll = roll(char.psiGamma, "sleight_roll", char.chatOutput,
+  val gammaSleightRoll = roll(char.psiGamma, "sleight_roll", char.chatOutputEPRolls,
     EPDefaultTemplate(char.characterName, char.psiGamma.skillName, char.psiGamma.sleight, char.epRoll, char.psiGamma.attackTarget),
     char.psiGamma.sleight.like(GearTab.rowItemName));
 

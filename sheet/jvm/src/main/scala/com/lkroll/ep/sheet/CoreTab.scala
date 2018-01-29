@@ -109,63 +109,80 @@ object CoreTab extends FieldGroup {
     });
 
   val specialRolls = block(t.specialRolls, arrowList(
-    rwd(roll(char, "simple-success-roll", char.chatOutput,
+    rwd(roll(char, "simple-success-roll", char.chatOutputEPRolls,
       EPDefaultTemplate(char.characterName, t.successRoll, char.epRoll, char.customTarget),
       span(sty.rollLabel, t.successRoll))),
     rwd(
-      roll(char, "fray-halved-roll", char.chatOutput,
+      roll(char, "fray-halved-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.frayHalvedRoll.fullLabel, char.epRoll, char.frayHalvedTarget),
         span(sty.rollLabel, t.frayHalvedRoll)),
       t.rangedDefence),
     rwd(
-      roll(char, "willx2-roll", char.chatOutput,
+      roll(char, "willx2-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.wilx2Roll.fullLabel, char.epRoll, char.willx2Target),
         span(sty.rollLabel, t.wilx2Roll)),
       t.psiDefense),
     rwd(
-      roll(char, "willx3-roll", char.chatOutput,
+      roll(char, "willx3-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.wilx3Roll.fullLabel, char.epRoll, char.willx3Target),
         span(sty.rollLabel, t.wilx3Roll)),
       t.continuityTest, t.stressTest, t.resistTraumaDisorientation, t.healTrauma),
     rwd(
-      roll(char, "somx3-roll", char.chatOutput,
+      roll(char, "somx3-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.somx3Roll.fullLabel, char.epRoll, char.somx3Target),
         span(sty.rollLabel, t.somx3Roll)),
       t.integrationTest, t.resistWoundKnockdown, t.bruteStrength),
     rwd(
-      roll(char, "intx3-roll", char.chatOutput,
+      roll(char, "intx3-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.intx3Roll.fullLabel, char.epRoll, char.intx3Target),
         span(sty.rollLabel, t.intx3Roll)),
       t.alienationTest, t.havingAnIdea),
     rwd(
-      roll(char, "cogx3-roll", char.chatOutput,
+      roll(char, "cogx3-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.cogx3Roll.fullLabel, char.epRoll, char.cogx3Target),
         span(sty.rollLabel, t.cogx3Roll)),
       t.memoriseRecall, t.havingAnIdea),
     rwd(
-      roll(char, "dur-energy-armour-roll", char.chatOutput,
+      roll(char, "refx3-roll", char.chatOutputEPRolls,
+        EPDefaultTemplate (char.characterName, t.refx3Roll.fullLabel, char.epRoll, char.refx3Target),
+        span(sty.rollLabel, t.refx3Roll)),
+      t.holdBreath),
+    rwd(
+      roll(char, "dur-energy-armour-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.durEnergyRoll.fullLabel, char.epRoll, char.durEnergyArmour),
         span(sty.rollLabel, t.durEnergyRoll)),
       t.resistShock),
     rwd(
-      roll(char, "ref-coox2-roll", char.chatOutput,
+      roll(char, "ref-coox2-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.refCoox2Roll.fullLabel, char.epRoll, char.refCoox2Target),
         span(sty.rollLabel, t.refCoox2Roll)),
       t.catchingObjects),
     rwd(
-      roll(char, "coo-som-roll", char.chatOutput,
+      roll(char, "coo-som-roll", char.chatOutputEPRolls,
         EPDefaultTemplate (char.characterName, t.cooSomRoll.fullLabel, char.epRoll, char.cooSomTarget),
         span(sty.rollLabel, t.cooSomRoll)),
-      t.escapeArtist)));
+      t.escapeArtist),
+    rwd(
+      roll(char, "wil-cog-roll", char.chatOutputEPRolls,
+        EPDefaultTemplate (char.characterName, t.wilCogRoll.fullLabel, char.epRoll, char.wilCogTarget),
+        span(sty.rollLabel, t.wilCogRoll)),
+      t.resistBrainSeizure),
+    rwd(
+      roll(char, "ref-coo-wil-roll", char.chatOutputEPRolls,
+        EPDefaultTemplate (char.characterName, t.refCooWilRoll.fullLabel, char.epRoll, char.refCooWilTarget),
+        span(sty.rollLabel, t.refCooWilRoll)),
+      t.jumpOnGrenade),
+    span(EPStyle.smallDescription, t.resistAsphyxiation.attrs),
+    span(EPStyle.smallDescription, t.resistBackupComplications.attrs)));
 
   val stats = fblock(t.stats, EPStyle.max2p5rem,
     (t.tt -> char.traumaThreshold),
-    roll(char, "lucidity-roll", char.chatOutput, EPDefaultTemplate(char.characterName, t.luc.fullLabel, char.epRoll, char.lucidityTarget), (t.luc -> char.lucidity)),
+    roll(char, "lucidity-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.luc.fullLabel, char.epRoll, char.lucidityTarget), (t.luc -> char.lucidity)),
     (t.ir -> char.insanityRating),
     (t.wt -> char.woundThreshold),
-    (t.dur -> char.durability),
+    roll(char, "dur-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.dur.fullLabel, char.epRoll, char.durTarget), (t.dur -> char.durability)),
     (t.dr -> char.deathRating),
-    roll(char, "initiative-roll", char.chatOutput, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
+    roll(char, "initiative-roll", char.chatOutputOther, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
     (t.spd -> dualMode(char.speed)),
     (t.moa -> dualMode(char.mentalOnlyActions)),
     (t.db -> char.damageBonus));
@@ -175,7 +192,7 @@ object CoreTab extends FieldGroup {
     flexFillNarrow,
     sblock(
       t.mox,
-      roll(char, "moxie-roll", char.chatOutput, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
+      roll(char, "moxie-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.mox.fullLabel, char.epRoll, char.moxieTarget)),
       sty.max15rem,
       char.moxie, span(" / "), dualMode(char.moxieMax)),
     flexFillNarrow,

@@ -68,7 +68,7 @@ object MuseTab extends FieldGroup {
         TightRepRow(
           presOnly(tightfrow(
             char.museSkills.total like { total => span(sty.skillTotal, name := total.name) },
-            roll(char.museSkills, "muse_skill_roll", char.chatOutput, EPDefaultTemplate(char.museName, char.museSkills.skillName, char.museSkills.field, char.epRoll, char.museSkills.rollTarget), char.museSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
+            roll(char.museSkills, "muse_skill_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.museName, char.museSkills.skillName, char.museSkills.field, char.epRoll, char.museSkills.rollTarget), char.museSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
             char.museSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
             char.museSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
             flexFill)),

@@ -96,9 +96,9 @@ object GearTab extends FieldGroup {
   }
   def checklabellike(label: LabelsI18N, ff: FlagField, innerSep: Option[String] = None): FieldWithRenderer = ff.like(checklabel(label, innerSep));
 
-  val meleeDamageRollExcellent60 = roll(char.meleeWeapons, "damage_roll_excellent60", char.chatOutput, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRollExcellent60, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration));
-  val meleeDamageRollExcellent30 = roll(char.meleeWeapons, "damage_roll_excellent30", char.chatOutput, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRollExcellent30, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration));
-  val meleeDamageRoll = roll(char.meleeWeapons, "damage_roll", char.chatOutput, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRoll, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration),
+  val meleeDamageRollExcellent60 = roll(char.meleeWeapons, "damage_roll_excellent60", char.chatOutputOther, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRollExcellent60, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration));
+  val meleeDamageRollExcellent30 = roll(char.meleeWeapons, "damage_roll_excellent30", char.chatOutputOther, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRollExcellent30, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration));
+  val meleeDamageRoll = roll(char.meleeWeapons, "damage_roll", char.chatOutputOther, EPDamageTemplate(char.characterName, char.meleeWeapons.weapon, char.meleeWeapons.damageRoll, char.meleeWeapons.damageType, char.meleeWeapons.armourPenetration),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.dmg),
       char.meleeWeapons.numDamageDice,
@@ -106,7 +106,7 @@ object GearTab extends FieldGroup {
       char.meleeWeapons.damageBonus,
       span(" / "),
       char.meleeWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))));
-  val meleeAttackRoll = roll(char.meleeWeapons, "weapon_roll", char.chatOutput,
+  val meleeAttackRoll = roll(char.meleeWeapons, "weapon_roll", char.chatOutputEPRolls,
     EPDefaultTemplate(char.characterName, char.meleeWeapons.skillName, char.meleeWeapons.weapon, char.epRoll, char.meleeWeapons.attackTarget, CommandButton("damage", meleeDamageRoll.roll), CommandButton("damage+5", meleeDamageRollExcellent30), CommandButton("damage+10", meleeDamageRollExcellent60)),
     char.meleeWeapons.weapon.like(rowItemName));
 
@@ -151,11 +151,11 @@ object GearTab extends FieldGroup {
             MarkupElement(char.meleeWeapons.description.like(CoreTabRenderer.textareaFieldGrow))))))
     });
 
-  val rangedDamageConcExtraBF = roll(char, "ranged_damage_conc_extra_bf", char.chatOutput, EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcBFXDmg));
-  val rangedDamageConcExtraFA = roll(char, "ranged_damage_conc_extra_fa", char.chatOutput, EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcFAXDmg));
-  val rangedDamageRollExcellent60 = roll(char.rangedWeapons, "damage_roll_excellent60", char.chatOutput, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRollExcellent60, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
-  val rangedDamageRollExcellent30 = roll(char.rangedWeapons, "damage_roll_excellent30", char.chatOutput, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRollExcellent30, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
-  val rangedDamageRoll = roll(char.rangedWeapons, "damage_roll", char.chatOutput, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRoll, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)),
+  val rangedDamageConcExtraBF = roll(char, "ranged_damage_conc_extra_bf", char.chatOutputOther, EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcBFXDmg));
+  val rangedDamageConcExtraFA = roll(char, "ranged_damage_conc_extra_fa", char.chatOutputOther, EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcFAXDmg));
+  val rangedDamageRollExcellent60 = roll(char.rangedWeapons, "damage_roll_excellent60", char.chatOutputOther, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRollExcellent60, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+  val rangedDamageRollExcellent30 = roll(char.rangedWeapons, "damage_roll_excellent30", char.chatOutputOther, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRollExcellent30, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+  val rangedDamageRoll = roll(char.rangedWeapons, "damage_roll", char.chatOutputOther, EPDamageTemplate(char.characterName, char.rangedWeapons.weapon, char.rangedWeapons.damageRoll, char.rangedWeapons.damageType, char.rangedWeapons.armourPenetration, CommandButton("+1d10 extra damage", rangedDamageConcExtraBF), CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.dmg),
       char.rangedWeapons.numDamageDice,
@@ -163,7 +163,7 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.damageBonus,
       span(" / "),
       char.rangedWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))));
-  val rangedAttackRoll = roll(char.rangedWeapons, "weapon_roll", char.chatOutput,
+  val rangedAttackRoll = roll(char.rangedWeapons, "weapon_roll", char.chatOutputEPRolls,
     EPDefaultTemplate(char.characterName, char.rangedWeapons.skillName, char.rangedWeapons.weapon, char.epRoll, char.rangedWeapons.attackTarget, CommandButton("damage", rangedDamageRoll.roll), CommandButton("damage+5", rangedDamageRollExcellent30), CommandButton("damage+10", rangedDamageRollExcellent60)),
     char.rangedWeapons.weapon.like(rowItemName));
 

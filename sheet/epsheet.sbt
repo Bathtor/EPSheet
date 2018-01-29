@@ -4,7 +4,7 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.3.0"
+version in ThisBuild := "1.4.0"
 
 scalaVersion in ThisBuild := "2.12.4"
 
@@ -46,10 +46,10 @@ lazy val epsheet = crossProject.in(file(".")).
   enablePlugins(BuildInfoPlugin).
   settings(
     name := "EP Sheet",
-    libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.3",
-    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.6.+", 
-    libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.3.0",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.+" % "test",
+    libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.+",
+    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.7.+", 
+    libraryDependencies += "com.lkroll.ep" %%% "ep-model" % version.value,
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.+" % "test",
     EclipseKeys.useProjectId := true,
     EclipseKeys.eclipseOutput := Some("./etarget"),
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -65,7 +65,7 @@ lazy val epsheet = crossProject.in(file(".")).
   jsSettings(
     // Add JS-specific settings here
     //name := "EP Sheet JS",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.+",
     libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-facade" % "1.+" % "provided"
   )
 

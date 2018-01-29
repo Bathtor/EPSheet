@@ -47,18 +47,21 @@ object EPCharModel extends SheetModel {
     foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
   //val justEPRoll = button("just_ep_roll", epRoll);
   lazy val moxieTarget = roll("moxie-target", modQuery.expr + moxie);
+  lazy val durTarget = roll("dur-target", modQuery.expr + durability + globalPhysicalMods);
   lazy val customTarget = roll("custom-target", modQuery.expr);
   lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2 + globalMods);
   lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3 + globalMods);
   lazy val somx3Target = roll("somx3-target", modQuery.expr + somTotal * 3 + globalPhysicalMods);
   lazy val intx3Target = roll("intx3-target", modQuery.expr + intTotal * 3 + globalMods);
+  lazy val refx3Target = roll("refx3-target", modQuery.expr + refTotal * 3 + globalMods);
   lazy val frayField = "fray_field".ref[Int].editable(false).default(refTotal);
   lazy val frayHalvedTarget = roll("fray-halved-target", modQuery.expr + floor(frayField.altArith / 2) + globalPhysicalMods);
   lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery.expr + durability - damage + armourEnergyTotal + globalPhysicalMods);
   lazy val refCoox2Target = roll("ref-coox2-target", modQuery.expr + refTotal + cooTotal * 2 + globalPhysicalMods);
   lazy val cooSomTarget = roll("coo-som-target", modQuery.expr + cooTotal + somTotal + globalPhysicalMods);
   lazy val cogx3Target = roll("cogx3-target", modQuery.expr + cogTotal * 3 + globalMods);
-  // maybe WIL+COG for Psi brain seizure?
+  lazy val refCooWilTarget = roll("ref-coo-wil-target", modQuery.expr + refTotal + cooTotal + wilTotal + globalPhysicalMods);
+  lazy val wilCogTarget = roll("wil-cog-target", modQuery.expr + wilTotal + cogTotal + globalMods);
 
   // **** core ****
   val background = text("background");
@@ -236,7 +239,8 @@ object EPCharModel extends SheetModel {
   val miscActionMod = "misc_action_mod".default(0);
   val miscPhysicalMod = "misc_physical_mod".default(0);
   val miscInitiativeMod = "misc_initiative_mod".default(0);
-  val chatOutput = "chat_output".default(Chat.Default);
+  val chatOutputOther = "chat_output_other".default(Chat.Default);
+  val chatOutputEPRolls = "chat_output_ep_rolls".default(Chat.Default);
   val chatOutputSelect = "chat_output_select".options(ChatOutput).default(ChatOutput.Public);
 
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;

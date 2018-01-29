@@ -9,11 +9,11 @@ version := "0.1.0"
 
 scalaVersion := "2.12.4"
 
-libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.2.0-SNAPSHOT"
+libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.2.+"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
 libraryDependencies += "org.rogach" %%% "scallop" % "3.1.+"
-libraryDependencies += "org.scalactic" %%% "scalactic" % "3.+"
-libraryDependencies += "org.scalatest" %%% "scalatest" % "3.+" % "test"
+libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.+"
+libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.+" % "test"
 
 lazy val submitScript = taskKey[Unit]("Submit the script that assembles the API script");
 lazy val submit = taskKey[Unit]("Assemble and fastOpt the API script");

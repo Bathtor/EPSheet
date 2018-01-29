@@ -45,7 +45,8 @@ object OptionsTab extends FieldGroup {
         Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         fblock(t.sheetSettings, EPStyle.min5rem,
           (t.chatOutput -> char.chatOutputSelect),
-          char.chatOutput.hidden,
+          char.chatOutputOther.hidden,
+          char.chatOutputEPRolls.hidden,
           flexFill)),
       fcol(
         Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),

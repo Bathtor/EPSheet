@@ -52,12 +52,12 @@ object SkillTab extends FieldGroup {
             char.activeSkills.globalMods.hidden,
             presOnly(tightfrow(
               char.activeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll(char.activeSkills, "active_skill_roll", char.chatOutput, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.field, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
+              roll(char.activeSkills, "active_skill_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.field, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
               char.activeSkills.categoryShort.like(SkillRenderers.categoryRenderer),
               char.activeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
               char.activeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
               //span(raw(" &mdash; ")),
-              roll(char.activeSkills, "active_spec_roll", char.chatOutput, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.specialisations, char.epRoll, char.activeSkills.rollSpecTarget), char.activeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
+              roll(char.activeSkills, "active_spec_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.specialisations, char.epRoll, char.activeSkills.rollSpecTarget), char.activeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
               flexFill)),
             editOnly(tightfrow(
               sty.halfRemRowSeparator,
@@ -80,11 +80,11 @@ object SkillTab extends FieldGroup {
             char.knowledgeSkills.rowId.hidden,
             presOnly(tightfrow(
               char.knowledgeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll(char.knowledgeSkills, "knowledge_skill_roll", char.chatOutput, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.field, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
+              roll(char.knowledgeSkills, "knowledge_skill_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.field, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
               char.knowledgeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
               char.knowledgeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
               //span(raw(" &mdash; ")),
-              roll(char.knowledgeSkills, "knowledge_spec_roll", char.chatOutput, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.specialisations, char.epRoll, char.knowledgeSkills.rollSpecTarget), char.knowledgeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
+              roll(char.knowledgeSkills, "knowledge_spec_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.specialisations, char.epRoll, char.knowledgeSkills.rollSpecTarget), char.knowledgeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
               flexFill)),
             editOnly(tightfrow(
               sty.halfRemRowSeparator,

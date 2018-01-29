@@ -75,10 +75,13 @@ object EPTranslation extends SheetI18N {
   val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
   val intx3Roll = abbr("intx3", "INT × 3", "intuitionx3", "Intuition tripled");
   val cogx3Roll = abbr("cogx3", "COG × 3", "cognitionx3", "Cognition tripled");
+  val refx3Roll = abbr("refx3", "REF × 3", "reflexx3", "Reflex tripled");
   val frayHalvedRoll = abbr("fraydiv2", "Fray/2", "frayhalved", "Fray halved");
   val durEnergyRoll = abbr("dur-energy-armor", "DUR + Energy Armor", "durability-energy-armor", "Durability + Energy Armor");
-  val refCoox2Roll = abbr("ref-coox2", "REF + COO × 2", "reflex-coordinationx2", "Reflect + Coordination doubled");
+  val refCoox2Roll = abbr("ref-coox2", "REF + COO × 2", "reflex-coordinationx2", "Reflex + Coordination doubled");
+  val refCooWilRoll = abbr("ref-coo-will", "REF + COO + WIL", "reflex-coordination-willpower", "Reflex + Coordination + Willpower");
   val cooSomRoll = abbr("coo-som", "COO + SOM", "coordination-somatics", "Coordination + Somatics");
+  val wilCogRoll = abbr("wil-cog", "WIL + COG", "willpower-cognition", "Willpower + Cognition");
   val psiDefense = text("psi-defense", "Psi Defense");
   val continuityTest = text("continutity-test", "Continuity Test");
   val resistTraumaDisorientation = text("resist-trauma-disorientation", "Resist Trauma Disorientation");
@@ -94,6 +97,11 @@ object EPTranslation extends SheetI18N {
   val escapeArtist = text("escape-artist", "Escape Artist");
   val havingAnIdea = text("having-an-idea", "Having an Idea");
   val memoriseRecall = text("memorise-recall", "Memorise/Recall");
+  val resistAsphyxiation = text("resist-asphyxiation", "Roll with DUR (above) to resist asphyxiation.");
+  val resistBackupComplications = text("resist-backup-complications", "To resist complications during backup (EP p.270) roll with LUC (above).");
+  val holdBreath = text("hold-breath", "Suddenly Holding Breath (EP p.201)");
+  val jumpOnGrenade = text("jump-on-grenade", "Jump on Grenade");
+  val resistBrainSeizure = text("resist-brain-serizure", "Resist Psi Brain Seizure (EP p.221)");
 
   val aptitudes = text("aptitudes", "Aptitudes");
   val cog = abbr("cog", "COG", "cognition", "Cognition");

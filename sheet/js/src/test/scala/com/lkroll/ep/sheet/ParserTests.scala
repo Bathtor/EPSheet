@@ -1,4 +1,4 @@
-package com.larskroll.ep.sheet
+package com.lkroll.ep.sheet
 
 import org.scalatest._
 
