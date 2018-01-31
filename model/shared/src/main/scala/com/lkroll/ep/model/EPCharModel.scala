@@ -29,7 +29,12 @@ import com.lkroll.roll20.sheet.model._;
 import com.lkroll.roll20.core._;
 
 object EPCharModel extends SheetModel {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
+
+  implicit class LabelledField[T: Numeric](f: FieldLike[T]) {
+    def labelled: RollExprs.LabelledRoll[T] =
+      RollExprs.LabelledRoll(f.arith(), f.attr);
+  }
 
   override def version = BuildInfo.version; //"0.1.0";
 
@@ -41,27 +46,28 @@ object EPCharModel extends SheetModel {
 
   val characterSheet = text("character_sheet").default(s"$sheetName v$version");
 
-  val modQuery = InputQuery("Test Modifier", Some(0));
+  val modQueryRaw = InputQuery("Test Modifier", Some(0));
+  val modQuery = modQueryRaw.expr.label("user mod");
   // **** rolls ****
   val epRoll = roll("ep-roll", Seq(100, 89, 78, 67, 56, 45, 34, 23, 12, 1).
     foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
   //val justEPRoll = button("just_ep_roll", epRoll);
-  lazy val moxieTarget = roll("moxie-target", modQuery.expr + moxie);
-  lazy val durTarget = roll("dur-target", modQuery.expr + durability + globalPhysicalMods);
-  lazy val customTarget = roll("custom-target", modQuery.expr);
-  lazy val willx2Target = roll("willx2-target", modQuery.expr + wilTotal * 2 + globalMods);
-  lazy val willx3Target = roll("willx3-target", modQuery.expr + wilTotal * 3 + globalMods);
-  lazy val somx3Target = roll("somx3-target", modQuery.expr + somTotal * 3 + globalPhysicalMods);
-  lazy val intx3Target = roll("intx3-target", modQuery.expr + intTotal * 3 + globalMods);
-  lazy val refx3Target = roll("refx3-target", modQuery.expr + refTotal * 3 + globalMods);
+  lazy val moxieTarget = roll("moxie-target", modQuery + moxie);
+  lazy val durTarget = roll("dur-target", modQuery + durability + globalPhysicalMods);
+  lazy val customTarget = roll("custom-target", modQuery);
+  lazy val willx2Target = roll("willx2-target", modQuery + wilTotal * 2 + globalMods);
+  lazy val willx3Target = roll("willx3-target", modQuery + wilTotal * 3 + globalMods);
+  lazy val somx3Target = roll("somx3-target", modQuery + somTotal * 3 + globalPhysicalMods);
+  lazy val intx3Target = roll("intx3-target", modQuery + intTotal * 3 + globalMods);
+  lazy val refx3Target = roll("refx3-target", modQuery + refTotal * 3 + globalMods);
   lazy val frayField = "fray_field".ref[Int].editable(false).default(refTotal);
-  lazy val frayHalvedTarget = roll("fray-halved-target", modQuery.expr + floor(frayField.altArith / 2) + globalPhysicalMods);
-  lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery.expr + durability - damage + armourEnergyTotal + globalPhysicalMods);
-  lazy val refCoox2Target = roll("ref-coox2-target", modQuery.expr + refTotal + cooTotal * 2 + globalPhysicalMods);
-  lazy val cooSomTarget = roll("coo-som-target", modQuery.expr + cooTotal + somTotal + globalPhysicalMods);
-  lazy val cogx3Target = roll("cogx3-target", modQuery.expr + cogTotal * 3 + globalMods);
-  lazy val refCooWilTarget = roll("ref-coo-wil-target", modQuery.expr + refTotal + cooTotal + wilTotal + globalPhysicalMods);
-  lazy val wilCogTarget = roll("wil-cog-target", modQuery.expr + wilTotal + cogTotal + globalMods);
+  lazy val frayHalvedTarget = roll("fray-halved-target", modQuery + floor(frayField.altArith / 2) + globalPhysicalMods);
+  lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery + durability - damage + armourEnergyTotal + globalPhysicalMods);
+  lazy val refCoox2Target = roll("ref-coox2-target", modQuery + refTotal + cooTotal * 2 + globalPhysicalMods);
+  lazy val cooSomTarget = roll("coo-som-target", modQuery + cooTotal + somTotal + globalPhysicalMods);
+  lazy val cogx3Target = roll("cogx3-target", modQuery + cogTotal * 3 + globalMods);
+  lazy val refCooWilTarget = roll("ref-coo-wil-target", modQuery + refTotal + cooTotal + wilTotal + globalPhysicalMods);
+  lazy val wilCogTarget = roll("wil-cog-target", modQuery + wilTotal + cogTotal + globalMods);
 
   // **** core ****
   val background = text("background");
@@ -78,47 +84,47 @@ object EPCharModel extends SheetModel {
   val cogMorph = "cog_morph".editable(false).default(0);
   val cogMorphMax = "cog_morph_max".editable(false).default(20);
   val cogTotal = "cog_total".editable(false).default(0);
-  lazy val cogTarget = roll("cog-target", modQuery.expr + cogTotal + globalMods);
+  lazy val cogTarget = roll("cog-target", modQuery + cogTotal + globalMods);
   val cooBase = "coo_base".default(0);
   val cooTemp = "coo_temp".default(0);
   val cooMorph = "coo_morph".editable(false).default(0);
   val cooMorphMax = "coo_morph_max".editable(false).default(20);
   val cooTotal = "coo_total".editable(false).default(0);
-  lazy val cooTarget = roll("coo-target", modQuery.expr + cooTotal + globalPhysicalMods);
+  lazy val cooTarget = roll("coo-target", modQuery + cooTotal + globalPhysicalMods);
   val intBase = "int_base".default(0);
   val intTemp = "int_temp".default(0);
   val intMorph = "int_morph".editable(false).default(0);
   val intMorphMax = "int_morph_max".editable(false).default(20);
   val intTotal = "int_total".editable(false).default(0);
-  lazy val intTarget = roll("int-target", modQuery.expr + intTotal + globalMods);
+  lazy val intTarget = roll("int-target", modQuery + intTotal + globalMods);
   val refBase = "ref_base".default(0);
   val refTemp = "ref_temp".default(0);
   val refMorph = "ref_morph".editable(false).default(0);
   val refMorphMax = "ref_morph_max".editable(false).default(20);
   val refTotal = "ref_total".editable(false).default(0);
-  lazy val refTarget = roll("ref-target", modQuery.expr + refTotal + globalPhysicalMods);
+  lazy val refTarget = roll("ref-target", modQuery + refTotal + globalPhysicalMods);
   val savBase = "sav_base".default(0);
   val savTemp = "sav_temp".default(0);
   val savMorph = "sav_morph".editable(false).default(0);
   val savMorphMax = "sav_morph_max".editable(false).default(20);
   val savTotal = "sav_total".editable(false).default(0);
-  lazy val savTarget = roll("sav-target", modQuery.expr + savTotal + globalMods);
+  lazy val savTarget = roll("sav-target", modQuery + savTotal + globalMods);
   val somBase = "som_base".default(0);
   val somTemp = "som_temp".default(0);
   val somMorph = "som_morph".editable(false).default(0);
   val somMorphMax = "som_morph_max".editable(false).default(20);
   val somTotal = "som_total".editable(false).default(0);
-  lazy val somTarget = roll("som-target", modQuery.expr + somTotal + globalPhysicalMods);
+  lazy val somTarget = roll("som-target", modQuery + somTotal + globalPhysicalMods);
   val wilBase = "wil_base".default(0);
   val wilTemp = "wil_temp".default(0);
   val wilMorph = "wil_morph".editable(false).default(0);
   val wilMorphMax = "wil_morph_max".editable(false).default(20);
   val wilTotal = "wil_total".editable(false).default(0);
-  lazy val wilTarget = roll("wil-target", modQuery.expr + wilTotal + globalMods);
+  lazy val wilTarget = roll("wil-target", modQuery + wilTotal + globalMods);
   // base stats
   val traumaThreshold = "trauma_threshold".editable(false).default(0);
   val lucidity = "lucidity".editable(false).default(0);
-  val lucidityTarget = roll("lucidity-target", modQuery.expr + lucidity); // p. 272 I don't think any other mods apply
+  val lucidityTarget = roll("lucidity-target", modQuery + lucidity); // p. 272 I don't think any other mods apply
   val insanityRating = "insanity_rating".editable(false).default(0);
   val woundThreshold = "wound_threshold".editable(false).default(0);
   val durability = "durability".editable(false).default(0);
@@ -168,9 +174,10 @@ object EPCharModel extends SheetModel {
 
   // gear
   lazy val meleeWeapons = MeleeWeaponSection;
-  val rangeQuery = LabelledSelectQuery(
+  val rangeQueryRaw = LabelledSelectQuery(
     "Range",
     Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10));
+  val rangeQuery = rangeQueryRaw.expr.label("range mod");
   lazy val rangedWeapons = RangedWeaponSection;
   val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
   val rangedConcFAXDmg = roll("ranged_conc_fa_xdmg", 3.d(10));
@@ -193,31 +200,33 @@ object EPCharModel extends SheetModel {
   val psiTempTime = "psi_temp_time".editable(false).default(0);
   val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 10, 1);
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
-  val targetQuery = LabelledSelectQuery(
+  val targetQueryRaw = LabelledSelectQuery(
     "Target Type",
     Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> -20, "Non-sapient Animals" -> -30));
-  val targetStrainQuery = LabelledSelectQuery(
+  val targetQuery = targetQueryRaw.expr.label("sentience mod");
+  val targetStrainQueryRaw = LabelledSelectQuery(
     "Target Type",
     Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> 1, "Non-sapient Animals" -> 3));
+  val targetStrainQuery = targetStrainQueryRaw.expr.label("sentience mod");
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
 
   // MUSE
   val museName = text("muse_name");
   val museCog = "muse_cog".default(10);
-  lazy val museCogTarget = roll("muse-cog-target", modQuery.expr + museCog - museTraumaMod);
+  lazy val museCogTarget = roll("muse-cog-target", modQuery + museCog - museTraumaMod);
   val museCoo = "muse_coo".default(10);
-  lazy val museCooTarget = roll("muse-coo-target", modQuery.expr + museCoo - museTraumaMod);
+  lazy val museCooTarget = roll("muse-coo-target", modQuery + museCoo - museTraumaMod);
   val museInt = "muse_int".default(20);
-  lazy val museIntTarget = roll("muse-int-target", modQuery.expr + museInt - museTraumaMod);
+  lazy val museIntTarget = roll("muse-int-target", modQuery + museInt - museTraumaMod);
   val museRef = "muse_ref".default(10);
-  lazy val museRefTarget = roll("muse-ref-target", modQuery.expr + museRef - museTraumaMod);
+  lazy val museRefTarget = roll("muse-ref-target", modQuery + museRef - museTraumaMod);
   val museSav = "muse_sav".default(10);
-  lazy val museSavTarget = roll("muse-sav-target", modQuery.expr + museSav - museTraumaMod);
+  lazy val museSavTarget = roll("muse-sav-target", modQuery + museSav - museTraumaMod);
   val museSom = "muse_som".default(10);
-  lazy val museSomTarget = roll("muse-som-target", modQuery.expr + museSom - museTraumaMod);
+  lazy val museSomTarget = roll("muse-som-target", modQuery + museSom - museTraumaMod);
   val museWil = "muse_wil".default(10);
-  lazy val museWilTarget = roll("muse-wil-target", modQuery.expr + museWil - museTraumaMod);
+  lazy val museWilTarget = roll("muse-wil-target", modQuery + museWil - museTraumaMod);
   val museTraumaThreshold = "muse_trauma_threshold".editable(false).default(4);
   val museLucidity = "muse_lucidity".editable(false).default(20);
   val museInsanityRating = "muse_insanity_rating".editable(false).default(40);

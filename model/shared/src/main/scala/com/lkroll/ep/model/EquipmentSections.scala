@@ -28,7 +28,7 @@ import com.lkroll.roll20.sheet.model._;
 import com.lkroll.roll20.core._;
 
 object MeleeWeaponSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
@@ -38,7 +38,7 @@ object MeleeWeaponSection extends RepeatingSection {
   val skillSearch = "skill_search".options("Blades", "Clubs", "Exotic Melee Weapon: ...", "Unarmed Combat");
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalPhysicalMods);
+  val attackTarget = roll("attack_target", EPCharModel.modQuery + skillTotal.altArith + EPCharModel.globalPhysicalMods);
   val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
   val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);
@@ -51,7 +51,7 @@ object MeleeWeaponSection extends RepeatingSection {
 }
 
 object RangedWeaponSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
@@ -62,7 +62,7 @@ object RangedWeaponSection extends RepeatingSection {
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val miscMod = "misc_mod".default(0);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods);
+  val attackTarget = roll("attack_target", EPCharModel.modQuery + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods);
   val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
   val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);

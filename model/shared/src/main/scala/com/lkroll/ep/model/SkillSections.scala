@@ -28,7 +28,7 @@ import com.lkroll.roll20.sheet.model._;
 import com.lkroll.roll20.core._;
 
 object ActiveSkillSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
@@ -51,7 +51,7 @@ object ActiveSkillSection extends RepeatingSection {
 }
 
 object KnowledgeSkillSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
@@ -72,7 +72,7 @@ object KnowledgeSkillSection extends RepeatingSection {
 }
 
 object MuseSkillSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 

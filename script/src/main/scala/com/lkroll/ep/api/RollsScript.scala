@@ -68,7 +68,7 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
               case Success(total) => {
                 tvar.key match {
                   case "test-roll"   => { testRoll = Some(total); transformRoll(total) }
-                  case "test-target" => { testTarget = Some(total); transformTarget(total) }
+                  case "test-target" => { testTarget = Some(total); transformTarget(ir.expression) }
                   case _             => TemplateVal.InlineRoll(total)
                 }
               }
@@ -120,10 +120,12 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
     TemplateVal.InlineRoll(r);
   }
 
-  private def transformTarget(total: Int): TemplateVal.InlineRoll = {
-    import RollExprs.{ Math => RM, Arith => RA };
-    val roll: RollExpression[Int] = fakeRoll(total);
-    val r = Rolls.InlineRoll(roll.label("target total"));
+  private def transformTarget(expr: String): TemplateVal.InlineRoll = {
+    import RollExprs.Math;
+    import Arith.RollArith;
+    val exprParen: RollExpression[Int] = Math(RollArith(RollExprs.Native[Int](expr)).paren);
+    val roll: RollExpression[Int] = fakeRoll(RollArith(exprParen.label("roll target")));
+    val r = Rolls.InlineRoll(roll);
     TemplateVal.InlineRoll(r);
   }
 
@@ -132,11 +134,13 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
   }
 
   private def fakeRoll(expr: ArithmeticExpression[Int], critical: Boolean = false): RollExpression[Int] = {
-    import RollExprs.{ Math => RM, Arith => RA };
+    import RollExprs.Math;
+    import Arith.RollArith;
+
     if (critical) {
-      RM(expr + RA(Dice.unit.cs()(0)));
+      Math(expr + RollArith(Dice.unit.cs()(0).label("API hack")));
     } else {
-      RM(expr + RA(Dice.unit.cs()(1)));
+      Math(expr + RollArith(Dice.unit.cs()(1).label("API hack")));
     }
   }
 

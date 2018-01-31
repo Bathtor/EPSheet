@@ -4,7 +4,7 @@ name := "EP Model Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.4.0"
+version in ThisBuild := "1.4.1"
 
 scalaVersion in ThisBuild := "2.12.4"
 
@@ -24,7 +24,7 @@ lazy val epmodel = crossProject.in(file(".")).
   settings(
     name := "EP Model",
     libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-model" % "0.7.+", 
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.+" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
     EclipseKeys.useProjectId := true,
     EclipseKeys.eclipseOutput := Some("./etarget"),
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),

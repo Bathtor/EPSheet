@@ -28,7 +28,7 @@ import com.lkroll.roll20.sheet.model._;
 import com.lkroll.roll20.core._;
 
 object PsiChiSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
@@ -46,7 +46,7 @@ object PsiChiSection extends RepeatingSection {
 }
 
 object PsiGammaSection extends RepeatingSection {
-  import FieldImplicits._;
+  import FieldImplicitsLabels._
 
   implicit val ctx = this.renderingContext;
 
