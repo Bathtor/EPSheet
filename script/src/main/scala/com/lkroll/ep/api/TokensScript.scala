@@ -30,8 +30,9 @@ import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
 import scalajs.js
 import scalajs.js.JSON
-import fastparse.all._
+//import fastparse.all._
 import util.{ Try, Success, Failure }
+import com.lkroll.ep.model.ActiveSkillSection
 
 object TokensScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPTokensCommand);
@@ -41,17 +42,32 @@ case class AbilityTemplate(name: String, action: Character => String, tokenActio
   def invocation(char: Character): String = s"%{${char.name}|$name}";
 }
 object SupportedAbilities {
+  private def actionFromSkill(skillName: String): Character => String = {
+    val f: Character => String = char => {
+      val res: List[FieldAttribute[String]] = char.repeating(ActiveSkillSection.skillName);
+      res.find(a => a.current.equals(skillName)) match {
+        case Some(a) => {
+          val Some(rowId) = a.getRowId;
+          s"%{${char.name}|repeating_activeskills_${rowId}_activeskills_active_skill_roll}"
+        }
+        case None => APILogger.warn(s"Skill ${skillName} could not be found for character ${char.name}"); "not found"
+      }
+    };
+    f
+  }
+
   val ini = AbilityTemplate("Initiative", char => s"%{${char.name}|initiative-roll}");
-  // TODO val fray = AbilityTemplate("Fray", char => s"%{${char.name}|fray-halved-roll}");
+  val fray = AbilityTemplate("Fray", actionFromSkill("Fray"));
   val frayHalved = AbilityTemplate("Fray/2", char => s"%{${char.name}|fray-halved-roll}");
 }
 
 class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
   import org.rogach.scallop.singleArgConverter;
 
+  val clear = opt[Boolean]("clear", descr = "Remove ALL character abilities.");
   val force = opt[Boolean]("force", descr = "Override existing abilities.");
   val ini = opt[Boolean]("ini");
-  //val fray = opt[Boolean]("fray");
+  val fray = opt[Boolean]("fray");
   val frayHalved = opt[Boolean]("fray-halved");
   verify();
 }
@@ -74,8 +90,16 @@ object EPTokensCommand extends APICommand[EPTokensConf] {
         token.represents match {
           case Some(char) => {
             debug(s"Token represents $char");
+            if (config.clear()) {
+              val existing = char.abilities;
+              debug(s"Found existing abilities to be removed for char=${char.name}:\n${existing.mkString("\n");}", true);
+              existing.foreach(_.remove());
+            }
             if (config.ini()) {
               createAbility(SupportedAbilities.ini, char, config.force());
+            }
+            if (config.fray()) {
+              createAbility(SupportedAbilities.fray, char, config.force());
             }
             if (config.frayHalved()) {
               createAbility(SupportedAbilities.frayHalved, char, config.force());
