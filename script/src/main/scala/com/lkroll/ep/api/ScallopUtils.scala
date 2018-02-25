@@ -24,32 +24,22 @@
  */
 package com.lkroll.ep.api
 
-import com.lkroll.roll20.core._
-import com.lkroll.roll20.api._
-import com.lkroll.roll20.api.conf._
-import com.lkroll.roll20.api.templates._
-import com.lkroll.roll20.api.facade.Roll20API
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
-import scalajs.js
-import scalajs.js.JSON
-import fastparse.all._
-import util.{ Try, Success, Failure }
+object ScallopUtils {
+  import org.rogach.scallop.{ ArgType, ValueConverter };
 
-object EPScripts extends APIScriptRoot {
-  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript);
-
-  onReady {
-    info(s"EPScripts v${BuildInfo.version} loaded!");
-  }
-
-  def checkVersion(char: Character): Either[String, Unit] = {
-    char.attributeValue(epmodel.versionField) match {
-      case Some(version) => if (version == epmodel.version()) {
-        Right(())
-      } else {
-        Left(s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!")
+  def singleListArgConverter[A](conv: String => A) = new ValueConverter[List[A]] {
+    def parse(s: List[(String, List[String])]) = {
+      try {
+        //APILogger.debug(s.mkString(","));
+        val l = s.map(_._2.mkString(" ")).map(i => conv(i));
+        l match {
+          case Nil => Right(None)
+          case _   => Right(Some(l))
+        }
+      } catch {
+        case _: Throwable => Left(s"Could not parse ${s.mkString(" ")}")
       }
-      case None => Left(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
     }
+    val argType = ArgType.LIST
   }
 }

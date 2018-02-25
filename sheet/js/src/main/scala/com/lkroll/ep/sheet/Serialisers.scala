@@ -28,10 +28,10 @@ import scalajs.js
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.core._
 
-object ReporderSer extends Serialiser[Array[String]] {
+object ReporderSer extends JSSerialiser[Array[String]] {
   override def serialise(o: Array[String]): js.Any = o.mkString(",");
 }
 
-object ChatSer extends Serialiser[ChatCommand] {
+object ChatSer extends JSSerialiser[ChatCommand] {
   override def serialise(o: ChatCommand): js.Any = o.render;
 }

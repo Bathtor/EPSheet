@@ -28,12 +28,12 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
+import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
+import concurrent.Future
 import util.{ Try, Success, Failure }
-
-// TODO On ice for now...Must support RollQueries to be useful
 
 object GroupRollsScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPGroupRollsCommand);
@@ -41,15 +41,21 @@ object GroupRollsScript extends APIScript {
 
 class EPGroupRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
-  //val ini = opt[Boolean]("ini");
-  //val fray = opt[Boolean]("fray");
-  val frayHalved = opt[Boolean]("fray-halved");
-  requireOne(frayHalved);
+  val mod = opt[Int]("mod", descr = "The value used to replace roll queries for modifiers");
+  val ini = opt[Boolean]("ini", descr = "Roll Initiative.");
+  val skill = opt[List[String]](
+    "skill",
+    descr = "Roll the provided Active Skill.")(
+      ScallopUtils.singleListArgConverter(identity));
+  val frayHalved = opt[Boolean]("fray-halved", descr = "Roll Fray/2.");
+  requireOne(ini, skill, frayHalved);
+  dependsOnAll(skill, List(mod));
+  dependsOnAll(frayHalved, List(mod));
   verify();
 }
 
 object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
-  import CoreImplicits._;
+  import APIImplicits._;
   override def command = "epgroup-roll";
   override def options = (args) => new EPGroupRollsConf(args);
   override def apply(config: EPGroupRollsConf, ctx: ChatContext): Unit = {
@@ -61,33 +67,55 @@ object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
         case t: Token => Some(t)
         case c        => debug(s"Ignoring non-Token $c"); None
       };
-      tokens.foreach { token =>
+      val targets = tokens.flatMap { token =>
         debug(s"Working on token: ${token.name} (${token.id})");
         token.represents match {
           case Some(char) => {
             debug(s"Token represents $char");
-            //            if (config.ini()) {
-            //              rollAbility(ctx, SupportedAbilities.ini, char);
-            //            }
-            if (config.frayHalved()) {
-              rollAbility(ctx, SupportedAbilities.frayHalved, char);
+            EPScripts.checkVersion(char) match {
+              case Right(()) => Some((token, char))
+              case Left(msg) => ctx.reply(msg + " Skipping token."); None
             }
           }
-          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!")
+          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
       };
+      if (config.ini()) {
+        rollInitiative(targets, ctx);
+      } else if (config.skill.isSupplied) {
+        // TODO roll skill
+      } else if (config.frayHalved()) {
+        // TODO roll Fray/2
+      } else {
+        ctx.reply(s"No roll option selected!");
+      }
     }
   }
 
-  private def rollAbility(ctx: ChatContext, ability: AbilityTemplate, char: Character): Unit = {
-    val existing = char.abilitiesForName(ability.name);
-    val msg = if (existing.isEmpty) {
-      ability.action(char)
-    } else {
-      ability.action(char)
-      //ability.invocation(char)
-    }; //.replace("/", "");
-    debug(s"About to send message '$msg'");
-    sendChat(ctx.player, msg);
+  def rollInitiative(targets: List[(Token, Character)], ctx: ChatContext): Unit = {
+    val campaign = Campaign();
+    val resFutures = targets.map {
+      case (token, char) => {
+        val strippedIni = epmodel.iniRoll.formula match {
+          case RollExprs.WithOption(expr, _) => expr.forCharacter(char.name) // drop the to-tracker option and target for character
+          case _                             => ??? // this shouldn't happen unless there's a bug
+        };
+
+        rollViaChat(Rolls.SimpleRoll(strippedIni)).map(r => (token, char, r))
+      }
+    };
+    val resFuture = Future.sequence(resFutures);
+    resFuture.onComplete {
+      case Success(res) => {
+        campaign.turnOrder ++= res.map(t => (t._1 -> t._3));
+        campaign.turnOrder.dedup();
+        campaign.turnOrder.sort();
+        val msg = "<h3>Rolled Initiative</h3>" +
+          res.map(t => s"""<b>${t._2.name}</b>: [[${t._3}]] """)
+          .mkString("<ul><li>", "</li><li>", "</li></ul>");
+        ctx.reply(msg);
+      }
+      case Failure(e) => error(e); ctx.reply(s"Some rolls failed to complete.");
+    }
   }
 }

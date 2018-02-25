@@ -114,9 +114,8 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
   }
 
   private def transformRoll(total: Int): TemplateVal.InlineRoll = {
-
-    val roll: RollExpression[Int] = fakeRoll(total, isCritical(total));
-    val r = Rolls.InlineRoll(roll.label("success roll total"));
+    val roll: RollExpression[Int] = fakeRoll(Arith.RollArith(total.label("success roll total")), isCritical(total));
+    val r = Rolls.InlineRoll(roll);
     TemplateVal.InlineRoll(r);
   }
 

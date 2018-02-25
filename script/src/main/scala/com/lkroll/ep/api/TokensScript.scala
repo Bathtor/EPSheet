@@ -38,37 +38,43 @@ object TokensScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPTokensCommand);
 }
 
-case class AbilityTemplate(name: String, action: Character => String, tokenAction: Boolean = true) {
+case class AbilityTemplate(name: String, action: Character => Option[String], tokenAction: Boolean = true) {
   def invocation(char: Character): String = s"%{${char.name}|$name}";
 }
+
 object SupportedAbilities {
-  private def actionFromSkill(skillName: String): Character => String = {
-    val f: Character => String = char => {
+  private def actionFromSkill(skillName: String): Character => Option[String] = {
+    val f: Character => Option[String] = char => {
       val res: List[FieldAttribute[String]] = char.repeating(ActiveSkillSection.skillName);
       res.find(a => a.current.equals(skillName)) match {
         case Some(a) => {
           val Some(rowId) = a.getRowId;
-          s"%{${char.name}|repeating_activeskills_${rowId}_activeskills_active_skill_roll}"
+          Some(s"%{${char.name}|repeating_activeskills_${rowId}_activeskills_active_skill_roll}")
         }
-        case None => APILogger.warn(s"Skill ${skillName} could not be found for character ${char.name}"); "not found"
+        case None => APILogger.warn(s"Skill ${skillName} could not be found for character ${char.name}"); None
       }
     };
     f
   }
 
-  val ini = AbilityTemplate("Initiative", char => s"%{${char.name}|initiative-roll}");
+  def fromSkill(skillName: String): AbilityTemplate = AbilityTemplate(skillName, actionFromSkill(skillName));
+
+  val ini = AbilityTemplate("Initiative", char => Some(s"%{${char.name}|initiative-roll}"));
   val fray = AbilityTemplate("Fray", actionFromSkill("Fray"));
-  val frayHalved = AbilityTemplate("Fray/2", char => s"%{${char.name}|fray-halved-roll}");
+  val frayHalved = AbilityTemplate("Fray/2", char => Some(s"%{${char.name}|fray-halved-roll}"));
 }
 
 class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
-  import org.rogach.scallop.singleArgConverter;
 
   val clear = opt[Boolean]("clear", descr = "Remove ALL character abilities.");
   val force = opt[Boolean]("force", descr = "Override existing abilities.");
-  val ini = opt[Boolean]("ini");
-  val fray = opt[Boolean]("fray");
-  val frayHalved = opt[Boolean]("fray-halved");
+  val ini = opt[Boolean]("ini", descr = "Add Initiative as a token action");
+  val fray = opt[Boolean]("fray", descr = "Add Fray as a token action");
+  val frayHalved = opt[Boolean]("fray-halved", descr = "Add Fray/2 as a token action");
+  val skill = opt[List[String]](
+    "skill",
+    descr = "Add the provided Active Skill as a token action. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity));
   verify();
 }
 
@@ -89,28 +95,49 @@ object EPTokensCommand extends APICommand[EPTokensConf] {
         debug(s"Working on token: ${token.name} (${token.id})");
         token.represents match {
           case Some(char) => {
+            var updates = List.empty[String];
             debug(s"Token represents $char");
             if (config.clear()) {
               val existing = char.abilities;
               debug(s"Found existing abilities to be removed for char=${char.name}:\n${existing.mkString("\n");}", true);
               existing.foreach(_.remove());
+              updates ::= config.clear.name;
             }
             if (config.ini()) {
-              createAbility(SupportedAbilities.ini, char, config.force());
+              if (createAbility(SupportedAbilities.ini, char, config.force())) {
+                updates ::= config.ini.name;
+              }
             }
             if (config.fray()) {
-              createAbility(SupportedAbilities.fray, char, config.force());
+              if (createAbility(SupportedAbilities.fray, char, config.force())) {
+                updates ::= config.fray.name;
+              }
             }
             if (config.frayHalved()) {
-              createAbility(SupportedAbilities.frayHalved, char, config.force());
+              if (createAbility(SupportedAbilities.frayHalved, char, config.force())) {
+                updates ::= config.frayHalved.name;
+              }
             }
-            Some(char.name)
+            if (config.skill.isSupplied) {
+              //              if (createAbility(SupportedAbilities.fromSkill(config.skill()), char, config.force())) {
+              //                updates ::= config.skill.name + s"(${config.skill()})";
+              //              }
+              config.skill().foreach { skillName =>
+                if (createAbility(SupportedAbilities.fromSkill(skillName), char, config.force())) {
+                  updates ::= config.skill.name + s"($skillName)";
+                }
+              }
+            }
+            Some(char.name -> updates)
           }
           case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
 
       };
-      val updates = updatedCharacters.mkString("<ul><li>", "</li><li>", "</li><ul>");
+      val updates = updatedCharacters.map(_ match {
+        case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
+      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+      debug(s"Updates: $updates")
       ctx.reply(s"Updated Characters $updates");
     }
   }
@@ -127,10 +154,16 @@ object EPTokensCommand extends APICommand[EPTokensConf] {
         return false;
       }
     }
-    val ab = Ability.create(char.id, ability.name);
-    ab.action = ability.action(char);
-    ab.isTokenAction = ability.tokenAction;
-    debug(s"Created ability $ab");
-    return true;
+    ability.action(char) match {
+      case Some(ac) => {
+        val ab = Ability.create(char.id, ability.name);
+        ab.action = ac;
+        ab.isTokenAction = ability.tokenAction;
+        debug(s"Created ability $ab");
+        true
+      }
+      case None => false
+    }
+
   }
 }
