@@ -75,6 +75,7 @@ class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
     "skill",
     descr = "Add the provided Active Skill as a token action. (Can be specified multiple times)")(
       ScallopUtils.singleListArgConverter(identity));
+  conflicts(clear, List(force, ini, fray, frayHalved, skill));
   verify();
 }
 

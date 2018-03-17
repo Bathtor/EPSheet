@@ -22,34 +22,40 @@
  * SOFTWARE.
  *
  */
-package com.lkroll.ep.api
+package com.lkroll.ep.api.compendium
 
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
-import com.lkroll.roll20.api.templates._
-import com.lkroll.roll20.api.facade.Roll20API
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
-import scalajs.js
-import scalajs.js.JSON
-import fastparse.all._
-import util.{ Try, Success, Failure }
+import java.io.{ ByteArrayOutputStream, ByteArrayInputStream }
+import java.util.Base64;
+//import java.util.zip.{ GZIPOutputStream, GZIPInputStream }
 
-object EPScripts extends APIScriptRoot {
-  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, compendium.CompendiumScript);
+object CompendiumScript extends APIScript {
+  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumDataCommand);
+}
 
-  onReady {
-    info(s"EPScripts v${BuildInfo.version} loaded!");
-  }
+class EPCompoendiumDataConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
-  def checkVersion(char: Character): Either[String, Unit] = {
-    char.attributeValue(epmodel.versionField) match {
-      case Some(version) => if (version == epmodel.version()) {
-        Right(())
-      } else {
-        Left(s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!")
-      }
-      case None => Left(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
+  val needle = opt[String]("needle");
+  verify();
+}
+
+object EPCompendiumDataCommand extends APICommand[EPCompoendiumDataConf] {
+  import APIImplicits._;
+  override def command = "epcompendium-data";
+  override def options = (args) => new EPCompoendiumDataConf(args);
+  override def apply(config: EPCompoendiumDataConf, ctx: ChatContext): Unit = {
+    if (config.needle.isSupplied) {
+      val needle = config.needle();
+      val needleB = needle.getBytes("UTF-8");
+      val bos = new ByteArrayOutputStream(needleB.length);
+      //val gzip = new GZIPOutputStream(bos)
+      //gzip.write(needleB);
+      //gzip.close();
+      ctx.reply("Meh fuck this")
+    } else {
+      ctx.reply("No needle supplied :(");
     }
   }
 }

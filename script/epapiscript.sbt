@@ -17,6 +17,7 @@ libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.4"
 libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
 
 lazy val submitScript = taskKey[Unit]("Submit the script that assembles the API script");
+lazy val openScript = taskKey[Unit]("Opens the API script");
 lazy val submit = taskKey[Unit]("Assemble and fastOpt the API script");
 lazy val submitScriptFull = taskKey[Unit]("Submit the script that assembles the API script in fullOpt");
 lazy val submitFull = taskKey[Unit]("Assemble and fullOpt the API script");
@@ -29,14 +30,20 @@ submitScriptFull := {
   s"./assemble.sc --version ${version.value} --full true" !
 }
 
+openScript := {
+  Seq("/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl", "ep-script.js").!!
+}
+
 submit in Compile := Def.sequential(
   fastOptJS in Compile,
-  submitScript in Compile
+  submitScript in Compile,
+  openScript in Compile
 ).value
 
 submitFull in Compile := Def.sequential(
   fullOptJS in Compile,
-  submitScriptFull in Compile
+  submitScriptFull in Compile,
+  openScript in Compile
 ).value
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)

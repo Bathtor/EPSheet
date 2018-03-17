@@ -81,7 +81,7 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
           } yield {
             val roll = numToExpr(rollValue);
             val target = numToExpr(targetValue);
-            TemplateVar("test-mof", TemplateVal.InlineRoll(fakeRoll(roll - target).label("roll - target")))
+            TemplateVar("test-mof", TemplateVal.InlineRoll(fakeRoll(roll - target.paren).label("roll - target")))
           };
           val augmentedVars = mofO match {
             case Some(mof) => mof :: replacedVars;

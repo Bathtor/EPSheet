@@ -36,7 +36,7 @@ object EPCharModel extends SheetModel {
       RollExprs.LabelledRoll(f.arith(), f.attr);
   }
 
-  override def version = BuildInfo.version; //"0.1.0";
+  override def version = BuildInfo.version;
 
   implicit val ctx = this.renderingContext;
 
@@ -52,7 +52,8 @@ object EPCharModel extends SheetModel {
   val epRoll = roll("ep-roll", Seq(100, 89, 78, 67, 56, 45, 34, 23, 12, 1).
     foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
   //val justEPRoll = button("just_ep_roll", epRoll);
-  lazy val moxieTarget = roll("moxie-target", modQuery + moxie);
+  lazy val moxieTarget = roll("moxie-target", moxieMax.arith());
+  lazy val moxiex10Target = roll("moxiex10-target", modQuery + moxie * 10);
   lazy val durTarget = roll("dur-target", modQuery + durability + globalPhysicalMods);
   lazy val customTarget = roll("custom-target", modQuery);
   lazy val willx2Target = roll("willx2-target", modQuery + wilTotal * 2 + globalMods);
@@ -178,6 +179,10 @@ object EPCharModel extends SheetModel {
     "Range",
     Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10));
   val rangeQuery = rangeQueryRaw.expr.label("range mod");
+  val extraDamageQueryRaw = LabelledSelectQuery("Extra Damage", Seq("None" -> 0, "Excellent 30+" -> 5, "Excellent 60+" -> 10));
+  val extraDamageQuery = extraDamageQueryRaw.expr.label("extra damage");
+  val extraDamageDiceQueryRaw = LabelledSelectQuery("Extra Dice", Seq("None" -> 0, "Burst Fire" -> 1, "Full Automatic" -> 3));
+  val extraDamageDiceQuery = DiceExprs.BasicRoll(extraDamageDiceQueryRaw.param, 10).label("extra damage");
   lazy val rangedWeapons = RangedWeaponSection;
   val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
   val rangedConcFAXDmg = roll("ranged_conc_fa_xdmg", 3.d(10));

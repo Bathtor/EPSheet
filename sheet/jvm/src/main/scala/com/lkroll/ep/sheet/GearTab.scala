@@ -44,7 +44,7 @@ object GearTab extends FieldGroup {
   //    val f = char.weightUnit;
   //    span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
   //  }
-  val weightUnit: SheetElement = span("kg");
+  //val weightUnit: SheetElement = span("kg");
   // Note: Roll20 doesn't allow datalists :(
   //  def skillDataList(f: EnumField): Tag = {
   //    val listName = f.qualifiedAttr + "list";
@@ -116,7 +116,7 @@ object GearTab extends FieldGroup {
       char.meleeWeapons.damageRollExcellent30,
       char.meleeWeapons.damageType,
       char.meleeWeapons.armourPenetration));
-  val meleeDamageRoll: RollElement = roll(
+  val meleeDamageRoll: Button = roll(
     char.meleeWeapons,
     "damage_roll",
     char.chatOutputOther,
@@ -124,6 +124,16 @@ object GearTab extends FieldGroup {
       char.characterName,
       char.meleeWeapons.weapon,
       char.meleeWeapons.damageRoll,
+      char.meleeWeapons.damageType,
+      char.meleeWeapons.armourPenetration));
+  val meleeDamageRollQuery: RollElement = roll(
+    char.meleeWeapons,
+    "damage_query_roll",
+    char.chatOutputOther,
+    EPDamageTemplate(
+      char.characterName,
+      char.meleeWeapons.weapon,
+      char.meleeWeapons.damageRollQuery,
       char.meleeWeapons.damageType,
       char.meleeWeapons.armourPenetration),
     buttonSeq(
@@ -143,7 +153,7 @@ object GearTab extends FieldGroup {
       char.meleeWeapons.weapon,
       char.epRoll,
       char.meleeWeapons.attackTarget,
-      CommandButton("damage", meleeDamageRoll.roll),
+      CommandButton("damage", meleeDamageRoll),
       CommandButton("damage+5", meleeDamageRollExcellent30),
       CommandButton("damage+10", meleeDamageRollExcellent60)),
     char.meleeWeapons.weapon.like(rowItemName));
@@ -160,7 +170,8 @@ object GearTab extends FieldGroup {
           char.meleeWeapons.skillName,
           span(")"),
           span(raw(" ~ ")),
-          meleeDamageRoll,
+          meleeDamageRollQuery,
+          meleeDamageRoll.hidden,
           meleeDamageRollExcellent30.hidden,
           meleeDamageRollExcellent60.hidden,
           char.meleeWeapons.description.like(CoreTabRenderer.description),
@@ -223,7 +234,7 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.armourPenetration,
       CommandButton("+1d10 extra damage", rangedDamageConcExtraBF),
       CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
-  val rangedDamageRoll: RollElement = roll(
+  val rangedDamageRoll: Button = roll(
     char.rangedWeapons, "damage_roll",
     char.chatOutputOther,
     EPDamageTemplate(
@@ -233,7 +244,16 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.damageType,
       char.rangedWeapons.armourPenetration,
       CommandButton("+1d10 extra damage", rangedDamageConcExtraBF),
-      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)),
+      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+  val rangedDamageRollQuery: RollElement = roll(
+    char.rangedWeapons, "damage_roll",
+    char.chatOutputOther,
+    EPDamageTemplate(
+      char.characterName,
+      char.rangedWeapons.weapon,
+      char.rangedWeapons.damageRollQuery,
+      char.rangedWeapons.damageType,
+      char.rangedWeapons.armourPenetration),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.dmg),
       char.rangedWeapons.numDamageDice,
@@ -251,7 +271,7 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.weapon,
       char.epRoll,
       char.rangedWeapons.attackTarget,
-      CommandButton("damage", rangedDamageRoll.roll),
+      CommandButton("damage", rangedDamageRoll),
       CommandButton("damage+5", rangedDamageRollExcellent30),
       CommandButton("damage+10", rangedDamageRollExcellent60)),
     char.rangedWeapons.weapon.like(rowItemName));
@@ -281,7 +301,8 @@ object GearTab extends FieldGroup {
           checklabellike(t.fullAutomatic, char.rangedWeapons.fullAutomatic, Some(" ")),
           span(raw(" } ")),
           span(raw(" ~ ")),
-          rangedDamageRoll,
+          rangedDamageRollQuery,
+          rangedDamageRoll.hidden,
           rangedDamageRollExcellent30.hidden,
           rangedDamageRollExcellent60.hidden,
           span(raw(" ~ ")), span(EPStyle.subtleInlineLabel, t.weaponRanges),

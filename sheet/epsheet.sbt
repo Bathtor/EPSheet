@@ -9,7 +9,7 @@ version in ThisBuild := "1.4.3"
 scalaVersion in ThisBuild := "2.12.4"
 
 resolvers += "Apache" at "http://repo.maven.apache.org/maven2"
-resolvers += Resolver.bintrayRepo("lkroll", "maven")
+resolvers += Resolver.bintrayRepo("lkrollcom", "maven")
 resolvers += Resolver.mavenLocal
 
 lazy val submitSheet = taskKey[Unit]("Submit the script that assembled and uploads the sheet");

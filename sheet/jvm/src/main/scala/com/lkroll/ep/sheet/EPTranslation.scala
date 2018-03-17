@@ -70,6 +70,7 @@ object EPTranslation extends SheetI18N {
   }
   val specialRolls = text("special-rolls", "Special Rolls");
   val successRoll = text("success-roll", "Success Roll");
+  val moxx10Roll = abbr("moxx10", "MOX × 10", "moxiex10", "Moxie times 10");
   val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
   val wilx3Roll = abbr("wilx3", "WIL × 3", "willpowerx3", "Willpower tripled");
   val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
@@ -102,6 +103,8 @@ object EPTranslation extends SheetI18N {
   val holdBreath = text("hold-breath", "Suddenly Holding Breath (EP p.201)");
   val jumpOnGrenade = text("jump-on-grenade", "Jump on Grenade");
   val resistBrainSeizure = text("resist-brain-serizure", "Resist Psi Brain Seizure (EP p.221)");
+  val avoidLemon = text("avoid-lemon", "Avoid Lemon Breakdown (EP p.150)");
+  val avoidVirusExposure = text("avoid-virus-exposure", "Avoid Virus Exposure");
 
   val aptitudes = text("aptitudes", "Aptitudes");
   val cog = abbr("cog", "COG", "cognition", "Cognition");

@@ -45,6 +45,7 @@ object MeleeWeaponSection extends RepeatingSection {
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, intToDiceParam(10)) + damageBonus + EPCharModel.damageBonus);
   val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 5);
   val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + EPCharModel.damageBonus + 10);
+  val damageRollQuery = roll("damage_query", DiceExprs.BasicRoll(numDamageDice.expr, intToDiceParam(10)) + damageBonus + EPCharModel.damageBonus + EPCharModel.extraDamageQuery.arith);
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
   val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val description = text("description");
@@ -69,6 +70,7 @@ object RangedWeaponSection extends RepeatingSection {
   val damageRoll = roll("damage", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus);
   val damageRollExcellent30 = roll("damage_excellent30", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + 5);
   val damageRollExcellent60 = roll("damage_excellent60", DiceExprs.BasicRoll(numDamageDice.expr, 10) + damageBonus + 10);
+  val damageRollQuery = roll("damage_query", DiceExprs.BasicRoll(numDamageDice.expr, intToDiceParam(10)) + damageBonus + EPCharModel.extraDamageDiceQuery.arith + EPCharModel.extraDamageQuery.arith);
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
   val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val singleShot = "single_shot".default(false);
