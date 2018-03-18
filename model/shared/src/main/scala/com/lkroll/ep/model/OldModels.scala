@@ -22,20 +22,19 @@
  * SOFTWARE.
  *
  */
-package com.lkroll.ep.sheet
 
-import scalajs.js
-import com.lkroll.roll20.sheet._
-import com.lkroll.roll20.core._
+package com.lkroll.ep.model
 
-object ReporderSer extends JSSerialiser[Array[String]] {
-  override def serialise(o: Array[String]): js.Any = o.mkString(",");
-}
+import com.lkroll.roll20.sheet.model._;
+import com.lkroll.roll20.core._;
 
-object ChatSer extends JSSerialiser[ChatCommand] {
-  override def serialise(o: ChatCommand): js.Any = o.render;
-}
+object OldModels {
+  object V4 extends SheetModel {
+    import FieldImplicitsLabels._
+    implicit val ctx = this.renderingContext;
 
-object ToggleSer extends JSSerialiser[Boolean] {
-  override def serialise(o: Boolean): js.Any = if (o) "on" else "0";
+    override def version = "1.4.0";
+
+    val async = "async".default(false);
+  }
 }

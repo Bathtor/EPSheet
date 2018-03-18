@@ -38,7 +38,9 @@ import scala.scalajs.js
 
 object EPWorkers extends SheetWorkerRoot {
 
-  override def children: Seq[SheetWorker] = Seq(SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
+  override def children: Seq[SheetWorker] = Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
+
+  val tabbedWorker = TabbedWorker(EPCharModel, EPUpdates);
 
   import EPCharModel._
 
@@ -46,30 +48,12 @@ object EPWorkers extends SheetWorkerRoot {
   register(knowledgeSkills.reporder, ReporderSer);
   register(morphs.reporder, ReporderSer);
   register[ChatCommand](ChatSer);
+  register[Boolean](ToggleSer);
 
   onOpen {
     log("EPSheet: Sheet workers loading...");
-    versionLoadOp();
+    //versionLoadOp();
     ()
-  };
-
-  val versionLoadOp = op(versionField, characterSheet) { o: Option[(String, String)] =>
-    o match {
-      case Some((v, cs)) => {
-        if (v == version) {
-          log(s"Loaded sheet with version $v");
-          Promise[Unit]().success(()).future
-        } else {
-          log(s"Loaded sheet with version $v < ${version}");
-          // TODO update mechanism
-          setAttrs(Map(versionField <<= version, characterSheet <<= s"$sheetName v$version"))
-        }
-      }
-      case None => {
-        log(s"Loaded unversioned sheet!");
-        setAttrs(Map(versionField <<= version, characterSheet <<= s"$sheetName v$version"))
-      }
-    }
   };
 
   private def aptTotalCalc(aptField: Field[Int]): Tuple4[Int, Int, Int, Int] => Seq[(FieldLike[Any], Any)] = {

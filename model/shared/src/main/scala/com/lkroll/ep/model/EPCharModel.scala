@@ -44,7 +44,7 @@ object EPCharModel extends SheetModel {
   val author = "Lars Kroll";
   val github = "https://github.com/Bathtor/EPSheet";
 
-  val characterSheet = text("character_sheet").default(s"$sheetName v$version");
+  val characterSheet = text("character_sheet").default(s"$sheetName v???");
 
   val modQueryRaw = InputQuery("Test Modifier", Some(0));
   val modQuery = modQueryRaw.expr.label("user mod");
@@ -201,7 +201,7 @@ object EPCharModel extends SheetModel {
   lazy val identities = IdentitiesSection;
 
   // PSI
-  val async = "async".default(false);
+  val async = "is_async".default(false);
   val psiTempTime = "psi_temp_time".editable(false).default(0);
   val psiCurrentSustained = "psi_current_sustained".default(0).validIn(0, 10, 1);
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);

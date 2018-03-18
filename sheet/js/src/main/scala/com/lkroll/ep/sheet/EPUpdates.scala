@@ -22,20 +22,28 @@
  * SOFTWARE.
  *
  */
+
 package com.lkroll.ep.sheet
 
-import scalajs.js
 import com.lkroll.roll20.sheet._
+import com.lkroll.roll20.sheet.model._
 import com.lkroll.roll20.core._
+import com.lkroll.ep.model._
 
-object ReporderSer extends JSSerialiser[Array[String]] {
-  override def serialise(o: Array[String]): js.Any = o.mkString(",");
-}
+object EPUpdates extends MinorVersionUpdateManager {
+  val model = EPCharModel;
+  val old = OldModels;
 
-object ChatSer extends JSSerialiser[ChatCommand] {
-  override def serialise(o: ChatCommand): js.Any = o.render;
-}
+  override def updateUnversioned(version: String): List[SheetWorkerOp] = List(
+    nop update { _ => Seq(model.versionField <<= version, model.characterSheet <<= s"${model.sheetName} v$version") });
 
-object ToggleSer extends JSSerialiser[Boolean] {
-  override def serialise(o: Boolean): js.Any = if (o) "on" else "0";
+  override def onEveryVersionUpdate(newVersion: String): Seq[(FieldLike[Any], Any)] = {
+    log(s"Updated to version $newVersion");
+    Seq(model.versionField <<= newVersion, model.characterSheet <<= s"${model.sheetName} v$newVersion");
+  }
+
+  forVersion("1.4.0") {
+    List(
+      nameChange(old.V4.async, model.async))
+  }
 }

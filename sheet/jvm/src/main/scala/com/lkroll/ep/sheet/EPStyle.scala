@@ -399,6 +399,7 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val boxBackground = hex("box-background", 0xfafafa);
   val lightText = hex("light-text", 0xfafafa);
   val darkText = hex("dark-text", 0x0c0c0c);
+  val overlayBackground = rgba("overlay-background", 0, 16, 27, 0.75);
 
   val titleText = alias("title-text", primaryShade3);
   val toggleSpanText = alias("toggle-span-text", mediumGrey);
@@ -422,6 +423,7 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val remplateFailure = alias("template-failure", secondaryShade0);
   val classTag = alias("class-tag-colour", primaryShade3);
   val catTag = alias("cat-tag-colour", secondaryShade3);
+  val overlayText = alias("overlay-text", lightText);
 }
 
 object EPColourData {
