@@ -243,6 +243,7 @@ object EPCharModel extends SheetModel {
   val generateMuseSkills = "muse_skills_generate".default(false);
   val generateMuseSkillsLabel = "muse_skills_generate_label".editable(false).default("generate-skills"); // other possibility is "generating-skills"
 
+  lazy val effects = EffectsSection;
   lazy val characterTraits = CharacterTraitSection;
   lazy val derangements = DerangementSection;
   lazy val disorders = DisorderSection;

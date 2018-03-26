@@ -4,7 +4,7 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.5.0"
+version in ThisBuild := "1.5.1"
 
 scalaVersion in ThisBuild := "2.12.4"
 

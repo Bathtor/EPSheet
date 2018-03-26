@@ -40,6 +40,21 @@ object CharacterTraitSection extends RepeatingSection {
   val description = text("description");
 }
 
+object EffectsSection extends RepeatingSection {
+  import FieldImplicits._;
+
+  implicit val ctx = this.renderingContext;
+
+  def name = "effects";
+
+  val effectName = text("name");
+  val active = flag("active").default(false);
+  val duration = text("duration");
+  val gameEffect = text("game_effect");
+  val showDescription = flag("show_description").default(false);
+  val description = text("description");
+}
+
 object DerangementSection extends RepeatingSection {
   import FieldImplicits._;
 

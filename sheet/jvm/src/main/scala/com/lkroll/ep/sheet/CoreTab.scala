@@ -57,6 +57,29 @@ object CoreTab extends FieldGroup {
     span(EPStyle.`trait-tag-field`, name := f.name, SheetI18N.datai18nDynamic)
   }
 
+  val effects = block(
+    t.effects,
+    char.effects {
+      TightRepRow(
+        presOnly(flowpar(
+          char.effects.active,
+          char.effects.effectName.like(GearTab.rowItemName),
+          span("["), char.effects.duration, span("] "),
+          char.effects.gameEffect,
+          char.effects.showDescription,
+          char.effects.description.like(CoreTabRenderer.description),
+          flexFill)),
+        editOnly(tightfrow(
+          char.effects.active,
+          char.effects.effectName.like(CoreTabRenderer.textWithPlaceholder(t.effectName.placeholder)),
+          span(EPStyle.inlineLabel, t.effectDuration),
+          char.effects.duration.like(CoreTabRenderer.textWithPlaceholder(t.effectDurationExample.placeholder)),
+          span(EPStyle.inlineLabel, t.effectOnGame),
+          char.effects.gameEffect.like(CoreTabRenderer.textWithPlaceholder(t.effectOnGameExample.placeholder)),
+          span(EPStyle.inlineLabel, t.effectDescription),
+          MarkupElement(char.effects.description.like(CoreTabRenderer.textareaFieldGrow)))))
+    });
+
   val characterTraits = block(
     t.characterTraits,
     char.characterTraits {
@@ -219,6 +242,7 @@ object CoreTab extends FieldGroup {
   val leftCol = fcol(
     Seq(EPStyle.`flex-grow`, EPStyle.exactly15rem, EPStyle.marginr1rem),
     characterInfo,
+    effects,
     characterTraits,
     derangements,
     disorders);
