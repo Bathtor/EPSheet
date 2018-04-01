@@ -454,6 +454,52 @@ span.sheet-skillSpec:not(:empty)::before {
     content: "‣";
 }
 
+.sheet-description-toggle {
+    display: none;
+}
+
+.sheet-toggle-wrapper-label {
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1.4em;
+    margin-top: 0px;
+    margin-bottom: -1px;
+    margin-left: 0px;
+    margin-right: 3px;
+}
+
+.sheet-toggle-wrapper-label input {
+    display: none;
+}
+
+.sheet-toggle-wrapper-label span {
+    color: ${text-highlight};
+    display: block;
+    height: 0px;
+}
+
+.sheet-toggle-wrapper-label:hover span {
+    color: ${button-highlight};
+}
+
+.sheet-toggle-wrapper-label .sheet-description-toggle:checked + span {
+    width: 0px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid ${text-highlight};
+}
+
+.sheet-toggle-wrapper-label .sheet-description-toggle:not(:checked) + span {
+    width: 3px;
+    border-top: 4px solid transparent;
+    border-left: 5px solid ${text-highlight};
+    border-bottom: 4px solid transparent;
+}
+
+.sheet-description-toggle:not(:checked)~.sheet-description {
+    display: none;
+}
+
 /*
 *
 * ROLL TEMPLATE

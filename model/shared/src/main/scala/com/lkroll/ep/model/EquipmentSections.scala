@@ -48,6 +48,7 @@ object MeleeWeaponSection extends RepeatingSection {
   val damageRollQuery = roll("damage_query", DiceExprs.BasicRoll(numDamageDice.expr, intToDiceParam(10)) + damageBonus + EPCharModel.damageBonus + EPCharModel.extraDamageQuery.arith);
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
   val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
 
@@ -88,6 +89,7 @@ object RangedWeaponSection extends RepeatingSection {
   val magazineSize = "ammo_max".default(0).validIn(0, 999, 1);
   val magazineCurrent = "ammo".default(0).validIn(0, 999, 1);
   val magazineType = "ammo_type".default("standard");
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
 
@@ -114,5 +116,6 @@ object GearSection extends RepeatingSection {
   def name = "gearitems";
   val itemName = text("item_name");
   val amount = "amount".default(0);
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }

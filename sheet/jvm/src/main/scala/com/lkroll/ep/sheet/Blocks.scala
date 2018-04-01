@@ -54,7 +54,9 @@ object Blocks {
   def pseudoButton(toggle: FlagField, buttonLabel: LabelI18N): PseudoButton = PseudoButton(toggle, Right(buttonLabel));
   def note(s: String): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(s));
   def note(l: LabelI18N): Tag = div(EPStyle.note, span(EPStyle.inlineLabel, EPTranslation.note), span(l));
-  def flowpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar, elems);
+  def flowpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.flowPar), elems);
+  def flowrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.flowRow), elems);
+  def indentpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.indentPar), elems);
   def buttonSeq(elems: SheetElement*) = GroupWithRenderer(ButtonSeq, elems);
   def arrowList(elems: SheetElement*) = GroupWithRenderer(ArrowList, elems);
   def rwd(roll: RollElement, descriptions: LabelI18N*) = RollWithDescription(roll, descriptions);
@@ -120,11 +122,11 @@ case object ButtonSeq extends GroupRenderer {
       e);
 }
 
-case object FlowPar extends GroupRenderer {
+case class FlowPar(sty: scalatags.stylesheet.Cls) extends GroupRenderer {
   import GroupRenderer._
 
   override def fieldCombiner: FieldCombiner = { tags =>
-    p(EPStyle.flowPar, tags)
+    p(sty, tags)
   };
 
   override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
@@ -327,6 +329,25 @@ case class PseudoButton(toggle: FlagField, buttonLabel: Either[FieldLike[_], Lab
 
     override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
   }
+}
+
+object TightRepRow extends GroupRenderer {
+  import GroupRenderer._
+  import RenderMode._
+
+  override def fieldCombiner = { tags =>
+    div(EPStyle.`flex-container`, tags)
+  };
+
+  override def renderEditWrapper(e: Seq[Tag]): Tag = {
+    div(TabbedStyle.edit, width := "100%", e)
+  }
+
+  override def renderPresentationWrapper(e: Seq[Tag]): Tag = {
+    div(TabbedStyle.presentation, width := "100%", e)
+  }
+
+  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 }
 
 //case class RollContent(roll: Button, members: Seq[SheetElement]) extends FieldGroup {

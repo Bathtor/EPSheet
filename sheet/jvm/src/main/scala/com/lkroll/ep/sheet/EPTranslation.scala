@@ -53,6 +53,7 @@ object EPTranslation extends SheetI18N {
   val effectOnGame = text("effect-game", "Game Effect");
   val effectOnGameExample = text("effect-game-example", "e.g., +5 SOM, -5 COO");
   val effectDescription = text("effect-description", "Description");
+  val showHideDescription = text("show-hide-description", "Show/Hide Description");
   val traits = text("traits", "Traits");
   val traitName = text("trait-name", "Name");
   val traitDescription = text("trait-description", "Description");

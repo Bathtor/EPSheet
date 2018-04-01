@@ -235,8 +235,33 @@ object EPStyle extends SheetStyle {
     textAlign.justify,
     marginRight := 5.px,
     marginLeft := 2.px,
+    marginBottom := 0.px,
     fontSize := 0.7.rem,
-    lineHeight := 1.4);
+    lineHeight := 1.4,
+    input(margin := 0.px));
+
+  val flowRow = cls(
+    display.`inline-block`,
+    verticalAlign.`text-top`,
+    textAlign.justify,
+    marginRight := 5.px,
+    marginLeft := 2.px,
+    marginBottom := 0.px,
+    fontSize := 0.7.rem,
+    lineHeight := 1.4,
+    input(margin := 0.px));
+
+  val indentPar = cls(
+    display.`inline-block`,
+    paddingLeft := 2.rem,
+    verticalAlign.`text-top`,
+    textAlign.justify,
+    marginRight := 5.px,
+    marginLeft := 2.px,
+    marginBottom := 0.px,
+    fontSize := 0.7.rem,
+    lineHeight := 1.4,
+    input(margin := 0.px));
 
   val note = cls(
     display.`inline-block`,
@@ -376,6 +401,9 @@ object EPStyle extends SheetStyle {
   val `trait-tag-field` = cls();
   val `h2hr` = cls();
   val `checklabel` = cls();
+
+  val `description-toggle` = cls();
+  val `toggle-wrapper-label` = cls();
 
   // ***  Templates ***
 

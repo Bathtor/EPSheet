@@ -73,7 +73,7 @@ object PsiTab extends FieldGroup {
           char.psiChi.action,
           span(raw(" / ")),
           char.psiChi.duration,
-          char.psiChi.description.like(CoreTabRenderer.description),
+          char.psiChi.description.like(CoreTabRenderer.inlineDescription),
           flexFill)),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,
@@ -105,7 +105,7 @@ object PsiTab extends FieldGroup {
           char.psiGamma.action,
           span(raw(" / ")),
           char.psiGamma.duration,
-          char.psiGamma.description.like(CoreTabRenderer.description),
+          char.psiGamma.description.like(CoreTabRenderer.inlineDescription),
           flexFill)),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,

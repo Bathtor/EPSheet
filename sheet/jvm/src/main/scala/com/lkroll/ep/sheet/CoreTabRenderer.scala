@@ -165,8 +165,23 @@ object CoreTabRenderer extends GroupRenderer {
   def textWithPlaceholder(placeholder: PlaceholderLabel): FieldSingleRenderer = (f) =>
     input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs)
 
-  val description: FieldSingleRenderer = (f) => {
+  val descriptionToggle: FieldSingleRenderer = (f) => {
+    input(`type` := "checkbox", name := f.name, EPStyle.`description-toggle`)
+  }
+
+  val descriptionToggleWrapped: FieldSingleRenderer = (f) => {
+    label(
+      EPStyle.`toggle-wrapper-label`,
+      input(`type` := "checkbox", name := f.name, EPStyle.`description-toggle`),
+      span(EPTranslation.showHideDescription.title.attr))
+  }
+
+  val inlineDescription: FieldSingleRenderer = (f) => {
     span(EPStyle.description, raw(" &mdash; "), span(name := f.name))
+  }
+
+  val description: FieldSingleRenderer = (f) => {
+    span(EPStyle.description, span(name := f.name))
   }
 
   val italic: FieldSingleRenderer = (f) => {

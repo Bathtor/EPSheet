@@ -125,22 +125,3 @@ object SkillRenderers {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
   }
 }
-
-object TightRepRow extends GroupRenderer {
-  import GroupRenderer._
-  import RenderMode._
-
-  override def fieldCombiner = { tags =>
-    div(EPStyle.`flex-container`, tags)
-  };
-
-  override def renderEditWrapper(e: Tag): Tag = {
-    div(TabbedStyle.edit, width := "100%", e)
-  }
-
-  override def renderPresentationWrapper(e: Tag): Tag = {
-    div(TabbedStyle.presentation, width := "100%", e)
-  }
-
-  override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
-}
