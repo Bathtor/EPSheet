@@ -78,7 +78,7 @@ object RangedWeaponSection extends RepeatingSection {
   val semiAutomatic = "semi_automatic".default(false);
   val burstFire = "burst_fire".default(false);
   val fullAutomatic = "full_automatic".default(false);
-  val shortRangeLower = "short_range_lower".default(0).editable(false);
+  val shortRangeLower = "short_range_lower".default(2).editable(false);
   val shortRangeUpper = "short_range_upper".default(0).validIn(0, 99999, 1);
   val mediumRangeLower = "medium_range_lower".default(0).editable(false);
   val mediumRangeUpper = "medium_range_upper".default(0).validIn(0, 99999, 1);
