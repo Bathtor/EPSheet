@@ -22,40 +22,37 @@
  * SOFTWARE.
  *
  */
-
 package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.roll20.core._
 import scalatags.Text.all._
-import scalatags.stylesheet._
+import SheetImplicits._
 
-object EPSheet extends TabbedSheet {
-  import SheetImplicits._;
-  import Roll20Predef._;
+object EPInfoTemplate extends RollTemplate {
+  override def name: String = "ep-info";
 
-  val char = EPCharModel;
   val t = EPTranslation;
   val sty = EPStyle;
 
-  override def hidden = Seq[SheetElement](char.characterSheet, char.morphType, char.woundMod, char.woundsApplied, char.traumaMod, char.frayField);
-  override def header = Header;
-  override def tabs = Seq(core, skills, morphs, gear, psi, identities, muse, options);
-  override def footer = Footer;
+  val title = value[String]("title");
+  val subtitle = value[String]("subtitle");
+  val description = value[String]("description");
 
-  val core = tab(t.core, CoreTab);
-  val skills = tab(t.skills, SkillTab);
-  val morphs = tab(t.morph, MorphTab);
-  val gear = tab(t.gear, GearTab);
-  val options = tab(t.options, OptionsTab);
-  val identities = tab(t.identities, IdentitiesTab);
-  val psi = tab(t.psi, PsiTab);
-  val muse = tab(t.muse, MuseTab);
-
-  override def style(): StyleSheet = EPStyle;
-  override def externalStyles() = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));
-  override def translation(): SheetI18N = EPTranslation;
-  override def colourScheme = EPPalette;
-  override def templates = EPInfoTemplate :: EPIniTemplate :: EPDefaultTemplate :: EPDamageTemplate :: super.templates;
+  // **** Layout ****
+  override def content: Tag = div(
+    sty.`template-wrapper`,
+    h3(title),
+    exists(subtitle) {
+      h4(subtitle)
+    },
+    allProps(title, subtitle, description) { (key, value) =>
+      p(sty.tightkv, span(sty.tightkey, key), span(raw(" ")), span(value))
+    },
+    exists(description) {
+      Seq(
+        h4("Description"),
+        p(description))
+    });
 }

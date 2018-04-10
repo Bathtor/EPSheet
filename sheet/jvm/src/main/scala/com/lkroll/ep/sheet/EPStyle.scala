@@ -412,6 +412,8 @@ object EPStyle extends SheetStyle {
   val `roll-failure` = cls();
   val `sub-header` = cls();
   val fieldvalue = cls();
+  val tightkv = cls();
+  val tightkey = cls();
 
 }
 

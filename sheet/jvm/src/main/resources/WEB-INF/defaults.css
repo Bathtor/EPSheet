@@ -506,19 +506,21 @@ span.sheet-skillSpec:not(:empty)::before {
 *
 */
 
+.sheet-rolltemplate-ep-info,
 .sheet-rolltemplate-ep-ini,
 .sheet-rolltemplate-ep-default,
 .sheet-rolltemplate-ep-damage {
     margin-left: -42px
 }
 
+.withoutavatars .sheet-rolltemplate-ep-info,
 .withoutavatars .sheet-rolltemplate-ep-ini,
 .withoutavatars .sheet-rolltemplate-ep-default,
 .withoutavatars .sheet-rolltemplate-ep-damage {
     margin-left: -11px
 }
 
-
+.sheet-rolltemplate-ep-info .sheet-template-wrapper,
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper {
@@ -532,6 +534,7 @@ span.sheet-skillSpec:not(:empty)::before {
     position: relative;
 }
 
+.sheet-rolltemplate-ep-info .inlinerollresult,
 .sheet-rolltemplate-ep-ini .inlinerollresult,
 .sheet-rolltemplate-ep-default .inlinerollresult,
 .sheet-rolltemplate-ep-damage .inlinerollresult {
@@ -548,6 +551,7 @@ span.sheet-skillSpec:not(:empty)::before {
         1px 1px 1px ${roll-highlight-shadow};
 }
 
+.sheet-rolltemplate-ep-info .sheet-fieldvalue,
 .sheet-rolltemplate-ep-ini .sheet-fieldvalue,
 .sheet-rolltemplate-ep-default .sheet-fieldvalue,
 .sheet-rolltemplate-ep-damage .sheet-fieldvalue {
@@ -568,6 +572,7 @@ span.sheet-skillSpec:not(:empty)::before {
 
 
 
+.sheet-rolltemplate-ep-info .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper h3 {
@@ -585,6 +590,7 @@ span.sheet-skillSpec:not(:empty)::before {
     padding: 5px;
 }
 
+.sheet-rolltemplate-ep-info .sheet-template-wrapper h4,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper h4,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper h4 {
     background-color: transparent;
@@ -619,14 +625,36 @@ span.sheet-skillSpec:not(:empty)::before {
     margin-right: 2em;
 }
 
+.sheet-rolltemplate-ep-info .sheet-template-wrapper p {
+    font-family: 'Abel', serif;
+    text-align: justify;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin: 0px;
+}
+
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper p,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper p,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper p {
     font-family: 'Abel', serif;
     text-align: left;
-    padding: 5px;
     text-indent: 2em;
     margin: 0px;
+}
+
+.sheet-rolltemplate-ep-info p.sheet-tightkv {
+    text-align: left;
+    text-indent: -2em;
+    padding-left: 4em;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.sheet-rolltemplate-ep-info .sheet-tightkey {
+    font-weight: bold;
+    padding-right: 1em;
 }
 
 .sheet-rolltemplate-ep-default .sheet-roll-success {
@@ -637,9 +665,11 @@ span.sheet-skillSpec:not(:empty)::before {
     background-image: linear-gradient(to right, ${template-failure} -30%, transparent 120%);
 }
 
+.sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~'],
+.sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='!'] {

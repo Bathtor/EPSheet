@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.ScallopUtils
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils }
 
 object CompendiumScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
@@ -98,12 +98,14 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
 }
 
 class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
-  val search = opt[String]("search");
-  val nameOnly = opt[Boolean]("name-only");
-  val rank = opt[Boolean]("rank")
-  mutuallyExclusive(nameOnly, rank)
-  dependsOnAll(nameOnly, List(search));
+  val search = opt[String]("search", descr = "Search for items with similar names to <param>.");
+  val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
+  val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
+  val weapon = opt[String]("weapon", descr = "Search for exact matches with <param> in weapons.");
+  val morph = opt[String]("morph", descr = "Search for exact matches with <param> in morphs.");
+  dependsOnAny(nameOnly, List(search, weapon, morph));
   dependsOnAll(rank, List(search));
+  requireOne(search, weapon, morph);
   verify();
 }
 
@@ -114,24 +116,34 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
   override def apply(config: EPCompendiumDataConf, ctx: ChatContext): Unit = {
     if (config.search.isSupplied) {
       val needle = config.search();
-      if (config.rank()) {
-        val weapons = EPCompendium.findWeapons(needle);
-        val pretty = weapons.mkString("<b>Results</b><br/>", "<br/>", "");
-        ctx.reply(pretty);
-      } else {
-        EPCompendium.findWeapon(needle) match {
-          case Some(s) => {
-            if (config.nameOnly()) {
-              ctx.reply(s);
-            } else {
-              val Some(w) = EPCompendium.getWeapon(s);
-              val pretty = w.toString; // TODO make nice
-              ctx.reply(pretty);
-            }
-          }
-          case None => ctx.reply(s"No match found for '$needle'")
-        }
+      val results = EPCompendium.findAnything(needle);
+      if (results.isEmpty) {
+        ctx.reply("No results found");
+        return ;
       }
+      if (config.rank()) {
+        if (config.nameOnly()) {
+          val pretty = results.map(r => r.templateTitle).mkString("<ul><li>", "</li><li>", "</li><ul>");
+          ctx.reply(pretty);
+        } else {
+          results.foreach { r =>
+            val pretty = asInfoTemplate(r);
+            ctx.reply(pretty);
+          }
+        }
+      } else { // head only
+        val top = results.head;
+        val pretty = if (config.nameOnly()) {
+          top.templateTitle
+        } else {
+          asInfoTemplate(top)
+        };
+        ctx.reply(pretty);
+      }
+    } else if (config.weapon.isSupplied) {
+      // TODO
+    } else if (config.morph.isSupplied) {
+      // TODO
     }
   }
 }
