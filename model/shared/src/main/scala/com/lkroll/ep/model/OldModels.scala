@@ -37,4 +37,21 @@ object OldModels {
 
     val async = "async".default(false);
   }
+
+  object V5 extends SheetModel {
+    import FieldImplicitsLabels._
+    implicit val ctx = this.renderingContext;
+
+    override def version = "1.5.0";
+
+    object MorphSection extends RepeatingSection {
+      import FieldImplicits._;
+
+      implicit val ctx = this.renderingContext;
+
+      def name = "morphs";
+
+      val aptitudeMax = "aptitude_max".default(""); // this causes to roll20 to think there's a current aptitude field
+    }
+  }
 }

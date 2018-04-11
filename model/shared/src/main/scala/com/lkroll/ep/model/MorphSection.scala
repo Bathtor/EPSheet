@@ -50,6 +50,6 @@ object MorphSection extends RepeatingSection {
   val armourEnergy = "armour_energy".default(0);
   val armourKinetic = "armour_kinetic".default(0);
   val aptitudeBoni = "aptitude_boni".default("");
-  val aptitudeMax = "aptitude_max".default("");
+  val aptitudeMax = "aptitude_maximum".default("");
   val skillBoni = "skill_boni".default("");
 }

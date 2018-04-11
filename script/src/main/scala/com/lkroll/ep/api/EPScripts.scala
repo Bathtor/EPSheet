@@ -38,8 +38,15 @@ import util.{ Try, Success, Failure }
 object EPScripts extends APIScriptRoot {
   override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, compendium.CompendiumScript);
 
+  val version = BuildInfo.version;
+  val author = "Lars Kroll";
+  val email = "bathtor@googlemail.com";
+  val emailTag = s"&lt;$email&gt;";
+  val repository = "https://github.com/Bathtor/EPSheet/tree/master/script";
+  val repoLink = s"[Github]($repository)";
+
   onReady {
-    info(s"EPScripts v${BuildInfo.version} loaded!");
+    info(s"EPScripts v${version} loaded!");
   }
 
   def checkVersion(char: Character): Either[String, Unit] = {

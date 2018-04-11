@@ -46,4 +46,8 @@ object EPUpdates extends MinorVersionUpdateManager {
     List(
       nameChange(old.V4.async, model.async))
   }
+  forVersion("1.5.0") {
+    List(
+      nameChangeRepeating(model.morphs, old.V5.MorphSection.aptitudeMax, model.morphs.aptitudeMax))
+  }
 }

@@ -28,17 +28,23 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils }
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
 
 object CompendiumScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
 }
 
 class EPCompendiumImportConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
-  footer(s"\nAll names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to find available names.");
+  version(s"${EPCompendiumImportCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner(s"""Import data from the Eclipse Phase Compendium.<br/>
+All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to find available names.
+""");
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  requireOne(weapon);
+  val morph = opt[List[String]]("morph", descr = "Import a morph with the given label or name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+
+  //requireOne(weapon, morph);
   verify();
 }
 
@@ -62,6 +68,18 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
           EPCompendium.getWeapon(s) match {
             case Some(w) => toImport ::= w
             case None    => ctx.reply(s"No weapon found for name ${s}")
+          }
+        }
+      }
+      if (config.morph.isSupplied) {
+        config.morph().foreach { s =>
+          EPCompendium.getMorph(s) match {
+            case Some(m) => {
+              val mi: MorphImport = m;
+              toImport ::= m;
+              toImport ++= mi.children;
+            }
+            case None => ctx.reply(s"No morph found for name ${s}")
           }
         }
       }
@@ -98,11 +116,14 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
 }
 
 class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
-  val search = opt[String]("search", descr = "Search for items with similar names to <param>.");
+  version(s"${EPCompendiumDataCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Search and view data loaded into the Eclipse Phase Compendium.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
+  val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.");
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
-  val weapon = opt[String]("weapon", descr = "Search for exact matches with <param> in weapons.");
-  val morph = opt[String]("morph", descr = "Search for exact matches with <param> in morphs.");
+  val weapon = opt[String]("weapon", descr = "Search for exact matches with &lt;param&gt; in weapons.");
+  val morph = opt[String]("morph", descr = "Search for exact matches with &lt;param&gt; in morphs.");
   dependsOnAny(nameOnly, List(search, weapon, morph));
   dependsOnAll(rank, List(search));
   requireOne(search, weapon, morph);

@@ -109,7 +109,7 @@ object MorphWorkers extends SheetWorker {
     op(morphs.active, morphs.morphName, morphs.morphType, morphs.visibleGender, morphs.visibleAge, morphs.durability, morphs.mobilitySystem,
       morphs.armourEnergy, morphs.armourKinetic, morphs.implants, morphs.traits,
       morphs.description, morphs.aptitudeBoni, morphs.aptitudeMax, morphs.skillBoni)).
-    update(morphAttrsCalc, EPWorkers.aptTotalsAll ++ List(EPWorkers.durStatsCalc, GearWorkers.armourTotalCalc, SkillWorkers.morphSkillBoniCalc));
+    update(morphAttrsCalc, EPWorkers.aptTotalsAll ++ List(EPWorkers.durStatsCalc, GearWorkers.armourTotalCalc, SkillWorkers.morphSkillBoniCalc, SkillWorkers.skillTotalCalc));
 
   private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty) {
     val updates = Seq(currentMorph, morphType,
