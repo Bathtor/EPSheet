@@ -44,6 +44,7 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val egoTrait = opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
   //requireOne(weapon, morph);
   verify();
@@ -77,7 +78,7 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
           EPCompendium.getMorphCustom(s) match {
             case Some(m) => {
               val mi: MorphInstanceImport = m;
-              toImport ::= m;
+              toImport ::= mi;
               toImport ++= mi.children;
             }
             case None => ctx.reply(s"No morph found for name ${s}")
@@ -89,10 +90,20 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
           EPCompendium.getMorphModel(s) match {
             case Some(m) => {
               val mi: MorphModelImport = m;
-              toImport ::= m;
+              toImport ::= mi;
               toImport ++= mi.children;
             }
             case None => ctx.reply(s"No morph found for name ${s}")
+          }
+        }
+      }
+      if (config.egoTrait.isSupplied) {
+        config.egoTrait().foreach { s =>
+          EPCompendium.getTrait(s) match {
+            case Some(t) => {
+              toImport ::= t;
+            }
+            case None => ctx.reply(s"No trait found for name ${s}")
           }
         }
       }
@@ -138,9 +149,10 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.");
   val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.");
   val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.");
-  dependsOnAny(nameOnly, List(search, weapon, morph, morphModel));
-  dependsOnAll(rank, List(search));
-  requireOne(search, weapon, morph, morphModel);
+  val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.");
+  dependsOnAny(nameOnly, List(search, weapon, morph, morphModel, epTrait));
+  dependsOnAny(rank, List(search, weapon, morph, morphModel, epTrait));
+  requireOne(search, weapon, morph, morphModel, epTrait);
   verify();
 }
 
@@ -152,10 +164,30 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
     if (config.search.isSupplied) {
       val needle = config.search();
       val results = EPCompendium.findAnything(needle);
-      if (results.isEmpty) {
-        ctx.reply("No results found");
-        return ;
-      }
+      handleResults(results, config, ctx);
+    } else if (config.weapon.isSupplied) {
+      val needle = config.weapon();
+      val results = EPCompendium.findWeapons(needle);
+      handleResults(results, config, ctx);
+    } else if (config.morph.isSupplied) {
+      val needle = config.morph();
+      val results = EPCompendium.findMorphInstances(needle);
+      handleResults(results, config, ctx);
+    } else if (config.morphModel.isSupplied) {
+      val needle = config.morphModel();
+      val results = EPCompendium.findMorphModels(needle);
+      handleResults(results, config, ctx);
+    } else if (config.epTrait.isSupplied) {
+      val needle = config.epTrait();
+      val results = EPCompendium.findTraits(needle);
+      handleResults(results, config, ctx);
+    }
+  }
+
+  private def handleResults(results: List[ChatRenderable], config: EPCompendiumDataConf, ctx: ChatContext): Unit = {
+    if (results.isEmpty) {
+      ctx.reply("No results found");
+    } else {
       if (config.rank()) {
         if (config.nameOnly()) {
           val pretty = results.map(r => r.templateTitle).mkString("<ul><li>", "</li><li>", "</li><ul>");
@@ -175,15 +207,6 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         };
         ctx.reply(pretty);
       }
-    } else if (config.weapon.isSupplied) {
-      // TODO
-      ctx.reply("Not implemented, yet")
-    } else if (config.morph.isSupplied) {
-      // TODO
-      ctx.reply("Not implemented, yet")
-    } else if (config.morphModel.isSupplied) {
-      // TODO
-      ctx.reply("Not implemented, yet")
     }
   }
 }
