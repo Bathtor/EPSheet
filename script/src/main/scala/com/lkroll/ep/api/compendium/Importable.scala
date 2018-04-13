@@ -38,7 +38,8 @@ trait Importable {
 
 object Importable {
   implicit def weapon2Import(w: Weapon): WeaponImport = WeaponImport(w);
-  implicit def morph2Import(m: Morph): MorphImport = MorphImport(m);
+  implicit def morphmodel2Import(m: MorphModel): MorphModelImport = MorphModelImport(m);
+  implicit def morphinst2Import(m: MorphInstance): MorphInstanceImport = MorphInstanceImport(m);
 }
 
 class ImportCache(val char: Character) {

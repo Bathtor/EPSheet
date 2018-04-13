@@ -42,7 +42,8 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val morph = opt[List[String]]("morph", descr = "Import a morph with the given label or name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
   //requireOne(weapon, morph);
   verify();
@@ -73,9 +74,21 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
       }
       if (config.morph.isSupplied) {
         config.morph().foreach { s =>
-          EPCompendium.getMorph(s) match {
+          EPCompendium.getMorphCustom(s) match {
             case Some(m) => {
-              val mi: MorphImport = m;
+              val mi: MorphInstanceImport = m;
+              toImport ::= m;
+              toImport ++= mi.children;
+            }
+            case None => ctx.reply(s"No morph found for name ${s}")
+          }
+        }
+      }
+      if (config.morphModel.isSupplied) {
+        config.morphModel().foreach { s =>
+          EPCompendium.getMorphModel(s) match {
+            case Some(m) => {
+              val mi: MorphModelImport = m;
               toImport ::= m;
               toImport ++= mi.children;
             }
@@ -122,11 +135,12 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.");
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
-  val weapon = opt[String]("weapon", descr = "Search for exact matches with &lt;param&gt; in weapons.");
-  val morph = opt[String]("morph", descr = "Search for exact matches with &lt;param&gt; in morphs.");
-  dependsOnAny(nameOnly, List(search, weapon, morph));
+  val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.");
+  val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.");
+  val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.");
+  dependsOnAny(nameOnly, List(search, weapon, morph, morphModel));
   dependsOnAll(rank, List(search));
-  requireOne(search, weapon, morph);
+  requireOne(search, weapon, morph, morphModel);
   verify();
 }
 
@@ -163,8 +177,13 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       }
     } else if (config.weapon.isSupplied) {
       // TODO
+      ctx.reply("Not implemented, yet")
     } else if (config.morph.isSupplied) {
       // TODO
+      ctx.reply("Not implemented, yet")
+    } else if (config.morphModel.isSupplied) {
+      // TODO
+      ctx.reply("Not implemented, yet")
     }
   }
 }
