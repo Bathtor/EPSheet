@@ -101,6 +101,15 @@ object GearWorkers extends SheetWorker {
       Seq(meleeWeapons.damageTypeShort <<= dtLabel)
     }
   }
+  val meleeDamageDiv = bind(op(meleeWeapons.damageDivisor)) update {
+    case (divisor) => {
+      if (divisor == 1) {
+        Seq(meleeWeapons.showDivisor <<= false)
+      } else {
+        Seq(meleeWeapons.showDivisor <<= true)
+      }
+    }
+  }
   val rangedDamageTypeCalc = bind(op(rangedWeapons.damageType)) update {
     case (dtName) => {
       import DamageType._
@@ -108,6 +117,15 @@ object GearWorkers extends SheetWorker {
       val dt = withName(dtName);
       val dtLabel = dynamicLabelShort(dt);
       Seq(rangedWeapons.damageTypeShort <<= dtLabel)
+    }
+  }
+  val rangedDamageDiv = bind(op(rangedWeapons.damageDivisor)) update {
+    case (divisor) => {
+      if (divisor == 1) {
+        Seq(rangedWeapons.showDivisor <<= false)
+      } else {
+        Seq(rangedWeapons.showDivisor <<= true)
+      }
     }
   }
 }

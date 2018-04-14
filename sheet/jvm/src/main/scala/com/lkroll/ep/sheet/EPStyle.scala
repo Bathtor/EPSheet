@@ -405,6 +405,9 @@ object EPStyle extends SheetStyle {
   val `description-toggle` = cls();
   val `toggle-wrapper-label` = cls();
 
+  val `divide-not-one` = cls();
+  val divisor = cls();
+
   // ***  Templates ***
 
   val `template-wrapper` = cls();

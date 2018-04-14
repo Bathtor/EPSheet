@@ -500,6 +500,22 @@ span.sheet-skillSpec:not(:empty)::before {
     display: none;
 }
 
+input.sheet-divide-not-one {
+    display: none;
+}
+
+input.sheet-divide-not-one:not(:checked)~.sheet-divisor {
+    display: none;
+}
+
+input.sheet-divide-not-one:checked~.sheet-divisor {
+    display: inline;
+}
+
+input.sheet-divide-not-one:checked~.sheet-divisor::before {
+    content: "%";
+}
+
 /*
 *
 * ROLL TEMPLATE
