@@ -42,4 +42,21 @@ object ScallopUtils {
     }
     val argType = ArgType.LIST
   }
+
+  def singleArgSpacedConverter[A](conv: String => A) = new ValueConverter[A] {
+    def parse(s: List[(String, List[String])]) = {
+      try {
+        //APILogger.debug(s.mkString(","));
+        val l = s.map(_._2.mkString(" "));
+        l match {
+          case head :: Nil => Right(Some(conv(head)))
+          case Nil         => Right(None)
+          case _           => Left("you should provide exactly one argument for this option")
+        }
+      } catch {
+        case _: Throwable => Left(s"Could not parse ${s.mkString(" ")}")
+      }
+    }
+    val argType = ArgType.LIST
+  }
 }

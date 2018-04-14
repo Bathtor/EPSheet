@@ -29,6 +29,7 @@ import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
+import util.{ Try, Success, Failure }
 
 object CompendiumScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
@@ -42,10 +43,12 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
   val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val egoTrait = opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
+  dependsOnAll(withAmmo, List(weapon));
   //requireOne(weapon, morph);
   verify();
 }
@@ -65,12 +68,25 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
         case c        => debug(s"Ignoring non-Token $c"); None
       };
       var toImport = List.empty[Importable];
-      if (config.weapon.isSupplied) {
+      if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
         config.weapon().foreach { s =>
           EPCompendium.getWeapon(s) match {
             case Some(w) => toImport ::= w
             case None    => ctx.reply(s"No weapon found for name ${s}")
           }
+        }
+      } else if (config.weapon.isSupplied && config.withAmmo.isSupplied) {
+        EPCompendium.getAmmo(config.withAmmo()) match {
+          case Some(ammo) => {
+            config.weapon().foreach { s =>
+              EPCompendium.getWeapon(s).map(_.load(ammo)) match {
+                case Some(Success(w)) => toImport ::= w
+                case Some(Failure(e)) => ctx.reply(s"Error loading ${ammo.name} into $s: ${e.getMessage}")
+                case None             => ctx.reply(s"No weapon found for name ${s}")
+              }
+            }
+          }
+          case None => ctx.reply(s"No ammo found for name ${config.withAmmo()}")
         }
       }
       if (config.morph.isSupplied) {
@@ -143,16 +159,19 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   version(s"${EPCompendiumDataCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
   banner("Search and view data loaded into the Eclipse Phase Compendium.")
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
-  val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.");
+  val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.")(ScallopUtils.singleArgSpacedConverter(identity));
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
-  val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.");
-  val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.");
-  val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.");
-  val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.");
-  dependsOnAny(nameOnly, List(search, weapon, morph, morphModel, epTrait));
-  dependsOnAny(rank, List(search, weapon, morph, morphModel, epTrait));
-  requireOne(search, weapon, morph, morphModel, epTrait);
+  val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val ammo = opt[String]("ammo", descr = "Search for matches with &lt;param&gt; in ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo. Ammo name must be exact!")(ScallopUtils.singleArgSpacedConverter(identity));
+  val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.")(ScallopUtils.singleArgSpacedConverter(identity));
+  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait));
+  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait));
+  dependsOnAll(withAmmo, List(weapon));
+  requireOne(search, weapon, ammo, morph, morphModel, epTrait);
   verify();
 }
 
@@ -165,10 +184,28 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       val needle = config.search();
       val results = EPCompendium.findAnything(needle);
       handleResults(results, config, ctx);
-    } else if (config.weapon.isSupplied) {
+    } else if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
       val needle = config.weapon();
       val results = EPCompendium.findWeapons(needle);
       handleResults(results, config, ctx);
+    } else if (config.ammo.isSupplied) {
+      val needle = config.ammo();
+      val results = EPCompendium.findAmmos(needle);
+      handleResults(results, config, ctx);
+    } else if (config.weapon.isSupplied && config.withAmmo.isSupplied) {
+      val needle = config.weapon();
+      val ammoO = EPCompendium.getAmmo(config.withAmmo());
+      ammoO match {
+        case Some(ammo) => {
+          val weapons = EPCompendium.findWeapons(needle);
+          val results = weapons.flatMap(w => w.load(ammo) match {
+            case Success(wwa) => Some(wwa)
+            case Failure(e)   => ctx.reply(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
+          });
+          handleResults(results, config, ctx);
+        }
+        case None => ctx.reply(s"No ammo found for name ${config.withAmmo()}")
+      }
     } else if (config.morph.isSupplied) {
       val needle = config.morph();
       val results = EPCompendium.findMorphInstances(needle);

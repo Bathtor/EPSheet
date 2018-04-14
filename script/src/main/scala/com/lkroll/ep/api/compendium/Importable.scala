@@ -38,6 +38,7 @@ trait Importable {
 
 object Importable {
   implicit def weapon2Import(w: Weapon): WeaponImport = WeaponImport(w);
+  implicit def wwa2Import(w: WeaponWithAmmo): WeaponWithAmmoImport = WeaponWithAmmoImport(w);
   implicit def morphmodel2Import(m: MorphModel): MorphModelImport = MorphModelImport(m);
   implicit def morphinst2Import(m: MorphInstance): MorphInstanceImport = MorphInstanceImport(m);
   implicit def trait2Import(t: EPTrait): EgoTraitImport = EgoTraitImport(t);
