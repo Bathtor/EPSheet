@@ -197,6 +197,7 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
             val magazine = char.createRepeating(RangedWeaponSection.magazineCurrent, rowId);
             magazine <<= magazineSize;
             magazine.max = magazineSize.toString(); // TODO make max handling nicer
+            char.createRepeating(RangedWeaponSection.magazineType, rowId) <<= weapon.ammo.name;
           }
           case None => APILogger.warn(s"Weapon ${weapon.name} does not seems to be gun, despite being of ranged type.")
         }

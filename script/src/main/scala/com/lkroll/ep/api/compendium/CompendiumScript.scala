@@ -193,11 +193,10 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       val results = EPCompendium.findAmmos(needle);
       handleResults(results, config, ctx);
     } else if (config.weapon.isSupplied && config.withAmmo.isSupplied) {
-      val needle = config.weapon();
       val ammoO = EPCompendium.getAmmo(config.withAmmo());
       ammoO match {
         case Some(ammo) => {
-          val weapons = EPCompendium.findWeapons(needle);
+          val weapons = EPCompendium.findWeapon(config.weapon()).toList;
           val results = weapons.flatMap(w => w.load(ammo) match {
             case Success(wwa) => Some(wwa)
             case Failure(e)   => ctx.reply(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
