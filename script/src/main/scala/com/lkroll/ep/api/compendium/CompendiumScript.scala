@@ -30,6 +30,7 @@ import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
 import util.{ Try, Success, Failure }
+import org.rogach.scallop.singleArgConverter
 
 object CompendiumScript extends APIScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
@@ -47,10 +48,47 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val egoTrait = opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val derangement = opt[List[String]]("derangement", descr = "Import a derangement with the given name and default duration. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val withDuration = opt[FloatOrInline]("duration", descr = "Must be used together with --derangement. Import derangement with given duration.")(singleArgConverter(FloatOrInline.fromString(_)));
+  val disorder = opt[List[String]]("disorder", descr = "Import a disorder with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
   dependsOnAll(withAmmo, List(weapon));
+  codependent(withDuration, derangement);
   //requireOne(weapon, morph);
   verify();
+}
+
+sealed trait FloatOrInline {
+  def toFloat(ctx: ChatContext): Try[Float];
+}
+object FloatOrInline {
+  import fastparse.all._
+
+  lazy val parser: P[FloatOrInline] = P(inline | raw);
+  lazy val raw: P[AFloat] = P((CharIn('0' to '9').rep(1) ~ ("." ~ CharIn('0' to '9').rep(1)).?).!).map(s => AFloat(s.toFloat));
+  lazy val inline: P[Inline] = P("$[[" ~/ ws ~ CharIn('0' to '9').rep(1).! ~ ws ~ "]]").map(s => Inline(s.toInt));
+  lazy val ws = P(" ".rep);
+
+  def fromString(s: String): FloatOrInline = {
+    parser.parse(s) match {
+      case Parsed.Success(r, _) => r
+      case _: Parsed.Failure    => throw new RuntimeException(s"Could not parse '$s' as Float or Inline Roll Ref!")
+    }
+  }
+
+  case class AFloat(v: Float) extends FloatOrInline {
+    override def toFloat(ctx: ChatContext): Try[Float] = Success(v);
+  }
+
+  case class Inline(index: Int) extends FloatOrInline {
+    override def toFloat(ctx: ChatContext): Try[Float] = {
+      val irs = ctx.inlineRolls;
+      Try {
+        val ir = irs(index);
+        ir.results.total.toFloat
+      }
+    }
+  }
 }
 
 object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
@@ -123,6 +161,32 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
           }
         }
       }
+      if (config.derangement.isSupplied && config.withDuration.isSupplied) {
+        config.withDuration().toFloat(ctx) match {
+          case Success(dur) => {
+            config.derangement().foreach { s =>
+              EPCompendium.getDerangement(s) match {
+                case Some(d) => {
+                  toImport ::= DerangementImport(d, dur);
+                }
+                case None => ctx.reply(s"No derangement found for name ${s}")
+              }
+            }
+          }
+          case Failure(e) => ctx.reply(e.getMessage)
+        }
+
+      }
+      if (config.disorder.isSupplied) {
+        config.disorder().foreach { s =>
+          EPCompendium.getDisorder(s) match {
+            case Some(d) => {
+              toImport ::= d;
+            }
+            case None => ctx.reply(s"No disorder found for name ${s}")
+          }
+        }
+      }
       val updatedCharacters = tokens.flatMap { token =>
         debug(s"Working on token: ${token.name} (${token.id})");
         token.represents match {
@@ -168,10 +232,13 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.")(ScallopUtils.singleArgSpacedConverter(identity));
   val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.")(ScallopUtils.singleArgSpacedConverter(identity));
   val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.")(ScallopUtils.singleArgSpacedConverter(identity));
-  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait));
-  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait));
+  val derangement = opt[String]("derangement", descr = "Search for matches with &lt;param&gt; in derangements.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val disorder = opt[String]("disorder", descr = "Search for matches with &lt;param&gt; in disorders.")(ScallopUtils.singleArgSpacedConverter(identity));
+
+  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder));
+  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder));
   dependsOnAll(withAmmo, List(weapon));
-  requireOne(search, weapon, ammo, morph, morphModel, epTrait);
+  requireOne(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder);
   verify();
 }
 
@@ -216,6 +283,14 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
     } else if (config.epTrait.isSupplied) {
       val needle = config.epTrait();
       val results = EPCompendium.findTraits(needle);
+      handleResults(results, config, ctx);
+    } else if (config.derangement.isSupplied) {
+      val needle = config.derangement();
+      val results = EPCompendium.findDerangements(needle);
+      handleResults(results, config, ctx);
+    } else if (config.disorder.isSupplied) {
+      val needle = config.disorder();
+      val results = EPCompendium.findDisorders(needle);
       handleResults(results, config, ctx);
     }
   }
