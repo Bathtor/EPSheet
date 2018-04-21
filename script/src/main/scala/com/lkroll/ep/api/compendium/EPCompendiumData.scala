@@ -151,14 +151,56 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         List(results.head)
       };
       if (config.nameOnly()) {
-        val pretty = displayResults.map(r => r.templateTitle).mkString("<ul><li>", "</li><li>", "</li><ul>");
+        val pretty = displayResults.map(r => {
+          val infoButton = this.invoke("?", argumentFrom(r, config)).render;
+          val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r)).render;
+          s"${r.templateTitle} ${infoButton}&nbsp;${importButton}"
+        }).
+          mkString("<ul><li>", "</li><li>", "</li><ul>");
+        debug(s"About to send '$pretty'");
         ctx.reply(pretty);
       } else {
         displayResults.foreach { r =>
-          val pretty = asInfoTemplate(r);
+          val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r));
+          val pretty = asInfoTemplate(r, importButton);
+          debug(s"About to send '$pretty'");
           ctx.reply(pretty);
         }
       }
+    }
+  }
+
+  private def importArgumentFrom(r: ChatRenderable): List[OptionApplication] = {
+    val config: EPCompendiumImportConf = new EPCompendiumImportConf(List.empty);
+    val name = r.lookupName.replace(")", "&#41;");
+    r match {
+      case _: Armour        => List(config.armour <<= name)
+      case _: Derangement   => List(config.derangement <<= name)
+      case _: Disorder      => List(config.disorder <<= name)
+      case _: EPTrait       => List(config.egoTrait <<= name)
+      case _: Gear          => List(config.gear <<= name)
+      case _: MorphModel    => List(config.morphModel <<= name)
+      case _: MorphInstance => List(config.morph <<= name)
+      case _: Software      => List(config.software <<= name)
+      case _: Weapon        => List(config.weapon <<= name)
+      case _                => List.empty
+    }
+  }
+
+  private def argumentFrom(r: ChatRenderable, config: EPCompendiumDataConf): List[OptionApplication] = {
+    val name = r.lookupName.replace(")", "&#41;");
+    r match {
+      case _: Ammo          => List(config.ammo <<= name)
+      case _: Armour        => List(config.armour <<= name)
+      case _: Derangement   => List(config.derangement <<= name)
+      case _: Disorder      => List(config.disorder <<= name)
+      case _: EPTrait       => List(config.epTrait <<= name)
+      case _: Gear          => List(config.gear <<= name)
+      case _: MorphModel    => List(config.morphModel <<= name)
+      case _: MorphInstance => List(config.morph <<= name)
+      case _: Software      => List(config.software <<= name)
+      case _: Weapon        => List(config.weapon <<= name)
+      case _                => List.empty
     }
   }
 }
