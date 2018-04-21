@@ -26,12 +26,18 @@ package com.lkroll.ep.api.compendium
 
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
-import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
-import util.{ Try, Success, Failure }
-import org.rogach.scallop.singleArgConverter
+import com.lkroll.ep.compendium.utils.OptionPickler._
+import com.lkroll.ep.model.{ EPCharModel => epmodel, GearSection }
+import APIImplicits._;
 
-object CompendiumScript extends APIScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
+case class GearImport(g: Gear) extends Importable {
+  override def updateLabel: String = g.name;
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+    val rowId = Some(idPool.generateRowId());
+    char.createRepeating(GearSection.itemName, rowId) <<= g.name;
+    char.createRepeating(GearSection.amount, rowId) <<= 1;
+    char.createRepeating(GearSection.description, rowId) <<= g.descr;
+    Left("Ok")
+  }
 }

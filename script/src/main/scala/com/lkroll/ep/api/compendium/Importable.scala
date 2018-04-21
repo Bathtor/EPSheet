@@ -43,6 +43,9 @@ object Importable {
   implicit def morphinst2Import(m: MorphInstance): MorphInstanceImport = MorphInstanceImport(m);
   implicit def trait2Import(t: EPTrait): EgoTraitImport = EgoTraitImport(t);
   implicit def disorder2Import(d: Disorder): DisorderImport = DisorderImport(d);
+  implicit def armour2Import(a: Armour): ArmourImport = ArmourImport(a);
+  implicit def gear2Import(g: Gear): GearImport = GearImport(g);
+  implicit def software2Import(s: Software): SoftwareImport = SoftwareImport(s);
 }
 
 class ImportCache(val char: Character) {

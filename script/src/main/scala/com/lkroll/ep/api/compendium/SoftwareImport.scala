@@ -26,12 +26,25 @@ package com.lkroll.ep.api.compendium
 
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
-import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
-import util.{ Try, Success, Failure }
-import org.rogach.scallop.singleArgConverter
+import com.lkroll.ep.compendium.utils.OptionPickler._
+import com.lkroll.ep.model.{ EPCharModel => epmodel, GearSection }
+import APIImplicits._;
 
-object CompendiumScript extends APIScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand);
+case class SoftwareImport(s: Software) extends Importable {
+  override def updateLabel: String = s"${s.quality.label} s.name";
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+    val rowId = Some(idPool.generateRowId());
+    s.quality match {
+      case SoftwareQuality.Standard => {
+        char.createRepeating(GearSection.itemName, rowId) <<= s.name;
+        char.createRepeating(GearSection.description, rowId) <<= s.descr;
+      }
+      case q => {
+        char.createRepeating(GearSection.itemName, rowId) <<= s"${q.label} ${s.name}";
+        char.createRepeating(GearSection.description, rowId) <<= s.descr ++ "\n---\n" ++ f"Quality Modifier: ${q.modifier}%+d";
+      }
+    }
+    Left("Ok")
+  }
 }
