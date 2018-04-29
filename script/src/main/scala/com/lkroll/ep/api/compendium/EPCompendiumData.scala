@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts, SpecialRollsCommand }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
 
@@ -162,7 +162,8 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       } else {
         displayResults.foreach { r =>
           val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r));
-          val pretty = asInfoTemplate(r, importButton);
+          val extras = extraButtons(r);
+          val pretty = asInfoTemplate(r, importButton, extras);
           debug(s"About to send '$pretty'");
           ctx.reply(pretty);
         }
@@ -183,7 +184,12 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       case _: MorphInstance => List(config.morph <<= name)
       case _: Software      => List(config.software <<= name)
       case _: Weapon        => List(config.weapon <<= name)
-      case _                => List.empty
+      case wwa: WeaponWithAmmo => {
+        val wname = wwa.weapon.lookupName.replace(")", "&#41;");
+        val aname = wwa.ammo.lookupName.replace(")", "&#41;");
+        List(config.weapon <<= wname, config.withAmmo <<= aname)
+      }
+      case _ => List.empty
     }
   }
 
@@ -201,6 +207,50 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       case _: Software      => List(config.software <<= name)
       case _: Weapon        => List(config.weapon <<= name)
       case _                => List.empty
+    }
+  }
+
+  private def extraButtons(r: ChatRenderable): List[(String, APIButton)] = {
+    r match {
+      case w: Weapon => {
+        val c = SpecialRollsCommand.minConf;
+        val dmg = w.templateKV("Damage");
+        val dmgButton = SpecialRollsCommand.invoke(dmg, List(
+          c.damage <<= true,
+          c.damageDice <<= w.dmgD10,
+          c.damageDiv <<= w.dmgDiv,
+          c.damageConst <<= w.dmgConst,
+          c.damageType <<= w.dmgType.label,
+          c.ap <<= w.ap,
+          c.label <<= w.templateTitle));
+        val skill = w.templateKV("Skill");
+        val skillButton = SpecialRollsCommand.invoke(skill, List(
+          c.success <<= true,
+          c.target.name <<= s"?{$skill}",
+          c.label <<= w.templateTitle,
+          c.sublabel <<= skill));
+        List("Damage" -> dmgButton, "Skill" -> skillButton)
+      }
+      case w: WeaponWithAmmo => {
+        val c = SpecialRollsCommand.minConf;
+        val dmg = w.templateKV("Damage");
+        val dmgButton = SpecialRollsCommand.invoke(dmg, List(
+          c.damage <<= true,
+          c.damageDice <<= w.dmgD10,
+          c.damageDiv <<= w.dmgDiv,
+          c.damageConst <<= w.dmgConst,
+          c.damageType <<= w.dmgType.label,
+          c.ap <<= w.ap,
+          c.label <<= w.templateTitle));
+        val skill = w.templateKV("Skill");
+        val skillButton = SpecialRollsCommand.invoke(skill, List(
+          c.success <<= true,
+          c.target.name <<= s"?{$skill}",
+          c.label <<= w.templateTitle,
+          c.sublabel <<= skill));
+        List("Damage" -> dmgButton, "Skill" -> skillButton)
+      }
+      case _ => List.empty
     }
   }
 }

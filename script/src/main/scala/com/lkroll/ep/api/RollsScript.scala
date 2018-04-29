@@ -28,13 +28,114 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
+import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
 import util.{ Try, Success, Failure }
+import CoreImplicits._;
 
 object RollsScript extends APIScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPRollsCommand);
+  override def apiCommands: Seq[APICommand[_]] = Seq(EPRollsCommand, SpecialRollsCommand);
+
+  def transformRoll(total: Int): TemplateVal.InlineRoll = {
+    val roll: RollExpression[Int] = fakeRoll(Arith.RollArith(total.label("success roll total")), isCritical(total));
+    val r = Rolls.InlineRoll(roll);
+    TemplateVal.InlineRoll(r);
+  }
+
+  def transformTarget(expr: String): TemplateVal.InlineRoll = {
+    import RollExprs.Math;
+    import Arith.RollArith;
+    val exprParen: RollExpression[Int] = Math(RollArith(RollExprs.Native[Int](expr)).paren);
+    val roll: RollExpression[Int] = fakeRoll(RollArith(exprParen.label("roll target")));
+    val r = Rolls.InlineRoll(roll);
+    TemplateVal.InlineRoll(r);
+  }
+
+  def isCritical(total: Int): Boolean = {
+    total == 0 || total % 11 == 0
+  }
+
+  def fakeRoll(expr: ArithmeticExpression[Int], critical: Boolean = false): RollExpression[Int] = {
+    import RollExprs.Math;
+    import Arith.RollArith;
+
+    if (critical) {
+      Math(expr + RollArith(Dice.unit.cs()(0).label("API hack")));
+    } else {
+      Math(expr + RollArith(Dice.unit.cs()(1).label("API hack")));
+    }
+  }
+}
+
+class SpecialRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
+  import org.rogach.scallop.singleArgConverter;
+
+  val success = opt[Boolean]("success", descr = "roll a simple success roll");
+  val target = opt[Int]("target", default = Some(99), descr = "target for a success roll");
+
+  val damage = opt[Boolean]("damage", descr = "roll a damage roll");
+  val damageDice = opt[Int]("damage-dice", default = Some(1), descr = "how many d10 to roll");
+  val damageConst = opt[Int]("damage-const", default = Some(0), descr = "how much constant damage to add");
+  val damageDiv = opt[Int]("damage-div", default = Some(1), descr = "what to divide the roll by");
+  val ap = opt[Int]("ap", default = Some(0), descr = "armour penetration");
+  val damageType = opt[String]("damage-type", descr = "damage type (Kinetic or Energy)");
+  val label = opt[String]("label", descr = "custom roll label")(ScallopUtils.singleArgSpacedConverter(identity));
+  val sublabel = opt[String]("sublabel", descr = "custom roll sublabel")(ScallopUtils.singleArgSpacedConverter(identity));
+  requireOne(success, damage);
+  dependsOnAll(target, List(success));
+  dependsOnAll(damageDice, List(damage));
+  dependsOnAll(damageConst, List(damage));
+  dependsOnAll(damageDiv, List(damage));
+  dependsOnAll(damageType, List(damage));
+  dependsOnAll(ap, List(damage));
+  verify();
+}
+
+object SpecialRollsCommand extends APICommand[SpecialRollsConf] {
+  import CoreImplicits._;
+
+  override def command = "epspecialroll";
+  override def options = (args) => new SpecialRollsConf(args);
+  override def apply(config: SpecialRollsConf, ctx: ChatContext): Unit = {
+    if (config.success()) {
+      val templF = for {
+        rollResult <- rollViaChat(Rolls.SimpleRoll(epmodel.epRoll.formula))
+      } yield {
+        val targetValue = config.target();
+        val targetR = RollsScript.transformTarget(targetValue.toString()).r;
+        val roll = RollsScript.transformRoll(rollResult).r;
+        val mofO = if (rollResult > targetValue) {
+          val roll = numToExpr(rollResult);
+          val target = numToExpr(targetValue);
+          Some(Rolls.InlineRoll(RollsScript.fakeRoll(roll - target.paren).label("roll - target")))
+        } else None;
+        asDefaultTemplate(
+          character = "API",
+          attributeField = config.label.getOrElse("Success Roll"),
+          attributeSubField = config.sublabel.toOption,
+          testRoll = roll,
+          testTarget = targetR,
+          testMoF = mofO);
+      };
+      templF.onComplete {
+        case Success(templ) => ctx.reply(templ)
+        case Failure(e)     => error(e)
+      }
+    } else if (config.damage()) {
+      val rollExpr = Dice.d10.copy(n = config.damageDice()) / config.damageDiv() + config.damageConst();
+      val templ = asDamageTemplate(
+        character = "API",
+        attributeField = config.label.getOrElse("Damage Roll"),
+        damageRoll = Rolls.InlineRoll(rollExpr),
+        damageType = config.damageType.getOrElse("Unspecified"),
+        armourPenetration = config.ap());
+      ctx.reply(templ);
+    }
+  }
+
+  lazy val minConf = new SpecialRollsConf(Seq("--success"));
 }
 
 class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
@@ -46,7 +147,6 @@ class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
 }
 
 object EPRollsCommand extends APICommand[EPRollsConf] {
-  import CoreImplicits._;
 
   override def command = "eproll";
   override def options = (args) => new EPRollsConf(args);
@@ -67,8 +167,8 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
             Try(ir.results.total.toInt) match {
               case Success(total) => {
                 tvar.key match {
-                  case "test-roll"   => { testRoll = Some(total); transformRoll(total) }
-                  case "test-target" => { testTarget = Some(total); transformTarget(ir.expression) }
+                  case "test-roll"   => { testRoll = Some(total); RollsScript.transformRoll(total) }
+                  case "test-target" => { testTarget = Some(total); RollsScript.transformTarget(ir.expression) }
                   case _             => TemplateVal.InlineRoll(total)
                 }
               }
@@ -81,7 +181,7 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
           } yield {
             val roll = numToExpr(rollValue);
             val target = numToExpr(targetValue);
-            TemplateVar("test-mof", TemplateVal.InlineRoll(fakeRoll(roll - target.paren).label("roll - target")))
+            TemplateVar("test-mof", TemplateVal.InlineRoll(RollsScript.fakeRoll(roll - target.paren).label("roll - target")))
           };
           val augmentedVars = mofO match {
             case Some(mof) => mof :: replacedVars;
@@ -111,36 +211,6 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
 
   private def invalidRoll(ctx: ChatContext): Unit = {
     ctx.reply("Invalid roll!");
-  }
-
-  private def transformRoll(total: Int): TemplateVal.InlineRoll = {
-    val roll: RollExpression[Int] = fakeRoll(Arith.RollArith(total.label("success roll total")), isCritical(total));
-    val r = Rolls.InlineRoll(roll);
-    TemplateVal.InlineRoll(r);
-  }
-
-  private def transformTarget(expr: String): TemplateVal.InlineRoll = {
-    import RollExprs.Math;
-    import Arith.RollArith;
-    val exprParen: RollExpression[Int] = Math(RollArith(RollExprs.Native[Int](expr)).paren);
-    val roll: RollExpression[Int] = fakeRoll(RollArith(exprParen.label("roll target")));
-    val r = Rolls.InlineRoll(roll);
-    TemplateVal.InlineRoll(r);
-  }
-
-  private def isCritical(total: Int): Boolean = {
-    total == 0 || total % 11 == 0
-  }
-
-  private def fakeRoll(expr: ArithmeticExpression[Int], critical: Boolean = false): RollExpression[Int] = {
-    import RollExprs.Math;
-    import Arith.RollArith;
-
-    if (critical) {
-      Math(expr + RollArith(Dice.unit.cs()(0).label("API hack")));
-    } else {
-      Math(expr + RollArith(Dice.unit.cs()(1).label("API hack")));
-    }
   }
 
   //  private def extractIfIntLiteral(tvar: TemplateVar): Option[Int] = tvar.value match {

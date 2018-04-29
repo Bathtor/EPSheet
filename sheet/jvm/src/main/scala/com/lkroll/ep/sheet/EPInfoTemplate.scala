@@ -39,15 +39,18 @@ object EPInfoTemplate extends RollTemplate {
   val title = value[String]("title");
   val subtitle = value[String]("subtitle");
   val description = value[String]("description");
+  val importButton = button("import");
 
   // **** Layout ****
   override def content: Tag = div(
     sty.`template-wrapper`,
     h3(title),
-    exists(subtitle) {
-      h4(subtitle)
-    },
-    allProps(title, subtitle, description) { (key, value) =>
+    switchExists(subtitle, {
+      h4(importButton, raw("&nbsp;"), subtitle)
+    }, {
+      h4(importButton)
+    }),
+    allProps(title, subtitle, description, importButton) { (key, value) =>
       p(sty.tightkv, span(sty.tightkey, key), span(raw(" ")), span(value))
     },
     exists(description) {
