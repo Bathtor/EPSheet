@@ -39,7 +39,7 @@ object PsiTab extends FieldGroup {
   val sty = EPStyle;
 
   val ptRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
-    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
+    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
   val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputEPRolls, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),

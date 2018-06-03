@@ -27,6 +27,7 @@ package com.lkroll.ep.sheet
 
 import scalatags.Text.all._
 import com.lkroll.roll20.sheet._
+import com.lkroll.roll20.sheet.tabbed.TabbedStyle
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.ep.model._
 import SheetImplicits._

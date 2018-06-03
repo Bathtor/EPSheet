@@ -122,6 +122,6 @@ object SkillRenderers {
   //  }
 
   val categoryRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
-    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
+    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 }

@@ -26,6 +26,7 @@
 package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
+import com.lkroll.roll20.sheet.tabbed.TabbedStyle
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.roll20.core._
 import scalatags.Text.all._
@@ -322,7 +323,7 @@ case class PseudoButton(toggle: FlagField, buttonLabel: Either[FieldLike[_], Lab
         TabbedStyle.pseudoButtonWrapper,
         input(`type` := "checkbox", name := toggle.name, toggle.defaultValue),
         buttonLabel match {
-          case Left(f)  => span(name := f.name, SheetI18N.datai18nDynamic)
+          case Left(f)  => span(name := f.name, SheetI18NAttrs.datai18nDynamic)
           case Right(l) => span(l)
         })
     };

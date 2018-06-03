@@ -26,6 +26,7 @@
 package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
+import com.lkroll.roll20.sheet.tabbed._
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.ep.model._
 import scalatags.Text.all._
@@ -55,7 +56,7 @@ object EPSheet extends TabbedSheet {
 
   override def style(): StyleSheet = EPStyle;
   override def externalStyles() = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));
-  override def translation(): SheetI18N = EPTranslation;
+  override def translation(): SheetI18NDefaults = EPTranslation;
   override def colourScheme = EPPalette;
   override def templates = EPInfoTemplate :: EPIniTemplate :: EPDefaultTemplate :: EPDamageTemplate :: super.templates;
 }

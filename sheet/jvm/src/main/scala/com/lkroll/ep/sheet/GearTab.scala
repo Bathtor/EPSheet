@@ -63,7 +63,7 @@ object GearTab extends FieldGroup {
   //    }
   //  }
   val dtRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
-    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18N.datai18nDynamic))
+    sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
   case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: String) extends FieldGroup {

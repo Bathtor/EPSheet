@@ -27,209 +27,340 @@ package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{ EPTranslation => TranslationKeys, _ }
 
-object EPTranslation extends SheetI18N {
+object EPTranslation extends SheetI18NDefaults {
+  val keys = TranslationKeys;
 
-  val version = text("version", "v");
-  val charName = text("character-name", "Character Name");
-  val author = text("author", "Author");
-  val github = text("github", "Github");
+  val version = keys.version <~ "v";
+  val charName = keys.charName <~ "Character Name";
+  val author = keys.author <~ "Author";
+  val github = keys.github <~ "Github";
+  val note = keys.note <~ "Note";
+  val characterInfo = keys.characterInfo <~ "Character Info";
+  val background = keys.background <~ "Background";
+  val faction = keys.faction <~ "Faction";
+  val genderId = keys.genderId <~ "Gender Identity";
+  val actualAge = keys.actualAge <~ "Actual Age";
+  val currentMoxie = keys.currentMoxie <~ "Current Moxie Points";
+  val rezPoints = keys.rezPoints <~ ("REZ", "Rez Points");
+  val motivations = keys.motivations <~ "Motivations";
+  val effects = keys.effects <~ "Active Effects";
+  val effectName = keys.effectName <~ "Name";
+  val effectDuration = keys.effectDuration <~ "Duration";
+  val effectDurationExample = keys.effectDurationExample <~ "e.g., 1min";
+  val effectOnGame = keys.effectOnGame <~ "Game Effect";
+  val effectOnGameExample = keys.effectOnGameExample <~ "e.g., +5 SOM, -5 COO";
+  val effectDescription = keys.effectDescription <~ "Description";
+  val showHideDescription = keys.showHideDescription <~ "Show/Hide Description";
+  val traits = keys.traits <~ "Traits";
+  val traitName = keys.traitName <~ "Name";
+  val traitDescription = keys.traitDescription <~ "Description";
+  val characterTraits = keys.characterTraits <~ "Character Traits";
+  val specialRolls = keys.specialRolls <~ "Special Rolls";
+  val successRoll = keys.successRoll <~ "Success Roll";
+  val moxx10Roll = keys.moxx10Roll <~ ("MOX × 10", "Moxie times 10");
+  val wilx2Roll = keys.wilx2Roll <~ ("WIL × 2", "Willpower doubled");
+  val wilx3Roll = keys.wilx3Roll <~ ("WIL × 3", "Willpower tripled");
+  val somx3Roll = keys.somx3Roll <~ ("SOM × 3", "Somatics tripled");
+  val intx3Roll = keys.intx3Roll <~ ("INT × 3", "Intuition tripled");
+  val cogx3Roll = keys.cogx3Roll <~ ("COG × 3", "Cognition tripled");
+  val refx3Roll = keys.refx3Roll <~ ("REF × 3", "Reflex tripled");
+  val frayHalvedRoll = keys.frayHalvedRoll <~ ("Fray/2", "Fray halved");
+  val durEnergyRoll = keys.durEnergyRoll <~ ("DUR + Energy Armor", "Durability + Energy Armor");
+  val refCoox2Roll = keys.refCoox2Roll <~ ("REF + COO × 2", "Reflex + Coordination doubled");
+  val refCooWilRoll = keys.refCooWilRoll <~ ("REF + COO + WIL", "Reflex + Coordination + Willpower");
+  val cooSomRoll = keys.cooSomRoll <~ ("COO + SOM", "Coordination + Somatics");
+  val wilCogRoll = keys.wilCogRoll <~ ("WIL + COG", "Willpower + Cognition");
+  val psiDefense = keys.psiDefense <~ "Psi Defense";
+  val continuityTest = keys.continuityTest <~ "Continuity Test";
+  val resistTraumaDisorientation = keys.resistTraumaDisorientation <~ "Resist Trauma Disorientation";
+  val stressTest = keys.stressTest <~ "Stress Test";
+  val healTrauma = keys.healTrauma <~ "Heal Trauma";
+  val resistWoundKnockdown = keys.resistWoundKnockdown <~ "Resist Knockdown from Wound";
+  val integrationTest = keys.integrationTest <~ "Integration Test";
+  val alienationTest = keys.alienationTest <~ "Alienation Test";
+  val rangedDefence = keys.rangedDefence <~ "Ranged Defence";
+  val resistShock = keys.resistShock <~ "Resist Shock";
+  val bruteStrength = keys.bruteStrength <~ "Brute Strength";
+  val catchingObjects = keys.catchingObjects <~ "Catching Objects";
+  val escapeArtist = keys.escapeArtist <~ "Escape Artist";
+  val havingAnIdea = keys.havingAnIdea <~ "Having an Idea";
+  val memoriseRecall = keys.memoriseRecall <~ "Memorise/Recall";
+  val resistAsphyxiation = keys.resistAsphyxiation <~ "Roll with DUR (above) to resist asphyxiation.";
+  val resistBackupComplications = keys.resistBackupComplications <~ "To resist complications during backup (EP p.270) roll with LUC (above).";
+  val holdBreath = keys.holdBreath <~ "Suddenly Holding Breath (EP p.201)";
+  val jumpOnGrenade = keys.jumpOnGrenade <~ "Jump on Grenade";
+  val resistBrainSeizure = keys.resistBrainSeizure <~ "Resist Psi Brain Seizure (EP p.221)";
+  val avoidLemon = keys.avoidLemon <~ "Avoid Lemon Breakdown (EP p.150)";
+  val avoidVirusExposure = keys.avoidVirusExposure <~ "Avoid Virus Exposure";
+  val aptitudes = keys.aptitudes <~ "Aptitudes";
+  val cog = keys.cog <~ ("COG", "Cognition");
+  val coo = keys.coo <~ ("COO", "Coordination");
+  val int = keys.int <~ ("INT", "Intuition");
+  val ref = keys.ref <~ ("REF", "Reflex");
+  val sav = keys.sav <~ ("SAV", "Savy");
+  val som = keys.som <~ ("SOM", "Somatics");
+  val wil = keys.wil <~ ("WIL", "Willpower");
+  val aptBase = keys.aptBase <~ "Base";
+  val aptMorphBonus = keys.aptMorphBonus <~ "Morph Bonus";
+  val aptMorphMax = keys.aptMorphMax <~ "Morph Max";
+  val aptTemp = keys.aptTemp <~ "Temp";
+  val aptTotal = keys.aptTotal <~ "Total";
+  val stats = keys.stats <~ "Character Stats";
+  val mox = keys.mox <~ ("MOX", "Moxie");
+  val tt = keys.tt <~ ("TT", "Trauma Threshold");
+  val luc = keys.luc <~ ("LUC", "Lucidity");
+  val ir = keys.ir <~ ("IR", "Insanity Rating");
+  val wt = keys.wt <~ ("WT", "Wound Threshold");
+  val dur = keys.dur <~ ("DUR", "Durability");
+  val dr = keys.dr <~ ("DR", "Death Rating");
+  val init = keys.init <~ ("INIT", "Initiative");
+  val spd = keys.spd <~ ("SPD", "Speed");
+  val moa = keys.moa <~ ("MOA", "Mental Only Actions");
+  val db = keys.db <~ ("DB", "Damage Bonus");
+  val mentalHealth = keys.mentalHealth <~ "Mental Health";
+  val stress = keys.stress <~ "Stress";
+  val stressValue = keys.stressValue <~ ("SV", "Stress Value");
+  val trauma = keys.trauma <~ "Trauma";
+  val physicalHealth = keys.physicalHealth <~ "Physical Health";
+  val damage = keys.damage <~ "Damage";
+  val wounds = keys.wounds <~ "Wounds";
+  val woundsIgnored = keys.woundsIgnored <~ "Ignored Wounds";
+  val armour = keys.armour <~ "Armour";
+  val kinetic = keys.kinetic <~ "Kinetic";
+  val energy = keys.energy <~ "Energy";
+  val skills = keys.skills <~ "Skills";
+  val activeSkills = keys.activeSkills <~ "Active Skills";
+  val knowledgeSkills = keys.knowledgeSkills <~ "Knowledge Skills";
+  val skillName = keys.skillName <~ "Name";
+  val skillField = keys.skillField <~ "Field";
+  val skillCategories = keys.skillCategories <~ "Categories";
+  val skillSpecialisations = keys.skillSpecialisations <~ "Specialisations";
+  val skillLinkedAptitude = keys.skillLinkedAptitude <~ "Aptitude";
+  val skillNoDefaulting = keys.skillNoDefaulting <~ "No Defaulting";
+  val skillRanks = keys.skillRanks <~ "Ranks";
+  val skillMorphBonus = keys.skillMorphBonus <~ "Morph Bonus";
+  val skillTotal = keys.skillTotal <~ "Total";
+  val skillsGenerate = keys.skillsGenerate <~ "Generate Default Skills";
+  val skillsGenerating = keys.skillsGenerating <~ "Generating Skills...";
+  val skillsSortBy = keys.skillsSortBy <~ "Sort by";
+  val skillsSort = keys.skillsSort <~ "Sort Now";
+  val skillCommands = keys.skillCommands <~ "Commands";
+  val skillReloadPage = keys.skillReloadPage <~ "Sorting result is only shown after reopening the sheet.";
+  val skillNoSortManual = keys.skillNoSortManual <~ "Due to Roll20 limitations, manually added items can not be sorted automatically at this time.";
+  val core = keys.core <~ "Core";
+  val morph = keys.morph <~ "Morph";
+  val activeMorph = keys.activeMorph <~ "Active Morph";
+  val morphBank = keys.morphBank <~ "Morph Bank";
+  val morphType = keys.morphType <~ "Type";
+  val morphName = keys.morphName <~ "Model";
+  val morphLabel = keys.morphLabel <~ "Label";
+  val morphDescription = keys.morphDescription <~ "Description";
+  val morphLocation = keys.morphLocation <~ "Storage Location";
+  val morphTraits = keys.morphTraits <~ "Traits";
+  val morphImplants = keys.morphImplants <~ "Implants/Enhancements";
+  val morphMobilitySystem = keys.morphMobilitySystem <~ "Mobility System(s)";
+  val morphDurability = keys.morphDurability <~ "Durability";
+  val morphArmour = keys.morphArmour <~ "Armour";
+  val morphArmourEnergy = keys.morphArmourEnergy <~ "Energy Armour";
+  val morphArmourKinetic = keys.morphArmourKinetic <~ "Kinetic Armour";
+  val morphAptitudeBoni = keys.morphAptitudeBoni <~ "Aptitude Boni";
+  val morphAptitudeMax = keys.morphAptitudeMax <~ "Aptitude Max";
+  val morphSkillBoni = keys.morphSkillBoni <~ "Skill Boni";
+  val morphVisibleAge = keys.morphVisibleAge <~ "Visible Age";
+  val morphVisibleGender = keys.morphVisibleGender <~ "Visible Gender";
+  val gear = keys.gear <~ "Gear";
+  val gearFreeform = keys.gearFreeform <~ "Freeform Gear";
+  val meleeWeapons = keys.meleeWeapons <~ "Melee Weapons";
+  val rangedWeapons = keys.rangedWeapons <~ "Ranged Weapons";
+  val armourWorn = keys.armourWorn <~ "Armour Worn";
+  val armourActiveTotal = keys.armourActiveTotal <~ "Active Bonus";
+  val layeringPenalty = keys.layeringPenalty <~ "Layered Armour Penalty";
+  val armourName = keys.armourName <~ "Name";
+  val armourAccessory = keys.armourAccessory <~ "Armour Accessory";
+  val equipment = keys.equipment <~ "Equipment";
+  val equipmentName = keys.equipmentName <~ "Name";
+  val equipmentDescription = keys.equipmentDescription <~ "Description";
+  val currency = keys.currency <~ "Currency";
+  val cryptoCredits = keys.cryptoCredits <~ "Crypto Credits";
+  val cash = keys.cash <~ "Cash (Credit Chips)";
+  val ap = keys.ap <~ ("AP", "Armour Penetration");
+  val orTotalAP = keys.orTotalAP <~ "or ignore armour if critical success";
+  val dmg = keys.dmg <~ ("Dmg", "Damage");
+  val weaponName = keys.weaponName <~ "Weapon Name";
+  val weaponSkill = keys.weaponSkill <~ "Skill";
+  val weaponSkillSearch = keys.weaponSkillSearch <~ "Search Skill";
+  val weaponDescription = keys.weaponDescription <~ "Description";
+  val firingModes = keys.firingModes <~ "Firing Modes";
+  val singleShot = keys.singleShot <~ ("SS", "Single Shot");
+  val semiAutomatic = keys.semiAutomatic <~ ("SA", "Semi-Automatic");
+  val burstFire = keys.burstFire <~ ("BF", "Burst Fire");
+  val fullAutomatic = keys.fullAutomatic <~ ("FA", "Full Automatic");
+  val singleShotDescription = keys.singleShotDescription <~ """
+Single shot weapons may only be fired once per Complex Action.
+""".trim;
+  val semiAutomaticDescription = keys.semiAutomaticDescription <~ """
+Semi-automatic weapons may be fired twice with the same Complex Action. Each shot is handled as a separate attack.
+""".trim;
+  val burstFireDescription = keys.burstFireDescription <~ """
+Two bursts maybe fired with the same Complex Action. Each burst is handled as a separate attack. Bursts use up 3 shots worth of ammunition.
+A burst may be shot against a single target (concentrated fire) or against two targets within one meter of each other. Against a single target, the attacker can choose either a +10 modifier to hit or increase the DV by +1d10.
+""".trim;
+  val fullAutomaticDescription = keys.fullAutomaticDescription <~ """
+Only one full-auto attack may be made with each Complex Action. This attack may be made on a single target or against up to three separate targets within one meter of another. Against a single individual, the attacker can choose either a +30 modifier to hit or increase the DV by +3d10. Firing in full automatic mode uses up 10 shots.
+""".trim;
+  val weaponRanges = keys.weaponRanges <~ "Ranges";
+  val shortRange = keys.shortRange <~ ("S", "Short");
+  val mediumRange = keys.mediumRange <~ ("M", "Medium");
+  val longRange = keys.longRange <~ ("L", "Long");
+  val extremeRange = keys.extremeRange <~ ("X", "Extreme");
+  val magazine = keys.magazine <~ "Magazine";
+  val size = keys.size <~ "Size";
+  val ammoType = keys.ammoType <~ "Ammo Type";
+  val damageInflicts = keys.damageInflicts <~ "Inflicts";
+  val damageValue = keys.damageValue <~ ("DV", "Damage Value");
+  val concentrateFire = keys.concentrateFire <~ "Concentrate Fire";
+  val identities = keys.identities <~ "Identities";
+  val identity = keys.identity <~ "Identity";
+  val idDescription = keys.idDescription <~ "Description";
+  val idCredits = keys.idCredits <~ "Credits";
+  val idNotes = keys.idNotes <~ "Notes";
+  val reputation = keys.reputation <~ "Reputation";
+  val repScore = keys.repScore <~ "Score";
+  val calledInFavours = keys.calledInFavours <~ "Called in Favours";
+  val lvl1 = keys.lvl1 <~ ("Lvl 1", "Level 1");
+  val lvl2 = keys.lvl2 <~ ("Lvl 2", "Level 2");
+  val lvl3 = keys.lvl3 <~ ("Lvl 3", "Level 3");
+  val lvl4 = keys.lvl4 <~ ("Lvl 4", "Level 4");
+  val lvl5 = keys.lvl5 <~ ("Lvl 5", "Level 5");
+  val atRep = keys.atRep <~ ("@-Rep", "The Circle-A List (Autonomists)");
+  val cRep = keys.cRep <~ ("c-Rep", "CivicNet (Hypercorps)");
+  val eRep = keys.eRep <~ ("e-Rep", "EcoWave (Ecologists)");
+  val fRep = keys.fRep <~ ("f-Rep", "Fame (Media)");
+  val gRep = keys.gRep <~ ("g-Rep", "Guanxi (Criminals)");
+  val iRep = keys.iRep <~ ("i-Rep", "The Eye (Firewall)");
+  val rRep = keys.rRep <~ ("r-Rep", "Research Network Associates (Scientists)");
+  val uRep = keys.uRep <~ ("u-Rep", "Ultimate (Ultimates)");
+  val xRep = keys.xRep <~ ("x-Rep", "ExploreNet (Gatecrashers)");
+  val async = keys.async <~ "Async";
+  val asyncTrait = keys.asyncTrait <~ "Has Asyc trait";
+  val psi = keys.psi <~ "Psi";
+  val psiTempTime = keys.psiTempTime <~ "Temporary Duration";
+  val psiTempUnits = keys.psiTempUnits <~ "units";
+  val psiSustained = keys.psiSustained <~ "Sustained Sleights";
+  val psiCurrent = keys.psiCurrent <~ "Currently Sustained";
+  val psiSustainedMod = keys.psiSustainedMod <~ "Skill Penalty";
+  val psiChi = keys.psiChi <~ "Psi-chi Sleights";
+  val psiGamma = keys.psiGamma <~ "Psi-gamma Sleights";
+  val sleightName = keys.sleightName <~ "Name";
+  val sleightDescription = keys.sleightDescription <~ "Description";
+  val psiRange = keys.psiRange <~ "Range";
+  val psiAction = keys.psiAction <~ "Action";
+  val psiDuration = keys.psiDuration <~ "Duration";
+  val strainMod = keys.strainMod <~ "Strain Mod";
+  val strain = keys.strain <~ "Strain";
+  val psiSkill = keys.psiSkill <~ "Skill";
+  val muse = keys.muse <~ "Muse";
+  val museInfo = keys.museInfo <~ "Muse Info";
+  val museName = keys.museName <~ "Name";
+  val museNotes = keys.museNotes <~ "Notes";
+  val museSkills = keys.museSkills <~ "Muse Skills";
+  val derangements = keys.derangements <~ "Derangements";
+  val derangementDescription = keys.derangementDescription <~ "Description";
+  val hours = keys.hours <~ ("h", "hours");
+  val derangementDuration = keys.derangementDuration <~ "Duration";
+  val derangementSeverity = keys.derangementSeverity <~ "Severity";
+  val disorders = keys.disorders <~ "Disorders";
+  val disorderDescription = keys.disorderDescription <~ "Description";
+  val disorderRemainingTreatment = keys.disorderRemainingTreatment <~ "Remaining treatment time";
+  val options = keys.options <~ "Options";
+  val sheetSettings = keys.sheetSettings <~ "Sheet Settings";
+  val miscModifiers = keys.miscModifiers <~ "Misc. Modifiers";
+  val miscActionMod = keys.miscActionMod <~ "Misc. All Actions Modifier";
+  val miscNotes = keys.miscNotes <~ "Misc. Notes";
+  val miscPhysicalMod = keys.miscPhysicalMod <~ "Misc. Physical Modifier";
+  val miscInitiativeMod = keys.miscInitiativeMod <~ "Misc. Initiative Modifier";
+  val miscDurBonus = keys.miscDurBonus <~ "Misc. Durability Bonus";
+  val chatOutput = keys.chatOutput <~ "Chat Output";
+  val rollsfor = keys.rollsfor <~ "rolls for";
+  val rollSuccess = keys.rollSuccess <~ "Roll is a success";
+  val rollCritSuccess = keys.rollCritSuccess <~ "Roll is a critical success";
+  val rollAutoSuccess = keys.rollAutoSuccess <~ "Roll is an automatic success";
+  val rollFailure = keys.rollFailure <~ "Roll is a failure";
+  val rollCritFailure = keys.rollCritFailure <~ "Roll is a critical failure";
+  val rollAutoFailure = keys.rollAutoFailure <~ "Roll is an automatic failure";
+  val mos = keys.mos <~ ("MoS", "Margin of Success");
+  val mof = keys.mof <~ ("MoF", "Margin of Failure");
 
-  val note = text("note", "Note");
+  val traitTypeOptions = keys.traitTypeOptions <~ {
+    case TraitType.Positive => "Positive"
+    case TraitType.Neutral  => "Neutral"
+    case TraitType.Negative => "Negative"
+  };
+  val traitTypeOptionsShort = keys.traitTypeOptionsShort <~ {
+    case TraitType.Positive => "+"
+    case TraitType.Neutral  => "\u25E6"
+    case TraitType.Negative => "-"
+  };
+  val skillCategoryOptions = keys.skillCategoryOptions <~ {
+    case Skills.SkillCategory.Combat    => "Combat"
+    case Skills.SkillCategory.Mental    => "Mental"
+    case Skills.SkillCategory.Physical  => "Physical"
+    case Skills.SkillCategory.Psi       => "Psi & Mental" // always go together
+    case Skills.SkillCategory.Social    => "Social"
+    case Skills.SkillCategory.Technical => "Technical"
+    case Skills.SkillCategory.Vehicle   => "Vehicle"
+    case Skills.SkillCategory.NA        => "None"
+  };
+  val skillCategoryOptionsShort = keys.skillCategoryOptionsShort <~ {
+    case Skills.SkillCategory.Combat    => "C"
+    case Skills.SkillCategory.Mental    => "M"
+    case Skills.SkillCategory.Physical  => "P"
+    case Skills.SkillCategory.Psi       => "\u03A8&M"
+    case Skills.SkillCategory.Social    => "S"
+    case Skills.SkillCategory.Technical => "T"
+    case Skills.SkillCategory.Vehicle   => "V"
+    case Skills.SkillCategory.NA        => " "
+  };
+  val skillClassOptions = keys.skillClassOptions <~ {
+    case Skills.SkillClass.Active    => "Active"
+    case Skills.SkillClass.Knowledge => "Knowledge"
+  };
+  val skillSortOptions = keys.skillSortOptions <~ {
+    case Skills.SortBy.None     => " - "
+    case Skills.SortBy.Name     => "Name"
+    case Skills.SortBy.Category => "Category"
+    case Skills.SortBy.Aptitude => "Aptitude"
+  };
+  val dmgType = keys.dmgType <~ {
+    case DamageType.Kinetic => "Kinetic"
+    case DamageType.Energy  => "Energy"
+  };
+  val dmgTypeShort = keys.dmgTypeShort <~ {
+    case DamageType.Kinetic => "K"
+    case DamageType.Energy  => "E"
+  };
 
-  val characterInfo = text("character-info", "Character Info");
-  val background = text("background", "Background");
-  val faction = text("faction", "Faction");
-  val genderId = text("gender-id", "Gender Identity");
-  val actualAge = text("actual-age", "Actual Age");
-  val currentMoxie = text("current-moxie", "Current Moxie Points");
-  val rezPoints = abbr("rez", "REZ", "rez-points", "Rez Points");
-  val motivations = text("motivations", "Motivations");
-  val effects = text("effects", "Active Effects");
-  val effectName = text("effect-name", "Name");
-  val effectDuration = text("effect-duration", "Duration");
-  val effectDurationExample = text("effect-duration-example", "e.g., 1min");
-  val effectOnGame = text("effect-game", "Game Effect");
-  val effectOnGameExample = text("effect-game-example", "e.g., +5 SOM, -5 COO");
-  val effectDescription = text("effect-description", "Description");
-  val showHideDescription = text("show-hide-description", "Show/Hide Description");
-  val traits = text("traits", "Traits");
-  val traitName = text("trait-name", "Name");
-  val traitDescription = text("trait-description", "Description");
-  val characterTraits = text("character-traits", "Character Traits");
-  val traitTypeOptions = {
-    import TraitType._
-    val opts = TraitType.values.map {
-      case Positive => (Positive.toString() -> "Positive")
-      case Neutral  => (Neutral.toString() -> "Neutral")
-      case Negative => (Negative.toString() -> "Negative")
-    }.toMap;
-    enum(TraitType.labelPrefix, opts)
+  val psiType = keys.psiType <~ {
+    case PsiType.Active  => "Active"
+    case PsiType.Passive => "Passive"
   }
-  val traitTypeOptionsShort = {
-    import TraitType._
-    val opts = TraitType.values.map {
-      case Positive => (Positive.toString() -> "+")
-      case Neutral  => (Neutral.toString() -> "\u25E6")
-      case Negative => (Negative.toString() -> "-")
-    }.toMap;
-    enum(TraitType.labelShortPrefix, opts)
+  val psiTypeShort = keys.psiTypeShort <~ {
+    case PsiType.Active  => "A"
+    case PsiType.Passive => "P"
   }
-  val specialRolls = text("special-rolls", "Special Rolls");
-  val successRoll = text("success-roll", "Success Roll");
-  val moxx10Roll = abbr("moxx10", "MOX × 10", "moxiex10", "Moxie times 10");
-  val wilx2Roll = abbr("wilx2", "WIL × 2", "willpowerx2", "Willpower doubled");
-  val wilx3Roll = abbr("wilx3", "WIL × 3", "willpowerx3", "Willpower tripled");
-  val somx3Roll = abbr("somx3", "SOM × 3", "somaticsx3", "Somatics tripled");
-  val intx3Roll = abbr("intx3", "INT × 3", "intuitionx3", "Intuition tripled");
-  val cogx3Roll = abbr("cogx3", "COG × 3", "cognitionx3", "Cognition tripled");
-  val refx3Roll = abbr("refx3", "REF × 3", "reflexx3", "Reflex tripled");
-  val frayHalvedRoll = abbr("fraydiv2", "Fray/2", "frayhalved", "Fray halved");
-  val durEnergyRoll = abbr("dur-energy-armor", "DUR + Energy Armor", "durability-energy-armor", "Durability + Energy Armor");
-  val refCoox2Roll = abbr("ref-coox2", "REF + COO × 2", "reflex-coordinationx2", "Reflex + Coordination doubled");
-  val refCooWilRoll = abbr("ref-coo-will", "REF + COO + WIL", "reflex-coordination-willpower", "Reflex + Coordination + Willpower");
-  val cooSomRoll = abbr("coo-som", "COO + SOM", "coordination-somatics", "Coordination + Somatics");
-  val wilCogRoll = abbr("wil-cog", "WIL + COG", "willpower-cognition", "Willpower + Cognition");
-  val psiDefense = text("psi-defense", "Psi Defense");
-  val continuityTest = text("continutity-test", "Continuity Test");
-  val resistTraumaDisorientation = text("resist-trauma-disorientation", "Resist Trauma Disorientation");
-  val stressTest = text("stress-test", "Stress Test");
-  val healTrauma = text("heal-trauma", "Heal Trauma");
-  val resistWoundKnockdown = text("resist-wound-knockdown", "Resist Knockdown from Wound");
-  val integrationTest = text("integration-test", "Integration Test");
-  val alienationTest = text("alienation-test", "Alienation Test");
-  val rangedDefence = text("ranged-defence", "Ranged Defence");
-  val resistShock = text("resist-shock", "Resist Shock");
-  val bruteStrength = text("brute-strength", "Brute Strength");
-  val catchingObjects = text("catching-objects", "Catching Objects");
-  val escapeArtist = text("escape-artist", "Escape Artist");
-  val havingAnIdea = text("having-an-idea", "Having an Idea");
-  val memoriseRecall = text("memorise-recall", "Memorise/Recall");
-  val resistAsphyxiation = text("resist-asphyxiation", "Roll with DUR (above) to resist asphyxiation.");
-  val resistBackupComplications = text("resist-backup-complications", "To resist complications during backup (EP p.270) roll with LUC (above).");
-  val holdBreath = text("hold-breath", "Suddenly Holding Breath (EP p.201)");
-  val jumpOnGrenade = text("jump-on-grenade", "Jump on Grenade");
-  val resistBrainSeizure = text("resist-brain-serizure", "Resist Psi Brain Seizure (EP p.221)");
-  val avoidLemon = text("avoid-lemon", "Avoid Lemon Breakdown (EP p.150)");
-  val avoidVirusExposure = text("avoid-virus-exposure", "Avoid Virus Exposure");
-
-  val aptitudes = text("aptitudes", "Aptitudes");
-  val cog = abbr("cog", "COG", "cognition", "Cognition");
-  val coo = abbr("coo", "COO", "coordination", "Coordination");
-  val int = abbr("int", "INT", "intuition", "Intuition");
-  val ref = abbr("ref", "REF", "reflex", "Reflex");
-  val sav = abbr("sav", "SAV", "savy", "Savy");
-  val som = abbr("som", "SOM", "somatics", "Somatics");
-  val wil = abbr("wil", "WIL", "willpower", "Willpower");
-  val aptBase = text("apt-base", "Base");
-  val aptMorphBonus = text("apt-morph-bonus", "Morph Bonus");
-  val aptMorphMax = text("apt-morph-max", "Morph Max");
-  val aptTemp = text("apt-temp", "Temp");
-  val aptTotal = text("apt-total", "Total");
-
-  val stats = text("stats", "Character Stats");
-  val mox = abbr("mox", "MOX", "moxie", "Moxie");
-  val tt = abbr("tt", "TT", "trauma-threshold", "Trauma Threshold");
-  val luc = abbr("luc", "LUC", "lucidity", "Lucidity");
-  val ir = abbr("ir", "IR", "insanity-rating", "Insanity Rating");
-  val wt = abbr("wt", "WT", "wound-threshold", "Wound Threshold");
-  val dur = abbr("dur", "DUR", "durability", "Durability");
-  val dr = abbr("dr", "DR", "death-rating", "Death Rating");
-  val init = abbr("init", "INIT", "initiative", "Initiative");
-  val spd = abbr("spd", "SPD", "speed", "Speed");
-  val moa = abbr("moa", "MOA", "mental-only-actions", "Mental Only Actions");
-  val db = abbr("db", "DB", "damage-bonus", "Damage Bonus");
-
-  val mentalHealth = text("mental-health", "Mental Health");
-  val stress = text("stress", "Stress");
-  val stressValue = abbr("sv", "SV", "stress-value", "Stress Value");
-  val trauma = text("trauma", "Trauma");
-  val physicalHealth = text("physical-health", "Physical Health");
-  val damage = text("damage", "Damage");
-  val wounds = text("wounds", "Wounds");
-  val woundsIgnored = text("wounds-ignored", "Ignored Wounds")
-
-  val armour = text("armour", "Armour");
-  val kinetic = text("kinetic", "Kinetic");
-  val energy = text("energy", "Energy");
-
-  val skills = text("skills", "Skills");
-  val activeSkills = text("active-skills", "Active Skills");
-  val knowledgeSkills = text("knowledge-skills", "Knowledge Skills");
-  val skillName = text("skill-name", "Name");
-  val skillField = text("skill-field", "Field");
-  val skillCategories = text("skill-categories", "Categories");
-  val skillSpecialisations = text("skill-specialisations", "Specialisations");
-  val skillLinkedAptitude = text("skill-linked-aptitude", "Aptitude");
-  val skillNoDefaulting = text("skill-no-defaulting", "No Defaulting");
-  val skillRanks = text("skill-ranks", "Ranks");
-  val skillMorphBonus = text("skill-morph-bonus", "Morph Bonus");
-  val skillTotal = text("skill-total", "Total");
-  val skillCategoryOptions = {
-    import Skills.SkillCategory;
-    import SkillCategory._;
-    val opts = SkillCategory.values.map {
-      case Combat    => (Combat.toString() -> "Combat")
-      case Mental    => (Mental.toString() -> "Mental")
-      case Physical  => (Physical.toString() -> "Physical")
-      case Psi       => (Psi.toString() -> "Psi & Mental") // always go together
-      case Social    => (Social.toString() -> "Social")
-      case Technical => (Technical.toString() -> "Technical")
-      case Vehicle   => (Vehicle.toString() -> "Vehicle")
-      case NA        => (NA.toString() -> "None")
-    }.toMap;
-    enum(SkillCategory.labelPrefix, opts)
+  val derangementSeverityOptions = keys.derangementSeverityOptions <~ {
+    case DerangementSeverity.Minor    => "Minor"
+    case DerangementSeverity.Moderate => "Moderate"
+    case DerangementSeverity.Major    => "Major"
   }
-  val skillCategoryOptionsShort = {
-    import Skills.SkillCategory;
-    import SkillCategory._;
-    val opts = SkillCategory.values.map {
-      case Combat    => (Combat.toString() -> "C")
-      case Mental    => (Mental.toString() -> "M")
-      case Physical  => (Physical.toString() -> "P")
-      case Psi       => (Psi.toString() -> "\u03A8&M")
-      case Social    => (Social.toString() -> "S")
-      case Technical => (Technical.toString() -> "T")
-      case Vehicle   => (Vehicle.toString() -> "V")
-      case NA        => (NA.toString() -> " ")
-    }.toMap;
-    enum(SkillCategory.labelShortPrefix, opts)
+  val chatOutputOptions = keys.chatOutputOptions <~ {
+    case ChatOutput.Public       => "Public"
+    case ChatOutput.GM           => "Whisper to GM"
+    case ChatOutput.PublicScript => "Public via API"
+    case ChatOutput.GMScript     => "Whisper to GM via API"
   }
-
-  val skillClassOptions = {
-    import Skills.SkillClass;
-    import SkillClass._;
-    val opts = SkillClass.values.map {
-      case Active    => (Active.toString() -> "Active")
-      case Knowledge => (Knowledge.toString() -> "Knowledge")
-    }.toMap;
-    enum(SkillClass.labelPrefix, opts)
-  }
-
-  //  val skillClassOptionsShort = {
-  //    import Skills.SkillClass;
-  //    import SkillClass._;
-  //    val opts = SkillClass.values.map {
-  //      case Active    => (Active.toString() -> "A")
-  //      case Knowledge => (Knowledge.toString() -> "K")
-  //    }.toMap;
-  //    enum(SkillClass.labelShortPrefix, opts)
-  //  }
-
-  val skillSortOptions = {
-    import Skills.SortBy;
-    import SortBy._;
-
-    val opts = SortBy.values.map {
-      case None     => (None.toString() -> " - ")
-      case Name     => (Name.toString() -> "Name")
-      case Category => (Category.toString() -> "Category")
-      case Aptitude => (Aptitude.toString() -> "Aptitude")
-    }.toMap;
-    enum(SortBy.labelPrefix, opts)
-  }
-
   // ****************
   // ADD OPTIONS HERE
   // ****************
@@ -248,229 +379,5 @@ object EPTranslation extends SheetI18N {
     DamageType -> dmgTypeShort,
     PsiType -> psiTypeShort,
     TraitType -> traitTypeOptionsShort);
-  //Skills.SkillClass -> skillClassOptionsShort);
-
-  val skillsGenerate = text("generate-skills", "Generate Default Skills");
-  val skillsGenerating = text("generating-skills", "Generating Skills...");
-  val skillsSortBy = text("skills-sort-by", "Sort by");
-  val skillsSort = text("skills-sort", "Sort Now");
-  val skillCommands = text("skill-commands", "Commands");
-
-  val skillReloadPage = text("skill-reload-page", "Sorting result is only shown after reopening the sheet.");
-  val skillNoSortManual = text("skill-no-sort-manual", "Due to Roll20 limitations, manually added items can not be sorted automatically at this time.");
-
-  val core = text("core", "Core");
-  val morph = text("morphs", "Morph");
-  val activeMorph = text("active-morph", "Active Morph");
-  val morphBank = text("morph-bank", "Morph Bank");
-  val morphType = text("morph-type", "Type");
-  val morphName = text("morph-name", "Model");
-  val morphLabel = text("morph-label", "Label");
-  val morphDescription = text("morph-description", "Description");
-  val morphLocation = text("morph-location", "Storage Location");
-  val morphTraits = text("morph-traits", "Traits");
-  val morphImplants = text("morph-implants", "Implants/Enhancements");
-  val morphMobilitySystem = text("morph-mobility-system", "Mobility System(s)");
-  val morphDurability = text("morph-durability", "Durability");
-  val morphArmour = text("morph-armour", "Armour");
-  val morphArmourEnergy = text("morph-armour-energy", "Energy Armour");
-  val morphArmourKinetic = text("morph-armour-kinetic", "Kinetic Armour");
-  val morphAptitudeBoni = text("morph-aptitude-boni", "Aptitude Boni");
-  val morphAptitudeMax = text("morph-aptitude-max", "Aptitude Max");
-  val morphSkillBoni = text("morph-skill-boni", "Skill Boni");
-  val morphVisibleAge = text("morph-visible-age", "Visible Age");
-  val morphVisibleGender = text("morph-visible-gender", "Visible Gender");
-
-  val gear = text("gear", "Gear");
-  val gearFreeform = text("gear-freeform", "Freeform Gear");
-  val meleeWeapons = text("melee-weapons", "Melee Weapons");
-  val rangedWeapons = text("ranged-weapons", "Ranged Weapons");
-  val armourWorn = text("armour-worn", "Armour Worn");
-  val armourActiveTotal = text("armour-active-total", "Active Bonus");
-  val layeringPenalty = text("armour-layering-penalty", "Layered Armour Penalty")
-  val armourName = text("armour-name", "Name");
-  val armourAccessory = text("armour-accessory", "Armour Accessory");
-  val equipment = text("equipment", "Equipment");
-  val equipmentName = text("equipment-name", "Name");
-  val equipmentDescription = text("equipment-description", "Description");
-  val currency = text("currency", "Currency");
-  val cryptoCredits = text("crypto-credit", "Crypto Credits");
-  val cash = text("cash", "Cash (Credit Chips)");
-
-  val ap = abbr("ap", "AP", "armour-penetration", "Armour Penetration");
-  val orTotalAP = text("or-total-ap", "or ignore armour if critical success");
-  val dmg = abbr("weapon-dmg", "Dmg", "weapon-damage", "Damage");
-  val dmgType = {
-    import DamageType._;
-    val opts = DamageType.values.map {
-      case Kinetic => (Kinetic.toString -> "Kinetic")
-      case Energy  => (Energy.toString -> "Energy")
-    }.toMap;
-    enum(DamageType.labelPrefix, opts)
-  }
-  val dmgTypeShort = {
-    import DamageType._;
-    val opts = DamageType.values.map {
-      case Kinetic => (Kinetic.toString -> "K")
-      case Energy  => (Energy.toString -> "E")
-    }.toMap;
-    enum(DamageType.labelShortPrefix, opts)
-  }
-  val weaponName = text("weapon-name", "Weapon Name");
-  val weaponSkill = text("weapon-skill", "Skill");
-  val weaponSkillSearch = text("weapon-skill-search", "Search Skill");
-  val weaponDescription = text("weapon-description", "Description");
-  val firingModes = text("fire-modes", "Firing Modes");
-  val singleShot = abbr("ss", "SS", "single-shot", "Single Shot");
-  val semiAutomatic = abbr("sa", "SA", "semi-automatic", "Semi-Automatic");
-  val burstFire = abbr("bf", "BF", "burst-fire", "Burst Fire");
-  val fullAutomatic = abbr("fa", "FA", "full-automatic", "Full Automatic");
-  val singleShotDescription = text("single-shot-description", """
-Single shot weapons may only be fired once per Complex Action.
-""".trim);
-  val semiAutomaticDescription = text("semi-automatic-description", """
-Semi-automatic weapons may be fired twice with the same Complex Action. Each shot is handled as a separate attack.
-""".trim);
-  val burstFireDescription = text("burst-fire-description", """
-Two bursts maybe fired with the same Complex Action. Each burst is handled as a separate attack. Bursts use up 3 shots worth of ammunition.
-A burst may be shot against a single target (concentrated fire) or against two targets within one meter of each other. Against a single target, the attacker can choose either a +10 modifier to hit or increase the DV by +1d10.
-""".trim);
-  val fullAutomaticDescription = text("full-automatic-description", """
-Only one full-auto attack may be made with each Complex Action. This attack may be made on a single target or against up to three separate targets within one meter of another. Against a single individual, the attacker can choose either a +30 modifier to hit or increase the DV by +3d10. Firing in full automatic mode uses up 10 shots.
-""".trim);
-  val weaponRanges = text("weapon-ranges", "Ranges");
-  val shortRange = abbr("s-range", "S", "short-range", "Short");
-  val mediumRange = abbr("m-range", "M", "medium-range", "Medium");
-  val longRange = abbr("l-range", "L", "long-range", "Long");
-  val extremeRange = abbr("x-range", "X", "extreme-range", "Extreme");
-  val magazine = text("magazine", "Magazine");
-  val size = text("size", "Size");
-  val ammoType = text("ammo-type", "Ammo Type");
-
-  val damageInflicts = text("damage-inflicts", "Inflicts");
-  val damageValue = abbr("dv", "DV", "damage-value", "Damage Value");
-  val concentrateFire = text("concentrate-fire", "Concentrate Fire");
-
-  // identities
-  val identities = text("identities", "Identities");
-  val identity = text("identity", "Identity");
-  val idDescription = text("id-description", "Description");
-  val idCredits = text("id-credits", "Credits");
-  val idNotes = text("id-notes", "Notes");
-
-  val reputation = text("reputaion", "Reputation");
-  val repScore = text("rep-score", "Score");
-  val calledInFavours = text("called-in-favours", "Called in Favours");
-  val lvl1 = abbr("lvl1", "Lvl 1", "level1", "Level 1");
-  val lvl2 = abbr("lvl2", "Lvl 2", "level2", "Level 2");
-  val lvl3 = abbr("lvl3", "Lvl 3", "level3", "Level 3");
-  val lvl4 = abbr("lvl4", "Lvl 4", "level4", "Level 4");
-  val lvl5 = abbr("lvl5", "Lvl 5", "level5", "Level 5");
-  val atRep = abbr("atRep", "@-Rep", "circleAlist", "The Circle-A List (Autonomists)");
-  val cRep = abbr("cRep", "c-Rep", "civicNet", "CivicNet (Hypercorps)");
-  val eRep = abbr("eRep", "e-Rep", "ecoWave", "EcoWave (Ecologists)");
-  val fRep = abbr("fRep", "f-Rep", "fame", "Fame (Media)");
-  val gRep = abbr("gRep", "g-Rep", "guanxi", "Guanxi (Criminals)");
-  val iRep = abbr("iRep", "i-Rep", "theEye", "The Eye (Firewall)");
-  val rRep = abbr("rRep", "r-Rep", "rna", "Research Network Associates (Scientists)");
-  val uRep = abbr("uRep", "u-Rep", "ultimateRep", "Ultimate (Ultimates)");
-  val xRep = abbr("xRep", "x-Rep", "exploreNet", "ExploreNet (Gatecrashers)");
-
-  // PSI
-  val async = text("async", "Async");
-  val asyncTrait = text("async-trait", "Has Asyc trait");
-  val psi = text("psi", "Psi");
-  val psiTempTime = text("psi-temp-time", "Temporary Duration");
-  val psiTempUnits = text("psi-temp-units", "units");
-  val psiSustained = text("psi-sustained", "Sustained Sleights");
-  val psiCurrent = text("psi-current", "Currently Sustained");
-  val psiSustainedMod = text("psi-sustained-mod", "Skill Penalty");
-  val psiChi = text("psi-chi", "Psi-chi Sleights");
-  val psiGamma = text("psi-gamma", "Psi-gamma Sleights");
-  val sleightName = text("sleight-name", "Name");
-  val sleightDescription = text("sleight-description", "Description");
-  val psiRange = text("psi-range", "Range");
-  val psiAction = text("psi-action", "Action");
-  val psiDuration = text("psi-duration", "Duration");
-  val strainMod = text("psi-strain-mod", "Strain Mod");
-  val strain = text("strain", "Strain");
-  val psiSkill = text("psi-skill", "Skill");
-  val psiType = {
-    import PsiType._;
-    val opts = PsiType.values.map {
-      case Active  => (Active.toString -> "Active")
-      case Passive => (Passive.toString -> "Passive")
-    }.toMap;
-    enum(PsiType.labelPrefix, opts)
-  }
-  val psiTypeShort = {
-    import PsiType._;
-    val opts = PsiType.values.map {
-      case Active  => (Active.toString -> "A")
-      case Passive => (Passive.toString -> "P")
-    }.toMap;
-    enum(PsiType.labelShortPrefix, opts)
-  }
-
-  // MUSE
-  val muse = text("muse", "Muse");
-  val museInfo = text("muse-info", "Muse Info");
-  val museName = text("muse-name", "Name");
-  val museNotes = text("muse-notes", "Notes");
-  val museSkills = text("muse-skills", "Muse Skills");
-
-  // Derangements and Disorders
-  val derangementSeverityOptions = {
-    import DerangementSeverity._;
-    val opts = DerangementSeverity.values.map {
-      case Minor    => (Minor.toString() -> "Minor")
-      case Moderate => (Moderate.toString() -> "Moderate")
-      case Major    => (Major.toString() -> "Major")
-    }.toMap;
-    enum(DerangementSeverity.labelPrefix, opts)
-  }
-
-  val derangements = text("derangements", "Derangements");
-  val derangementDescription = text("derangement-description", "Description");
-  val hours = abbr("hours-short", "h", "hours-long", "hours");
-  val derangementDuration = text("derangement-duration", "Duration");
-  val derangementSeverity = text("derangement-severity", "Severity");
-
-  val disorders = text("disorders", "Disorders");
-  val disorderDescription = text("disorder-description", "Description");
-  val disorderRemainingTreatment = text("disorder-remaining-treatment", "Remaining treatment time");
-
-  // MISC
-  val options = text("options", "Options");
-  val sheetSettings = text("sheet-settings", "Sheet Settings");
-  val miscModifiers = text("misc-modifiers", "Misc. Modifiers");
-  val miscActionMod = text("misc-action-mod", "Misc. All Actions Modifier");
-  //val weightUnit = text("weight-unit", "Weight Unit");
-  val miscNotes = text("misc-notes", "Misc. Notes");
-  val miscPhysicalMod = text("misc-physical-mod", "Misc. Physical Modifier");
-  val miscInitiativeMod = text("misc-initiative-mod", "Misc. Initiative Modifier");
-  val miscDurBonus = text("misc-dur-bonus", "Misc. Durability Bonus");
-  val chatOutput = text("chat-output", "Chat Output");
-  val chatOutputOptions = {
-    import ChatOutput._;
-    val opts = ChatOutput.values.map {
-      case Public       => (Public.toString() -> "Public")
-      case GM           => (GM.toString() -> "Whisper to GM")
-      case PublicScript => (PublicScript.toString() -> "Public via API")
-      case GMScript     => (GMScript.toString() -> "Whisper to GM via API")
-    }.toMap;
-    enum(ChatOutput.labelPrefix, opts)
-  }
-
-  // templates
-  val rollsfor = text("rolls-for", "rolls for");
-  val rollSuccess = text("roll-success", "Roll is a success");
-  val rollCritSuccess = text("roll-crit-success", "Roll is a critical success");
-  val rollAutoSuccess = text("roll-auto-success", "Roll is an automatic success");
-  val rollFailure = text("roll-failure", "Roll is a failure");
-  val rollCritFailure = text("roll-crit-failure", "Roll is a critical failure");
-  val rollAutoFailure = text("roll-auto-failure", "Roll is an automatic failure");
-  val mos = abbr("mos", "MoS", "margin-of-success", "Margin of Success");
-  val mof = abbr("mof", "MoF", "margin-of-failure", "Margin of Failure");
 
 }

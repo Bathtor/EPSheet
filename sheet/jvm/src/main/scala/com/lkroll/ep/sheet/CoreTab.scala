@@ -54,7 +54,7 @@ object CoreTab extends FieldGroup {
     (t.motivations -> dualMode(char.motivations.like(CoreTabRenderer.textareaField))));
 
   val traitTypeRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
-    span(EPStyle.`trait-tag-field`, name := f.name, SheetI18N.datai18nDynamic)
+    span(EPStyle.`trait-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic)
   }
 
   val effects = block(

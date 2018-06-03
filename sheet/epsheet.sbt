@@ -4,7 +4,7 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.6.2"
+version in ThisBuild := "1.6.3"
 
 scalaVersion in ThisBuild := "2.12.4"
 
@@ -47,7 +47,7 @@ lazy val epsheet = crossProject.in(file(".")).
   settings(
     name := "EP Sheet",
     libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.+",
-    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.9.+", 
+    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.10.+", 
     libraryDependencies += "com.lkroll.ep" %%% "ep-model" % version.value,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
     EclipseKeys.useProjectId := true,
