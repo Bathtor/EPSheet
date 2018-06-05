@@ -37,6 +37,7 @@ object EPTranslation extends SheetI18NDefaults {
   val author = keys.author <~ "Author";
   val github = keys.github <~ "Github";
   val note = keys.note <~ "Note";
+
   val characterInfo = keys.characterInfo <~ "Character Info";
   val background = keys.background <~ "Background";
   val faction = keys.faction <~ "Faction";
@@ -130,6 +131,8 @@ object EPTranslation extends SheetI18NDefaults {
   val armour = keys.armour <~ "Armour";
   val kinetic = keys.kinetic <~ "Kinetic";
   val energy = keys.energy <~ "Energy";
+
+  // skills
   val skills = keys.skills <~ "Skills";
   val activeSkills = keys.activeSkills <~ "Active Skills";
   val knowledgeSkills = keys.knowledgeSkills <~ "Knowledge Skills";
@@ -149,7 +152,17 @@ object EPTranslation extends SheetI18NDefaults {
   val skillCommands = keys.skillCommands <~ "Commands";
   val skillReloadPage = keys.skillReloadPage <~ "Sorting result is only shown after reopening the sheet.";
   val skillNoSortManual = keys.skillNoSortManual <~ "Due to Roll20 limitations, manually added items can not be sorted automatically at this time.";
+  // default skills
+  val defaultSkills: List[DataLabel] = keys.defaultSkills.toList.map {
+    case (k, v) => v <~ k
+  };
+  val defaultFields: List[DataLabel] = keys.defaultFields.toList.map {
+    case (k, v) => v <~ k
+  };
+
   val core = keys.core <~ "Core";
+
+  // morphs
   val morph = keys.morph <~ "Morph";
   val activeMorph = keys.activeMorph <~ "Active Morph";
   val morphBank = keys.morphBank <~ "Morph Bank";
@@ -170,6 +183,8 @@ object EPTranslation extends SheetI18NDefaults {
   val morphSkillBoni = keys.morphSkillBoni <~ "Skill Boni";
   val morphVisibleAge = keys.morphVisibleAge <~ "Visible Age";
   val morphVisibleGender = keys.morphVisibleGender <~ "Visible Gender";
+
+  // gear
   val gear = keys.gear <~ "Gear";
   val gearFreeform = keys.gearFreeform <~ "Freeform Gear";
   val meleeWeapons = keys.meleeWeapons <~ "Melee Weapons";
@@ -221,6 +236,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val damageInflicts = keys.damageInflicts <~ "Inflicts";
   val damageValue = keys.damageValue <~ ("DV", "Damage Value");
   val concentrateFire = keys.concentrateFire <~ "Concentrate Fire";
+
+  // identities
   val identities = keys.identities <~ "Identities";
   val identity = keys.identity <~ "Identity";
   val idDescription = keys.idDescription <~ "Description";
@@ -243,6 +260,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val rRep = keys.rRep <~ ("r-Rep", "Research Network Associates (Scientists)");
   val uRep = keys.uRep <~ ("u-Rep", "Ultimate (Ultimates)");
   val xRep = keys.xRep <~ ("x-Rep", "ExploreNet (Gatecrashers)");
+
+  // psi
   val async = keys.async <~ "Async";
   val asyncTrait = keys.asyncTrait <~ "Has Asyc trait";
   val psi = keys.psi <~ "Psi";
@@ -261,11 +280,15 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val strainMod = keys.strainMod <~ "Strain Mod";
   val strain = keys.strain <~ "Strain";
   val psiSkill = keys.psiSkill <~ "Skill";
+
+  // muse
   val muse = keys.muse <~ "Muse";
   val museInfo = keys.museInfo <~ "Muse Info";
   val museName = keys.museName <~ "Name";
   val museNotes = keys.museNotes <~ "Notes";
   val museSkills = keys.museSkills <~ "Muse Skills";
+
+  // derangements
   val derangements = keys.derangements <~ "Derangements";
   val derangementDescription = keys.derangementDescription <~ "Description";
   val hours = keys.hours <~ ("h", "hours");
@@ -274,6 +297,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val disorders = keys.disorders <~ "Disorders";
   val disorderDescription = keys.disorderDescription <~ "Description";
   val disorderRemainingTreatment = keys.disorderRemainingTreatment <~ "Remaining treatment time";
+
+  // options
   val options = keys.options <~ "Options";
   val sheetSettings = keys.sheetSettings <~ "Sheet Settings";
   val miscModifiers = keys.miscModifiers <~ "Misc. Modifiers";
@@ -283,6 +308,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscInitiativeMod = keys.miscInitiativeMod <~ "Misc. Initiative Modifier";
   val miscDurBonus = keys.miscDurBonus <~ "Misc. Durability Bonus";
   val chatOutput = keys.chatOutput <~ "Chat Output";
+
+  // template
   val rollsfor = keys.rollsfor <~ "rolls for";
   val rollSuccess = keys.rollSuccess <~ "Roll is a success";
   val rollCritSuccess = keys.rollCritSuccess <~ "Roll is a critical success";

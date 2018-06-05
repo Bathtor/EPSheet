@@ -33,6 +33,8 @@ object EPTranslation extends SheetI18N {
   val author = text("author");
   val github = text("github");
   val note = text("note");
+
+  // character
   val characterInfo = text("character-info");
   val background = text("background");
   val faction = text("faction");
@@ -126,6 +128,8 @@ object EPTranslation extends SheetI18N {
   val armour = text("armour");
   val kinetic = text("kinetic");
   val energy = text("energy");
+
+  // skills
   val skills = text("skills");
   val activeSkills = text("active-skills");
   val knowledgeSkills = text("knowledge-skills");
@@ -145,7 +149,35 @@ object EPTranslation extends SheetI18N {
   val skillCommands = text("skill-commands");
   val skillReloadPage = text("skill-reload-page");
   val skillNoSortManual = text("skill-no-sort-manual");
+  // default skills
+  val defaultSkills: Map[String, DataKey] = {
+    val pregen = Skills.pregen.map { s =>
+      val skillKey = "skill-" + s.name.toLowerCase().replaceAll(" ", "-");
+      (s.name -> text(skillKey))
+    }.toMap;
+    // add special muse skills
+    pregen + ("[Custom]" -> text("skill-custom"))
+  };
+  val defaultFields: Map[String, DataKey] = {
+    val pregen = Skills.pregen.flatMap { s =>
+      s.field match {
+        case Some("???") => None
+        case Some(fieldName) => {
+          val fieldKey = "field-" + fieldName.toLowerCase().replaceAll(" ", "-");
+          Some((fieldName -> text(fieldKey)))
+        }
+        case None => None
+      }
+    }.toMap;
+    // add special muse skills
+    pregen + ("Psychology" -> text("field-psychology")) +
+      ("Electronics" -> text("field-electronics")) +
+      ("Accounting" -> text("field-accounting"))
+  };
+
   val core = text("core");
+
+  // morphs
   val morph = text("morphs");
   val activeMorph = text("active-morph");
   val morphBank = text("morph-bank");
@@ -166,6 +198,8 @@ object EPTranslation extends SheetI18N {
   val morphSkillBoni = text("morph-skill-boni");
   val morphVisibleAge = text("morph-visible-age");
   val morphVisibleGender = text("morph-visible-gender");
+
+  // gear
   val gear = text("gear");
   val gearFreeform = text("gear-freeform");
   val meleeWeapons = text("melee-weapons");
@@ -208,6 +242,8 @@ object EPTranslation extends SheetI18N {
   val damageInflicts = text("damage-inflicts");
   val damageValue = abbr("dv", "damage-value");
   val concentrateFire = text("concentrate-fire");
+
+  // identities and reputation
   val identities = text("identities");
   val identity = text("identity");
   val idDescription = text("id-description");
@@ -230,6 +266,8 @@ object EPTranslation extends SheetI18N {
   val rRep = abbr("rRep", "rna");
   val uRep = abbr("uRep", "ultimateRep");
   val xRep = abbr("xRep", "exploreNet");
+
+  // psi
   val async = text("async");
   val asyncTrait = text("async-trait");
   val psi = text("psi");
@@ -248,11 +286,15 @@ object EPTranslation extends SheetI18N {
   val strainMod = text("psi-strain-mod");
   val strain = text("strain");
   val psiSkill = text("psi-skill");
+
+  // muse
   val muse = text("muse");
   val museInfo = text("muse-info");
   val museName = text("muse-name");
   val museNotes = text("muse-notes");
   val museSkills = text("muse-skills");
+
+  // derangements
   val derangements = text("derangements");
   val derangementDescription = text("derangement-description");
   val hours = abbr("hours-short", "hours-long");
@@ -261,6 +303,8 @@ object EPTranslation extends SheetI18N {
   val disorders = text("disorders");
   val disorderDescription = text("disorder-description");
   val disorderRemainingTreatment = text("disorder-remaining-treatment");
+
+  // options
   val options = text("options");
   val sheetSettings = text("sheet-settings");
   val miscModifiers = text("misc-modifiers");
@@ -270,6 +314,8 @@ object EPTranslation extends SheetI18N {
   val miscInitiativeMod = text("misc-initiative-mod");
   val miscDurBonus = text("misc-dur-bonus");
   val chatOutput = text("chat-output");
+
+  // template
   val rollsfor = text("rolls-for");
   val rollSuccess = text("roll-success");
   val rollCritSuccess = text("roll-crit-success");

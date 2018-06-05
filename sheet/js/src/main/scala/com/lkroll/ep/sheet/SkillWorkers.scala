@@ -189,6 +189,7 @@ object SkillWorkers extends SheetWorker {
 
   val generateDefaultSkills = nop { _: Option[Unit] =>
 
+    debug("****** Preparing to generate default skills");
     val activeNamesF = getRowAttrs(activeSkills, Seq(activeSkills.skillName)).map(_.flatMap {
       case (k, v) => v.apply(activeSkills.skillName)
     } toSet);
@@ -200,19 +201,24 @@ object SkillWorkers extends SheetWorker {
       activeNames <- activeNamesF;
       knowledgeNames <- knowledgeNamesF
     } yield {
+      debug("****** Generating default skills");
       // double check there are no duplicate row ids generated (Roll20 seems to be doing that sometimes...)
       val dataNoDuplicates = Skills.pregen.foldLeft((Set.empty[String], Map.empty[FieldLike[Any], Any]))((acc, skill) => {
         acc match {
           case (ids, valueAcc) => {
+            debug(s"****** Generating entry for ${skill.name}");
             val ignore = if (skill.cls == Skills.SkillClass.Active) ignoreSkill(skill, activeNames) else ignoreSkill(skill, knowledgeNames);
             if (ignore) {
+              debug(s"****** Ignoring ${skill.name}");
               (ids, valueAcc)
             } else {
               var curId: String = null;
               do {
                 curId = Roll20.generateRowID();
               } while (ids.contains(curId))
+              debug(s"****** Generating skill values for ${skill.name} with id=$curId");
               val skillValues = generateSkillWithId(curId, skill);
+              debug(s"****** Adding skill values for ${skill.name} with id=$curId");
               (ids + curId, valueAcc ++ skillValues)
             }
           }
@@ -225,9 +231,19 @@ object SkillWorkers extends SheetWorker {
   };
 
   private def ignoreSkill(skill: Skill, existingNames: Set[String]): Boolean = {
+    val key = EPTranslation.defaultSkills.get(skill.name) match {
+      case Some(d) => d.key
+      case None    => error(s"No translation key for skill ${skill.name}!"); "no-key-found"
+    };
+    debug(s"****** Looking up localised name for skill ${skill.name} with key ${key}");
+    val name = getTranslationByKey(key).getOrElse {
+      error(s"Could not find translation for $key!");
+      key
+    };
+    debug(s"****** Localised name for skill ${skill.name} with key ${key} is ${name}");
     skill.field match {
       case Some("???") => false
-      case _           => existingNames.contains(skill.name)
+      case _           => existingNames.contains(name)
     }
   }
 
@@ -281,10 +297,18 @@ object SkillWorkers extends SheetWorker {
   };
 
   private def filterSkill(skill: Skill, exclude: Set[String], include: Set[String]): Boolean = {
+    val key = EPTranslation.defaultSkills.get(skill.name) match {
+      case Some(d) => d.key
+      case None    => error(s"No translation key for skill ${skill.name}!"); "no-key-found"
+    };
+    val localisedName = getTranslationByKey(key).getOrElse {
+      error(s"Could not find translation for $key!");
+      key
+    };
     if (include.contains(skill.name)) {
       skill.field match {
         case Some("???") => false
-        case _           => exclude.contains(skill.name) || !include.contains(skill.name)
+        case _           => exclude.contains(localisedName) || !include.contains(skill.name)
       }
     } else {
       true
@@ -293,9 +317,36 @@ object SkillWorkers extends SheetWorker {
 
   private def generateMuseSkillWithId(id: String, skill: Skill, defaultValues: Map[String, Int], defaultFields: Map[String, String]): Seq[(FieldLike[Any], Any)] = {
     import museSkills._;
+
+    val skillKey = EPTranslation.defaultSkills.get(skill.name) match {
+      case Some(d) => d.key
+      case None    => error(s"No translation key for skill ${skill.name}!"); "no-key-found"
+    };
+    val localisedName = getTranslationByKey(skillKey).getOrElse {
+      error(s"Could not find translation for $skillKey!");
+      skillKey
+    };
+
+    val localisedField = defaultFields.get(skill.name).map {
+      case "???" => "???"
+      case fieldName => {
+        val fieldKey = EPTranslation.defaultFields.get(fieldName) match {
+          case Some(d) => d.key
+          case None    => error(s"No translation key for field ${fieldName}!"); "no-key-found"
+        };
+        debug(s"****** Looking up localised name for field ${fieldName} with key ${fieldKey}");
+        val localisedName = getTranslationByKey(fieldKey).getOrElse {
+          error(s"Could not find translation for $fieldKey!");
+          fieldKey
+        };
+        debug(s"****** Localised name for field ${fieldName} with key ${fieldKey} is ${localisedName}");
+        localisedName
+      }
+    } getOrElse (field.resetValue);
+
     Seq(
-      museSkills.at(id, skillName) <<= skill.name,
-      museSkills.at(id, field) <<= defaultFields.getOrElse(skill.name, field.resetValue),
+      museSkills.at(id, skillName) <<= localisedName,
+      museSkills.at(id, field) <<= localisedField,
       museSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
       museSkills.at(id, ranks) <<= defaultValues.getOrElse(skill.name, ranks.resetValue),
       museSkills.at(id, total) <<= total.resetValue)
@@ -310,13 +361,41 @@ object SkillWorkers extends SheetWorker {
   }
 
   private def generateSkillWithId(id: String, skill: Skill): Seq[(FieldLike[Any], Any)] = {
+    val skillKey = EPTranslation.defaultSkills.get(skill.name) match {
+      case Some(d) => d.key
+      case None    => error(s"No translation key for skill ${skill.name}!"); "no-key-found"
+    };
+    debug(s"****** Looking up localised name for skill ${skill.name} with key ${skillKey}");
+    val localisedName = getTranslationByKey(skillKey).getOrElse {
+      error(s"Could not find translation for $skillKey!");
+      skillKey
+    };
+    debug(s"****** Localised name for skill ${skill.name} with key ${skillKey} is ${localisedName}");
+
+    val localisedField = skill.field.map {
+      case "???" => "???"
+      case fieldName => {
+        val fieldKey = EPTranslation.defaultFields.get(fieldName) match {
+          case Some(d) => d.key
+          case None    => error(s"No translation key for field ${fieldName}!"); "no-key-found"
+        };
+        debug(s"****** Looking up localised name for field ${fieldName} with key ${fieldKey}");
+        val localisedName = getTranslationByKey(fieldKey).getOrElse {
+          error(s"Could not find translation for $fieldKey!");
+          fieldKey
+        };
+        debug(s"****** Localised name for field ${fieldName} with key ${fieldKey} is ${localisedName}");
+        localisedName
+      }
+    };
+
     if (skill.cls == Skills.SkillClass.Active) {
       import activeSkills._;
       val globalModsExpression = modsForSkillCategory(skill.category);
       Seq(
         activeSkills.at(id, rowId) <<= id,
-        activeSkills.at(id, skillName) <<= skill.name,
-        activeSkills.at(id, field) <<= skill.field.getOrElse(field.resetValue),
+        activeSkills.at(id, skillName) <<= localisedName,
+        activeSkills.at(id, field) <<= localisedField.getOrElse(field.resetValue),
         activeSkills.at(id, category) <<= skill.category.toString(),
         activeSkills.at(id, categoryShort) <<= Skills.SkillCategory.dynamicLabelShort(skill.category),
         activeSkills.at(id, specialisations) <<= specialisations.resetValue,
@@ -331,7 +410,7 @@ object SkillWorkers extends SheetWorker {
       Seq(
         knowledgeSkills.at(id, rowId) <<= id,
         knowledgeSkills.at(id, skillName) <<= skill.name,
-        knowledgeSkills.at(id, field) <<= skill.field.getOrElse(field.resetValue),
+        knowledgeSkills.at(id, field) <<= localisedField.getOrElse(field.resetValue),
         knowledgeSkills.at(id, specialisations) <<= specialisations.resetValue,
         knowledgeSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
         knowledgeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
