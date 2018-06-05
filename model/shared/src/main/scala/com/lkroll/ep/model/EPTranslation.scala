@@ -242,6 +242,9 @@ object EPTranslation extends SheetI18N {
   val damageInflicts = text("damage-inflicts");
   val damageValue = abbr("dv", "damage-value");
   val concentrateFire = text("concentrate-fire");
+  val software = text("software");
+  val softwareQuality = text("software-quality");
+  val qualityMod = text("quality-modifier");
 
   // identities and reputation
   val identities = text("identities");

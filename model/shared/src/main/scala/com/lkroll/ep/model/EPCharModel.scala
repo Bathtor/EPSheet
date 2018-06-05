@@ -191,6 +191,7 @@ object EPCharModel extends SheetModel {
   val armourKineticBonus = "armour_kinetic_bonus".editable(false).default(0);
   val layeringPenalty = "layering_penalty".editable(false).default(0);
   val equipment = GearSection;
+  val software = SoftwareSection;
   val cryptoCredits = "crypto_currency".default(0).validIn(-999999999, 999999999, 1);
   val cash = "cash".default(0).validIn(-999999999, 999999999, 1);
   val gear1 = "gear1".default("");

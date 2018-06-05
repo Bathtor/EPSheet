@@ -123,3 +123,16 @@ object GearSection extends RepeatingSection {
   val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
+
+object SoftwareSection extends RepeatingSection {
+  import FieldImplicits._;
+
+  implicit val ctx = this.renderingContext;
+
+  def name = "software";
+  val itemName = text("item_name");
+  val quality = text("quality");
+  val qualityMod = "quality_mod".default(0).validIn(-60, 60, 10);
+  val showDescription = flag("show_description").default(false);
+  val description = text("description");
+}

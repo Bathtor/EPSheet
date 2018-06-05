@@ -28,23 +28,17 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, GearSection }
+import com.lkroll.ep.model.{ EPCharModel => epmodel, SoftwareSection }
 import APIImplicits._;
 
 case class SoftwareImport(s: Software) extends Importable {
   override def updateLabel: String = s"${s.quality.label} s.name";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
     val rowId = Some(idPool.generateRowId());
-    s.quality match {
-      case SoftwareQuality.Standard => {
-        char.createRepeating(GearSection.itemName, rowId) <<= s.name;
-        char.createRepeating(GearSection.description, rowId) <<= s.descr;
-      }
-      case q => {
-        char.createRepeating(GearSection.itemName, rowId) <<= s"${q.label} ${s.name}";
-        char.createRepeating(GearSection.description, rowId) <<= s.descr ++ "\n---\n" ++ f"Quality Modifier: ${q.modifier}%+d";
-      }
-    }
+    char.createRepeating(SoftwareSection.itemName, rowId) <<= s.name;
+    char.createRepeating(SoftwareSection.quality, rowId) <<= s.quality.label;
+    char.createRepeating(SoftwareSection.qualityMod, rowId) <<= s.quality.modifier;
+    char.createRepeating(SoftwareSection.description, rowId) <<= s.descr;
     Left("Ok")
   }
 }

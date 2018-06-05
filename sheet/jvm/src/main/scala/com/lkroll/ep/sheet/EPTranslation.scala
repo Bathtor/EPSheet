@@ -236,6 +236,9 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val damageInflicts = keys.damageInflicts <~ "Inflicts";
   val damageValue = keys.damageValue <~ ("DV", "Damage Value");
   val concentrateFire = keys.concentrateFire <~ "Concentrate Fire";
+  val software = keys.software <~ "Software";
+  val softwareQuality = keys.softwareQuality <~ "Quality";
+  val qualityMod = keys.qualityMod <~ "Quality Modifier";
 
   // identities
   val identities = keys.identities <~ "Identities";

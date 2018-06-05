@@ -430,6 +430,31 @@ object GearTab extends FieldGroup {
           MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
+  val software: SheetElement = block(
+    t.software,
+    char.software {
+      TightRepRow(
+        presOnly(
+          flowpar(
+            char.software.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            char.software.itemName.like(rowItemName),
+            span(raw("(")),
+            char.software.qualityMod,
+            span(raw(" – ")),
+            char.software.quality,
+            span(raw(") ")),
+            flexFill),
+          indentpar(
+            char.software.showDescription.like(CoreTabRenderer.descriptionToggle),
+            char.software.description.like(CoreTabRenderer.description))),
+        editOnly(tightfrow(
+          char.software.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
+          char.software.quality.like(CoreTabRenderer.textWithPlaceholder(t.softwareQuality.placeholder)),
+          (t.qualityMod -> char.software.qualityMod),
+          span(sty.inlineLabel, t.equipmentDescription),
+          MarkupElement(char.software.description.like(CoreTabRenderer.textareaFieldGrow)))))
+    });
+
   val fireModes: SheetElement = block(
     t.firingModes,
     flowpar(
@@ -461,7 +486,8 @@ object GearTab extends FieldGroup {
         Seq(EPStyle.`flex-grow`, sty.exactly20rem),
         armourWorn,
         currency,
-        equipment)),
+        equipment,
+        software)),
     frow(
       sty.`flex-stretch`,
       fcol(
