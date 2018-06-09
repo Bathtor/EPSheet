@@ -141,6 +141,7 @@ object EPCharModel extends SheetModel {
   val trauma = "trauma".default(0).validIn(0, 99, 1);
   val traumaMod = "trauma_mod".editable(false).default(0);
   val damage = "damage".default(0).validIn(0, 999, 1);
+  val damageMax = "damage_max".editable(false).default(0);
   val wounds = "wounds".default(0).validIn(0, 99, 1);
   val woundMod = "wound_mod".editable(false).default(0);
   val woundsIgnored = "wounds_ignored".default(0).validIn(0, 99, 1);

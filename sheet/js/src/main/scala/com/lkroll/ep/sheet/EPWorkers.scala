@@ -159,6 +159,7 @@ object EPWorkers extends SheetWorkerRoot {
       val dur = morphDur + bonus;
       Seq(
         durability <<= dur,
+        damageMax <<= dur,
         woundThreshold <<= Math.ceil(dur.toFloat / 5.0f).toInt,
         deathRating <<= drCalc(dur, MorphType.withName(mt)))
     }

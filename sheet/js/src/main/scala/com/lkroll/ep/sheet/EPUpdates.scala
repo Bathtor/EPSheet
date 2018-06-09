@@ -50,4 +50,8 @@ object EPUpdates extends MinorVersionUpdateManager {
     List(
       nameChangeRepeating(model.morphs, old.V5.MorphSection.aptitudeMax, model.morphs.aptitudeMax))
   }
+  forVersion("1.6.0") {
+    val assignDMax = op(model.durability).update(dur => Seq(model.damageMax <<= dur));
+    List(assignDMax)
+  }
 }
