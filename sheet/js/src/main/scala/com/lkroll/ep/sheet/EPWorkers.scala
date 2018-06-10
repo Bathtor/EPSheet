@@ -186,8 +186,6 @@ object EPWorkers extends SheetWorkerRoot {
     }
   }
 
-  // TODO ongoing updates notification
-
   private[sheet] def searchSkillAndSetNameTotal(needle: String, section: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
     val rowId = Roll20.getActiveRepeatingField();
     val simpleRowId = extractSimpleRowId(rowId);

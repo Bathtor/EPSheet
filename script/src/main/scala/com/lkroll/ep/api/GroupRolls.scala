@@ -81,7 +81,7 @@ object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
         }
       };
       if (config.ini()) {
-        rollInitiative(targets, ctx);
+        rollInitiativeAndAddToTracker(targets, ctx);
       } else if (config.skill.isSupplied) {
         // TODO roll skill
       } else if (config.frayHalved()) {
@@ -92,8 +92,9 @@ object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
     }
   }
 
-  def rollInitiative(targets: List[(Token, Character)], ctx: ChatContext): Unit = {
-    val campaign = Campaign();
+  type RollConsumer = Try[List[(Token, Character, Int)]] => Unit;
+
+  def rollInitiative(targets: List[(Token, Character)])(f: RollConsumer): Unit = {
     val resFutures = targets.map {
       case (token, char) => {
         val strippedIni = epmodel.iniRoll.formula match {
@@ -105,17 +106,23 @@ object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
       }
     };
     val resFuture = Future.sequence(resFutures);
-    resFuture.onComplete {
+    resFuture.onComplete(f);
+  }
+
+  def rollInitiativeAndAddToTracker(targets: List[(Token, Character)], ctx: ChatContext): Unit = {
+    val f: RollConsumer = {
       case Success(res) => {
+        val campaign = Campaign();
         campaign.turnOrder ++= res.map(t => (t._1 -> t._3));
         campaign.turnOrder.dedup();
-        campaign.turnOrder.sort();
+        campaign.turnOrder.sortDesc();
         val msg = "<h3>Rolled Initiative</h3>" +
           res.map(t => s"""<b>${t._2.name}</b>: [[${t._3}]] """)
           .mkString("<ul><li>", "</li><li>", "</li></ul>");
         ctx.reply(msg);
       }
       case Failure(e) => error(e); ctx.reply(s"Some rolls failed to complete.");
-    }
+    };
+    rollInitiative(targets)(f)
   }
 }

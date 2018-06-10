@@ -5,11 +5,11 @@ name := "EP API Script"
 
 organization := "com.lkroll.ep"
 
-version := "0.5.3"
+version := "0.6.0"
 
 scalaVersion := "2.12.4"
 
-libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.7.+"
+libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.8.+"
 libraryDependencies += "com.lkroll.ep" %%% "epcompendium-core" % "1.1.+"
 libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.7.0"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
