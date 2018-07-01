@@ -31,7 +31,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.ep.model._
 import scalatags.Text.all._
 
-object CoreTabRenderer extends GroupRenderer {
+trait CoreTabRenderer extends GroupRenderer {
   import GroupRenderer._
   import RenderMode._
 
@@ -190,3 +190,5 @@ object CoreTabRenderer extends GroupRenderer {
 
   def labelDescription(label: LabelsI18N) = span(EPStyle.description, raw(" &mdash; "), span(label.attrs));
 }
+
+object CoreTabRenderer extends CoreTabRenderer;

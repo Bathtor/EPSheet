@@ -40,7 +40,7 @@ object EPStyle extends SheetStyle {
     backgroundImage := "url('http://files.lars-kroll.com/EclipsePhase_Logo_Black.png')",
     backgroundRepeat := "no-repeat",
     backgroundPosition := "right top",
-    backgroundSize := "350px");
+    backgroundSize := "35rem");
 
   val wrapBox = cls(
     backgroundColor := c.boxBackground.css,
@@ -62,10 +62,10 @@ object EPStyle extends SheetStyle {
     width := "100%");
 
   val logoBox = cls(
-    width := "350px");
+    width := "35rem");
 
   val logoPlaceholder = cls(
-    height := "52px");
+    height := "5.2rem");
 
   val aRight = cls(
     textAlign.right);
@@ -85,7 +85,7 @@ object EPStyle extends SheetStyle {
     paddingLeft := "2px",
     paddingRight := "2px",
     marginBottom := "-2px",
-    fontSize := "11px",
+    fontSize := "1.1rem",
     fontWeight := 700,
     textTransform.uppercase,
     textAlign.center);
@@ -96,27 +96,27 @@ object EPStyle extends SheetStyle {
     paddingLeft := "2px",
     paddingRight := "2px",
     marginBottom := "-2px",
-    fontSize := "9px",
+    fontSize := "0.9rem",
     fontWeight := 700,
     textTransform.uppercase,
     textAlign.center,
     span(
-      fontSize := "9px",
+      fontSize := "0.9rem",
       fontWeight := 700,
       textTransform.uppercase));
 
   val largeText = cls(
     input(
-      fontSize := "1.4rem",
+      fontSize := "2.2rem",
       fontWeight.bold),
     span(
-      fontSize := "1.4rem",
+      fontSize := "2.2rem",
       fontWeight.bold));
 
   val aptTable = cls(
     tableLayout.fixed,
     width := "100%",
-    minWidth := "20rem",
+    minWidth := "32rem",
     th(width := 2.9.em),
     td(span(
       textAlign.right,
@@ -126,7 +126,7 @@ object EPStyle extends SheetStyle {
   val repTable = cls(
     tableLayout.fixed,
     width := "100%",
-    minWidth := "20rem",
+    minWidth := "32rem",
     td(
       textAlign.center,
       span(
@@ -191,7 +191,7 @@ object EPStyle extends SheetStyle {
     textTransform.uppercase,
     textAlign.left,
     color := c.darkText.css,
-    fontSize := "9px",
+    fontSize := "0.9rem",
     marginTop := "1px",
     marginBottom := "2px",
     paddingLeft := "2px",
@@ -210,7 +210,7 @@ object EPStyle extends SheetStyle {
   val lineLabel = cls(
     textTransform.uppercase,
     color := c.darkText.css,
-    fontSize := 11.px,
+    fontSize := 1.1.rem,
     marginRight := 5.px);
 
   val inlineContentGroup = cls(
@@ -229,14 +229,14 @@ object EPStyle extends SheetStyle {
 
   val flowPar = cls(
     display.`inline-block`,
-    paddingLeft := 2.rem,
-    textIndent := -2.rem,
+    paddingLeft := 3.2.rem,
+    textIndent := -3.2.rem,
     verticalAlign.`text-top`,
     textAlign.justify,
     marginRight := 5.px,
     marginLeft := 2.px,
     marginBottom := 0.px,
-    fontSize := 0.7.rem,
+    fontSize := 1.1.rem,
     lineHeight := 1.4,
     input(margin := 0.px));
 
@@ -247,19 +247,19 @@ object EPStyle extends SheetStyle {
     marginRight := 5.px,
     marginLeft := 2.px,
     marginBottom := 0.px,
-    fontSize := 0.7.rem,
+    fontSize := 1.1.rem,
     lineHeight := 1.4,
     input(margin := 0.px));
 
   val indentPar = cls(
     display.`inline-block`,
-    paddingLeft := 2.rem,
+    paddingLeft := 3.2.rem,
     verticalAlign.`text-top`,
     textAlign.justify,
     marginRight := 5.px,
     marginLeft := 2.px,
     marginBottom := 0.px,
-    fontSize := 0.7.rem,
+    fontSize := 1.1.rem,
     lineHeight := 1.4,
     input(margin := 0.px));
 
@@ -294,7 +294,7 @@ object EPStyle extends SheetStyle {
 
   val secondTableHeader = cls(
     color := c.titleText.css,
-    fontSize := "9px",
+    fontSize := "0.9rem",
     fontWeight.bold,
     textTransform.uppercase,
     textAlign.center);
@@ -313,8 +313,8 @@ object EPStyle extends SheetStyle {
     borderBottomWidth := 1.px,
     borderBottomStyle.solid,
     borderBottomColor := c.lightGrey.css,
-    marginBottom := 0.5.rem,
-    paddingBottom := 0.5.rem);
+    marginBottom := 0.8.rem,
+    paddingBottom := 0.8.rem);
 
   val wrapButton = cls();
 
@@ -322,53 +322,53 @@ object EPStyle extends SheetStyle {
     display.`inline-flex`);
 
   val rem15 = cls(
-    width := "15rem");
+    width := "24rem"); // scaled due to roll20 changes
 
   val max2p5rem = cls(
-    maxWidth := "2.5rem");
+    maxWidth := "4rem"); // scaled due to roll20 changes
 
   val max3charinline = cls(
     maxWidth := "3em",
     display.`inline-flex`);
 
   val max5rem = cls(
-    maxWidth := "5rem");
+    maxWidth := "8rem"); // scaled due to roll20 changes
 
   val max10rem = cls(
-    maxWidth := 10.rem);
+    maxWidth := 16.rem); // scaled due to roll20 changes
 
   val max15rem = cls(
-    maxWidth := 15.rem);
+    maxWidth := 24.rem); // scaled due to roll20 changes
 
   val max20rem = cls(
-    maxWidth := 20.rem);
+    maxWidth := 32.rem); // scaled due to roll20 changes
 
   val min5rem = cls(
     maxWidth := "100%",
-    minWidth := "5rem");
+    minWidth := "8rem"); // scaled due to roll20 changes
 
   val min1rem = cls(
     maxWidth := "100%",
-    minWidth := "1rem");
+    minWidth := "1.6rem"); // scaled due to roll20 changes
 
   val min02rem = cls(
     maxWidth := "100%",
-    minWidth := "0.2rem");
+    minWidth := "0.3rem"); // scaled due to roll20 changes
 
   val exactly15rem = cls(
-    width := "15rem");
+    width := "24rem"); // scaled due to roll20 changes
 
   val exactly20rem = cls(
-    width := "20rem");
+    width := "32rem"); // scaled due to roll20 changes
 
   val exactly23rem = cls(
-    width := "23rem");
+    width := "36rem"); // scaled due to roll20 changes
 
   val marginr1rem = cls(
-    marginRight := "1rem");
+    marginRight := "1.6rem"); // scaled due to roll20 changes
 
   val marginrp5rem = cls(
-    marginRight := 0.5.rem);
+    marginRight := 0.8.rem); // scaled due to roll20 changes
 
   val skillRow = cls(
     width := "100%");
@@ -407,6 +407,8 @@ object EPStyle extends SheetStyle {
 
   val `divide-not-one` = cls();
   val divisor = cls();
+
+  val identities = cls();
 
   // ***  Templates ***
 

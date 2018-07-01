@@ -57,24 +57,28 @@ object IdentitiesTab extends FieldGroup {
     (t.idDescription -> dualMode(ci.description)),
     (t.idCredits -> ci.credits),
     flexBreak,
-    (t.idNotes -> ci.notes.like(CoreTabRenderer.largeTextareaField)));
+    (t.idNotes -> ci.notes.like(CoreTabRenderer.textareaField)));
 
   val nameBarrier: GroupRenderer.FieldSingleRenderer = (f) => span(sty.`h2hr`, name := f.name);
 
   val members: Seq[SheetElement] = Seq(char.identities(
-    ci.identity.like(nameBarrier),
-    frow(
-      sty.`flex-start`,
-      fcol(
-        Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
-        identityInfo),
-      fcol(
-        Seq(sty.exactly23rem),
-        block(
-          t.reputation,
-          repTable)))));
+    fcol(
+      Seq(sty.marginr1rem),
+      ci.identity.like(nameBarrier),
+      identityInfo,
+      block(
+        t.reputation,
+        repTable))));
 
-  override def renderer = CoreTabRenderer;
+  override def renderer = IdentitiesRenderer;
+}
+
+object IdentitiesRenderer extends CoreTabRenderer {
+  import GroupRenderer._;
+
+  override def fieldCombiner: FieldCombiner = { tags =>
+    div(EPStyle.identities, tags)
+  }
 }
 
 case class RepTable(rows: Seq[RepRow]) extends FieldGroup {

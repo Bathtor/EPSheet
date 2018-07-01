@@ -42,7 +42,7 @@ object PsiTab extends FieldGroup {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
-  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputEPRolls, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
+  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.strain),
       span(raw("1d10/2+")),

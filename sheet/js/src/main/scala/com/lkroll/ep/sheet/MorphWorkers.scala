@@ -118,7 +118,7 @@ object MorphWorkers extends SheetWorker {
       morphArmourEnergy, morphArmourKinetic, morphSkillBoni).map({ case f: Field[Any] => (f -> f.resetValue) }) ++ morphAptBoni("") ++ morphAptMax("");
     val setF = setAttrs((extraUpdates ++ updates).toMap);
     setF.onComplete {
-      case Success(_) => EPWorkers.aptTotalsAll.andThen(EPWorkers.durStatsCalc).andThen(SkillWorkers.morphSkillBoniCalc)()
+      case Success(_) => EPWorkers.aptTotalsAll.andThen(EPWorkers.durStatsCalc).andThen(SkillWorkers.morphSkillBoniCalc).andThen(SkillWorkers.skillTotalCalc)()
       case Failure(e) => error(e)
     }
   }
