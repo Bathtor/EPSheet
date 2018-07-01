@@ -173,7 +173,7 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
 
   private def importArgumentFrom(r: ChatRenderable): List[OptionApplication] = {
     val config: EPCompendiumImportConf = new EPCompendiumImportConf(List.empty);
-    val name = r.lookupName.replace(")", "&#41;");
+    val name = buttonSafeText(r.lookupName);
     r match {
       case _: Armour        => List(config.armour <<= name)
       case _: Derangement   => List(config.derangement <<= name)
@@ -194,7 +194,7 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
   }
 
   private def argumentFrom(r: ChatRenderable, config: EPCompendiumDataConf): List[OptionApplication] = {
-    val name = r.lookupName.replace(")", "&#41;");
+    val name = buttonSafeText(r.lookupName);
     r match {
       case _: Ammo          => List(config.ammo <<= name)
       case _: Armour        => List(config.armour <<= name)
@@ -210,6 +210,8 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
     }
   }
 
+  private def buttonSafeText(s: String): String = s.replaceAll("\\)", "&#41;");
+
   private def extraButtons(r: ChatRenderable): List[(String, APIButton)] = {
     r match {
       case w: Weapon => {
@@ -222,13 +224,13 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
           c.damageConst <<= w.dmgConst,
           c.damageType <<= w.dmgType.label,
           c.ap <<= w.ap,
-          c.label <<= w.templateTitle));
+          c.label <<= buttonSafeText(w.templateTitle)));
         val skill = w.templateKV("Skill");
         val skillButton = SpecialRollsCommand.invoke(skill, List(
           c.success <<= true,
           c.target.name <<= s"?{$skill}",
-          c.label <<= w.templateTitle,
-          c.sublabel <<= skill));
+          c.label <<= buttonSafeText(w.templateTitle),
+          c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
       }
       case w: WeaponWithAmmo => {
@@ -241,13 +243,13 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
           c.damageConst <<= w.dmgConst,
           c.damageType <<= w.dmgType.label,
           c.ap <<= w.ap,
-          c.label <<= w.templateTitle));
+          c.label <<= buttonSafeText(w.templateTitle)));
         val skill = w.templateKV("Skill");
         val skillButton = SpecialRollsCommand.invoke(skill, List(
           c.success <<= true,
           c.target.name <<= s"?{$skill}",
-          c.label <<= w.templateTitle,
-          c.sublabel <<= skill));
+          c.label <<= buttonSafeText(w.templateTitle),
+          c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
       }
       case _ => List.empty
