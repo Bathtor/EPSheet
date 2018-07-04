@@ -20,14 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package com.lkroll.ep.model
 
 object DamageType extends Enumeration {
   type DamageType = Value;
 
-  val Kinetic, Energy = Value;
+  val Kinetic, Energy, Untyped = Value;
 
   val labelPrefix = "damage-typeopt";
   val labelShortPrefix = "damage-typeopt-short";

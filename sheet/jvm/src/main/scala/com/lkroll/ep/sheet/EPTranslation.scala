@@ -366,10 +366,12 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val dmgType = keys.dmgType <~ {
     case DamageType.Kinetic => "Kinetic"
     case DamageType.Energy  => "Energy"
+    case DamageType.Untyped => "Untyped"
   };
   val dmgTypeShort = keys.dmgTypeShort <~ {
     case DamageType.Kinetic => "K"
     case DamageType.Energy  => "E"
+    case DamageType.Untyped => ""
   };
 
   val psiType = keys.psiType <~ {

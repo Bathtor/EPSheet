@@ -50,6 +50,7 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val armour = opt[List[String]]("armour", descr = "Import an armour with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val gear = opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val software = opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val substance = opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
   dependsOnAll(withAmmo, List(weapon));
   codependent(withDuration, derangement);
@@ -213,6 +214,16 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
               toImport ::= s;
             }
             case None => ctx.reply(s"No software found for name ${s}")
+          }
+        }
+      }
+      if (config.substance.isSupplied) {
+        config.substance().foreach { s =>
+          EPCompendium.getSubstance(s) match {
+            case Some(s) => {
+              toImport ::= s;
+            }
+            case None => ctx.reply(s"No substance found for name ${s}")
           }
         }
       }

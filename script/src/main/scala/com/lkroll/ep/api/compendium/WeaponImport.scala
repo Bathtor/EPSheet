@@ -30,29 +30,39 @@ import com.lkroll.ep.compendium._
 import com.lkroll.ep.model.{ EPCharModel => epmodel, MeleeWeaponSection, RangedWeaponSection, DamageType => ModelDamageType }
 import APIImplicits._;
 
-case class WeaponImport(weapon: Weapon) extends Importable {
-
-  implicit def cdt2mdt(dt: DamageType): ModelDamageType.DamageType = dt match {
-    case DamageType.Energy  => ModelDamageType.Energy
-    case DamageType.Kinetic => ModelDamageType.Kinetic
+object WeaponDamageTypeConverter {
+  def convert(dt: DamageType): Either[ModelDamageType.DamageType, String] = {
+    dt match {
+      case DamageType.Energy  => Left(ModelDamageType.Energy)
+      case DamageType.Kinetic => Left(ModelDamageType.Kinetic)
+      case DamageType.Untyped => Left(ModelDamageType.Untyped)
+      case DamageType.Psychic => Right("Weapons can not have Psychic damage type!")
+    }
   }
+}
+
+case class WeaponImport(weapon: Weapon) extends Importable {
 
   override def updateLabel: String = s"weapon ${weapon.name}";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
     val rowId = Some(idPool.generateRowId());
+    val damageType = WeaponDamageTypeConverter.convert(weapon.damage.dmgType) match {
+      case Left(dt)   => dt
+      case Right(msg) => return Right(msg)
+    };
     weapon.`type` match {
       case _: WeaponType.Melee => {
         char.createRepeating(MeleeWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(MeleeWeaponSection.skillSearch, rowId) <<= weapon.`type`.skill;
         char.createRepeating(MeleeWeaponSection.armourPenetration, rowId) <<= weapon.ap;
-        char.createRepeating(MeleeWeaponSection.numDamageDice, rowId) <<= weapon.dmgD10;
-        if (weapon.dmgDiv != 1) {
-          char.createRepeating(MeleeWeaponSection.damageDivisor, rowId) <<= weapon.dmgDiv;
+        char.createRepeating(MeleeWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
+        if (weapon.damage.dmgDiv != 1) {
+          char.createRepeating(MeleeWeaponSection.damageDivisor, rowId) <<= weapon.damage.dmgDiv;
           char.createRepeating(MeleeWeaponSection.showDivisor, rowId) <<= true;
         }
-        char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.dmgConst;
-        char.createRepeating(MeleeWeaponSection.damageType, rowId) <<= weapon.dmgType.label;
-        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(weapon.dmgType);
+        char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
+        char.createRepeating(MeleeWeaponSection.damageType, rowId) <<= damageType.toString;
+        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.`type`.skill) match {
           case Some(skillId) => {
@@ -69,14 +79,14 @@ case class WeaponImport(weapon: Weapon) extends Importable {
         char.createRepeating(RangedWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(RangedWeaponSection.skillSearch, rowId) <<= weapon.`type`.skill;
         char.createRepeating(RangedWeaponSection.armourPenetration, rowId) <<= weapon.ap;
-        char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.dmgD10;
-        if (weapon.dmgDiv != 1) {
-          char.createRepeating(RangedWeaponSection.damageDivisor, rowId) <<= weapon.dmgDiv;
+        char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
+        if (weapon.damage.dmgDiv != 1) {
+          char.createRepeating(RangedWeaponSection.damageDivisor, rowId) <<= weapon.damage.dmgDiv;
           char.createRepeating(RangedWeaponSection.showDivisor, rowId) <<= true;
         }
-        char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.dmgConst;
-        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= weapon.dmgType.label;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(weapon.dmgType);
+        char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
+        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
 
         weapon.range match {
           case Range.Melee     => return Right("Ranged weapons should have range Ranged")
@@ -126,27 +136,26 @@ case class WeaponImport(weapon: Weapon) extends Importable {
 
 case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
 
-  implicit def cdt2mdt(dt: DamageType): ModelDamageType.DamageType = dt match {
-    case DamageType.Energy  => ModelDamageType.Energy
-    case DamageType.Kinetic => ModelDamageType.Kinetic
-  }
-
   override def updateLabel: String = s"weapon ${weapon.name}";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
     val rowId = Some(idPool.generateRowId());
+    val damageType = WeaponDamageTypeConverter.convert(weapon.damage.dmgType) match {
+      case Left(dt)   => dt
+      case Right(msg) => return Right(msg)
+    };
     weapon.weapon.`type` match {
       case _: WeaponType.Melee => {
         char.createRepeating(MeleeWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(MeleeWeaponSection.skillSearch, rowId) <<= weapon.weapon.`type`.skill;
         char.createRepeating(MeleeWeaponSection.armourPenetration, rowId) <<= weapon.ap;
-        char.createRepeating(MeleeWeaponSection.numDamageDice, rowId) <<= weapon.dmgD10;
-        if (weapon.dmgDiv != 1) {
-          char.createRepeating(MeleeWeaponSection.damageDivisor, rowId) <<= weapon.dmgDiv;
+        char.createRepeating(MeleeWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
+        if (weapon.damage.dmgDiv != 1) {
+          char.createRepeating(MeleeWeaponSection.damageDivisor, rowId) <<= weapon.damage.dmgDiv;
           char.createRepeating(MeleeWeaponSection.showDivisor, rowId) <<= true;
         }
-        char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.dmgConst;
-        char.createRepeating(MeleeWeaponSection.damageType, rowId) <<= weapon.dmgType.label;
-        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(weapon.dmgType);
+        char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
+        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.weapon.`type`.skill) match {
           case Some(skillId) => {
@@ -163,14 +172,14 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
         char.createRepeating(RangedWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(RangedWeaponSection.skillSearch, rowId) <<= weapon.weapon.`type`.skill;
         char.createRepeating(RangedWeaponSection.armourPenetration, rowId) <<= weapon.ap;
-        char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.dmgD10;
-        if (weapon.dmgDiv != 1) {
-          char.createRepeating(RangedWeaponSection.damageDivisor, rowId) <<= weapon.dmgDiv;
+        char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
+        if (weapon.damage.dmgDiv != 1) {
+          char.createRepeating(RangedWeaponSection.damageDivisor, rowId) <<= weapon.damage.dmgDiv;
           char.createRepeating(RangedWeaponSection.showDivisor, rowId) <<= true;
         }
-        char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.dmgConst;
-        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= weapon.dmgType.label;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(weapon.dmgType);
+        char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
+        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
 
         weapon.weapon.range match {
           case Range.Melee     => return Right("Ranged weapons should have range Ranged")

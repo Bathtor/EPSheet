@@ -28,17 +28,28 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, SoftwareSection }
+import com.lkroll.ep.model.{ EPCharModel => epmodel, GearSection, EffectsSection }
 import APIImplicits._;
 
-case class SoftwareImport(s: Software) extends Importable {
-  override def updateLabel: String = s"${s.quality.label} ${s.name}";
+case class SubstanceImport(s: Substance) extends Importable {
+  override def updateLabel: String = s"${s.name} (${s.category})";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
-    val rowId = Some(idPool.generateRowId());
-    char.createRepeating(SoftwareSection.itemName, rowId) <<= s.name;
-    char.createRepeating(SoftwareSection.quality, rowId) <<= s.quality.label;
-    char.createRepeating(SoftwareSection.qualityMod, rowId) <<= s.quality.modifier;
-    char.createRepeating(SoftwareSection.description, rowId) <<= s.descr;
+    val adcStr = s.addiction.map(a => s"${a.`type`.entryName} with modifier ${a.modStr}").getOrElse("–");
+    val effects = s.effects.map(_.text).mkString(",");
+    val extraDescr = s"""in category ${s.category} ${s.application.map(_.shortLabel).mkString("(", ",", ")")} of type ${s.classification.label}
+Addiction: $adcStr
+Onset Time: ${s.onset.renderShort}, Duration: ${s.duration.renderShort}
+---
+""" + s.descr;
+    val gearRowId = Some(idPool.generateRowId());
+    char.createRepeating(GearSection.itemName, gearRowId) <<= s.name;
+    char.createRepeating(GearSection.description, gearRowId) <<= extraDescr;
+    val effectsRowId = Some(idPool.generateRowId());
+    char.createRepeating(EffectsSection.effectName, effectsRowId) <<= s.name;
+    char.createRepeating(EffectsSection.duration, effectsRowId) <<= s.duration.renderShort;
+    char.createRepeating(EffectsSection.gameEffect, effectsRowId) <<= effects;
+    char.createRepeating(EffectsSection.description, effectsRowId) <<= extraDescr;
+
     Left("Ok")
   }
 }

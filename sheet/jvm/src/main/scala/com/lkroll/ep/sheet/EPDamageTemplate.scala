@@ -73,14 +73,14 @@ object EPDamageTemplate extends RollTemplate {
     exists(attributeField) {
       h4(attributeField)
     },
-    p(span(t.damageInflicts), span(raw(" ")), span(fontWeight.bold, t.damageValue), span(": "), damageRoll,
+    p(span(t.damageInflicts), span(": "), damageRoll, span(raw(" ")), span(fontWeight.bold, t.damageValue),
       exists(damageType) {
         Seq(span(raw(" ")), span(damageType))
       }, exists(damageExplanation) {
         Seq(span(raw(" ")), span(damageExplanation))
       }),
     exists(armourPenetration) {
-      p(span(fontWeight.bold, t.ap), span(": "), span(sty.fieldvalue, armourPenetration), span(" "), span(fontStyle.italic, t.orTotalAP))
+      p(span(sty.fieldvalue, armourPenetration), span(" "), span(fontWeight.bold, t.ap), span(" "), span(fontStyle.italic, t.orTotalAP))
     },
     exists(concentrateBF) {
       exists(concentrateFA) {

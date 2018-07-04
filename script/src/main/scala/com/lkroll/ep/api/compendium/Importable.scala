@@ -46,6 +46,7 @@ object Importable {
   implicit def armour2Import(a: Armour): ArmourImport = ArmourImport(a);
   implicit def gear2Import(g: Gear): GearImport = GearImport(g);
   implicit def software2Import(s: Software): SoftwareImport = SoftwareImport(s);
+  implicit def substance2Import(s: Substance): SubstanceImport = SubstanceImport(s);
 }
 
 class ImportCache(val char: Character) {

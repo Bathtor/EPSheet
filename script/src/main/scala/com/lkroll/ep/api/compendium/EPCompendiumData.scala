@@ -51,12 +51,13 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val armour = opt[String]("armour", descr = "Search for matches with &lt;param&gt; in armour.")(ScallopUtils.singleArgSpacedConverter(identity));
   val gear = opt[String]("gear", descr = "Search for matches with &lt;param&gt; in gear.")(ScallopUtils.singleArgSpacedConverter(identity));
   val software = opt[String]("software", descr = "Search for matches with &lt;param&gt; in software.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val substance = opt[String]("substance", descr = "Search for matches with &lt;param&gt; in substances.")(ScallopUtils.singleArgSpacedConverter(identity));
 
-  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software));
-  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software));
-  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software));
+  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
+  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
+  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
   dependsOnAll(withAmmo, List(weapon));
-  requireOne(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software);
+  requireOne(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance);
   verify();
 }
 
@@ -135,6 +136,11 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       ctx.reply(s"Searching for '$needle' in software...");
       val results = EPCompendium.findSoftwarePrograms(needle);
       handleResults(results, config, ctx);
+    } else if (config.substance.isSupplied) {
+      val needle = config.substance();
+      ctx.reply(s"Searching for '$needle' in substances...");
+      val results = EPCompendium.findSubstances(needle);
+      handleResults(results, config, ctx);
     }
   }
 
@@ -185,11 +191,12 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       case _: Software      => List(config.software <<= name)
       case _: Weapon        => List(config.weapon <<= name)
       case wwa: WeaponWithAmmo => {
-        val wname = wwa.weapon.lookupName.replace(")", "&#41;");
-        val aname = wwa.ammo.lookupName.replace(")", "&#41;");
+        val wname = buttonSafeText(wwa.weapon.lookupName);
+        val aname = buttonSafeText(wwa.ammo.lookupName);
         List(config.weapon <<= wname, config.withAmmo <<= aname)
       }
-      case _ => List.empty
+      case _: Substance => List(config.substance <<= name)
+      case _            => List.empty
     }
   }
 
@@ -205,6 +212,7 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       case _: MorphModel    => List(config.morphModel <<= name)
       case _: MorphInstance => List(config.morph <<= name)
       case _: Software      => List(config.software <<= name)
+      case _: Substance     => List(config.substance <<= name)
       case _: Weapon        => List(config.weapon <<= name)
       case _                => List.empty
     }
@@ -219,10 +227,10 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         val dmg = w.templateKV("Damage");
         val dmgButton = SpecialRollsCommand.invoke(dmg, List(
           c.damage <<= true,
-          c.damageDice <<= w.dmgD10,
-          c.damageDiv <<= w.dmgDiv,
-          c.damageConst <<= w.dmgConst,
-          c.damageType <<= w.dmgType.label,
+          c.damageDice <<= w.damage.dmgD10,
+          c.damageDiv <<= w.damage.dmgDiv,
+          c.damageConst <<= w.damage.dmgConst,
+          c.damageType <<= w.damage.dmgType.label,
           c.ap <<= w.ap,
           c.label <<= buttonSafeText(w.templateTitle)));
         val skill = w.templateKV("Skill");
@@ -238,10 +246,10 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         val dmg = w.templateKV("Damage");
         val dmgButton = SpecialRollsCommand.invoke(dmg, List(
           c.damage <<= true,
-          c.damageDice <<= w.dmgD10,
-          c.damageDiv <<= w.dmgDiv,
-          c.damageConst <<= w.dmgConst,
-          c.damageType <<= w.dmgType.label,
+          c.damageDice <<= w.damage.dmgD10,
+          c.damageDiv <<= w.damage.dmgDiv,
+          c.damageConst <<= w.damage.dmgConst,
+          c.damageType <<= w.damage.dmgType.label,
           c.ap <<= w.ap,
           c.label <<= buttonSafeText(w.templateTitle)));
         val skill = w.templateKV("Skill");
