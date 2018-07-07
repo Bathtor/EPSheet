@@ -40,7 +40,8 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies the weapon to use the specified ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val withAccessory = opt[String]("with-accessory", descr = "Must be used together with --weapon. Modifies the weapon to have the specified weapon accessory.")(ScallopUtils.singleArgSpacedConverter(identity));
   val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val egoTrait = opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
@@ -48,11 +49,14 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val withDuration = opt[FloatOrInline]("duration", descr = "Must be used together with --derangement. Import derangement with given duration.")(singleArgConverter(FloatOrInline.fromString(_)));
   val disorder = opt[List[String]]("disorder", descr = "Import a disorder with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val armour = opt[List[String]]("armour", descr = "Import an armour with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val withMod = opt[String]("with-mod", descr = "Must be used together with --armour. Modifies the amour to have the specified armour mod.")(ScallopUtils.singleArgSpacedConverter(identity));
   val gear = opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val software = opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val substance = opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
 
   dependsOnAll(withAmmo, List(weapon));
+  dependsOnAll(withAccessory, List(weapon));
+  dependsOnAll(withMod, List(armour));
   codependent(withDuration, derangement);
   //requireOne(weapon, morph);
   verify();
@@ -106,25 +110,55 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
         case c        => debug(s"Ignoring non-Token $c"); None
       };
       var toImport = List.empty[Importable];
-      if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
-        config.weapon().foreach { s =>
+      if (config.weapon.isSupplied) {
+        val weapons = config.weapon().flatMap { s =>
           EPCompendium.getWeapon(s) match {
-            case Some(w) => toImport ::= w
-            case None    => ctx.reply(s"No weapon found for name ${s}")
+            case Some(w) => Some(w)
+            case None => {
+              ctx.reply(s"No weapon found for name ${s}");
+              None
+            }
           }
-        }
-      } else if (config.weapon.isSupplied && config.withAmmo.isSupplied) {
-        EPCompendium.getAmmo(config.withAmmo()) match {
-          case Some(ammo) => {
-            config.weapon().foreach { s =>
-              EPCompendium.getWeapon(s).map(_.load(ammo)) match {
-                case Some(Success(w)) => toImport ::= w
-                case Some(Failure(e)) => ctx.reply(s"Error loading ${ammo.name} into $s: ${e.getMessage}")
-                case None             => ctx.reply(s"No weapon found for name ${s}")
+        };
+        val moddedWeaponsO = if (config.withAccessory.isSupplied) {
+          val s = config.withAccessory();
+          if (s.equalsIgnoreCase("None")) {
+            Some(weapons)
+          } else {
+            EPCompendium.getWeaponAccessory(s) match {
+              case Some(accessory) => Some(weapons.map(w => accessory.mod(w)))
+              case None => {
+                ctx.reply(s"No Weapon Accessory found for name ${s}");
+                None
               }
             }
           }
-          case None => ctx.reply(s"No ammo found for name ${config.withAmmo()}")
+        } else {
+          Some(weapons)
+        };
+        moddedWeaponsO match {
+          case Some(moddedWeapons) if config.withAmmo.isSupplied => {
+            val s = config.withAmmo();
+            if (s.equalsIgnoreCase("None")) {
+              moddedWeapons.foreach(w => toImport ::= w)
+            } else {
+              EPCompendium.getAmmo(s) match {
+                case Some(ammo) => {
+                  moddedWeapons.foreach { w =>
+                    w.load(ammo) match {
+                      case Success(w) => toImport ::= w
+                      case Failure(e) => ctx.reply(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}")
+                    }
+                  }
+                }
+                case None => ctx.reply(s"No ammo found for name ${s}}")
+              }
+            }
+          }
+          case Some(moddedWeapons) if !config.withAmmo.isSupplied => {
+            moddedWeapons.foreach(w => toImport ::= w)
+          }
+          case None => () // nothing more to do
         }
       }
       if (config.morph.isSupplied) {
@@ -188,13 +222,24 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
         }
       }
       if (config.armour.isSupplied) {
-        config.armour().foreach { s =>
+        val armours = config.armour().flatMap { s =>
           EPCompendium.getArmour(s) match {
-            case Some(a) => {
-              toImport ::= a;
-            }
-            case None => ctx.reply(s"No armour found for name ${s}")
+            case Some(a) => Some(a)
+            case None    => ctx.reply(s"No armour found for name ${s}"); None
           }
+        };
+        if (config.withMod.isSupplied) {
+          val s = config.withMod();
+          if (s.equalsIgnoreCase("None")) {
+            armours.foreach(a => toImport ::= a)
+          } else {
+            EPCompendium.getArmourMod(s) match {
+              case Some(mod) => armours.foreach(a => toImport ::= a.withMod(mod))
+              case None      => ctx.reply(s"No armour mod found for name ${s}")
+            }
+          }
+        } else {
+          armours.foreach(a => toImport ::= a)
         }
       }
       if (config.gear.isSupplied) {

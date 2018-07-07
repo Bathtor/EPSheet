@@ -28,7 +28,9 @@ def assemble(version: String, jsfile: Path, jsdeps: Path) {
 		val jsraw = read(jsdeps) ++ read(jsfile);
 		val jsfull = jsraw ++ "\n" ++ s"${rootscript}().load();";
 		write(deployfile, jsfull);
-		println("Done!");
+		val info = stat! deployfile;
+      	val size = info.size.toDouble / (1000.0 * 1000.0);
+		println(s"Done! Wrote ${size}MB.");
 	} catch {
 		case e: Throwable => e.printStackTrace(Console.err);
 	}

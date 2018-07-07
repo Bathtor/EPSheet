@@ -37,9 +37,11 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   banner("Search and view data loaded into the Eclipse Phase Compendium.")
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val multiSearch = opt[String]("multi-search", descr = "Search for a comma-separated list of items, showing best matches only.")(ScallopUtils.singleArgSpacedConverter(identity));
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
   val rankMax = opt[Int]("rank-max", descr = "Rank the top &lt;param&gt; significant results, instead of showing highest one only.");
+  // items
   val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.")(ScallopUtils.singleArgSpacedConverter(identity));
   val ammo = opt[String]("ammo", descr = "Search for matches with &lt;param&gt; in ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
   val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo. Ammo name must be exact!")(ScallopUtils.singleArgSpacedConverter(identity));
@@ -52,17 +54,41 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val gear = opt[String]("gear", descr = "Search for matches with &lt;param&gt; in gear.")(ScallopUtils.singleArgSpacedConverter(identity));
   val software = opt[String]("software", descr = "Search for matches with &lt;param&gt; in software.")(ScallopUtils.singleArgSpacedConverter(identity));
   val substance = opt[String]("substance", descr = "Search for matches with &lt;param&gt; in substances.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val augmentation = opt[String]("augmentation", descr = "Search for matches with &lt;param&gt; in augmentations.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val armourMod = opt[String]("armour-mod", descr = "Search for matches with &lt;param&gt; in armour mods.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val weaponAccessory = opt[String]("weapon-accessory", descr = "Search for matches with &lt;param&gt; in weapon accessories.")(ScallopUtils.singleArgSpacedConverter(identity));
 
-  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
-  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
-  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance));
+  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
+  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
+  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
   dependsOnAll(withAmmo, List(weapon));
-  requireOne(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance);
+  requireOne(search, multiSearch, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory);
   verify();
+
+  def forDataType(dataType: String): Option[org.rogach.scallop.ScallopOption[String]] = {
+    dataType match {
+      case Augmentation.dataType    => Some(augmentation)
+      case Armour.dataType          => Some(armour)
+      case ArmourMod.dataType       => Some(armourMod)
+      case Ammo.dataType            => Some(ammo)
+      case Derangement.dataType     => Some(derangement)
+      case Disorder.dataType        => Some(disorder)
+      case EPTrait.dataType         => Some(epTrait)
+      case Gear.dataType            => Some(gear)
+      case MorphModel.dataType      => Some(morphModel)
+      case MorphInstance.dataType   => Some(morph)
+      case Software.dataType        => Some(software)
+      case Substance.dataType       => Some(substance)
+      case Weapon.dataType          => Some(weapon)
+      case WeaponAccessory.dataType => Some(weaponAccessory)
+      case _                        => None
+    }
+  }
 }
 
 object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
   import APIImplicits._;
+  val minConf = new EPCompendiumDataConf(Seq("--search", "nothing"));
   override def command = "epcompendium-data";
   override def options = (args) => new EPCompendiumDataConf(args);
   override def apply(config: EPCompendiumDataConf, ctx: ChatContext): Unit = {
@@ -71,6 +97,22 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       ctx.reply(s"Searching for '$needle' in whole Compendium...");
       val results = EPCompendium.findAnything(needle);
       handleResults(results, config, ctx);
+    } else if (config.multiSearch.isSupplied) {
+      ctx.reply(s"Searching for multiple items in whole Compendium...");
+      val needles = config.multiSearch().split(",");
+      val results = needles.map { needle =>
+        val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>
+          val infoButton = this.invoke("?", argumentFrom(bestResult, config)).render;
+          s"${bestResult.templateTitle} ${infoButton}"
+        };
+        (needle, r)
+      };
+      val pretty = results.map {
+        case (needle, Some(r)) => s"<b>${needle}</b> &rarr; $r"
+        case (needle, None)    => s"<b>${needle}</b> &rarr; 404 Not Found"
+      }.mkString("<ul><li>", "</li><li>", "</li><ul>");
+      debug(s"About to send '$pretty'");
+      ctx.reply(pretty);
     } else if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
       val needle = config.weapon();
       ctx.reply(s"Searching for '$needle' in weapons...");
@@ -141,6 +183,23 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       ctx.reply(s"Searching for '$needle' in substances...");
       val results = EPCompendium.findSubstances(needle);
       handleResults(results, config, ctx);
+    } else if (config.augmentation.isSupplied) {
+      val needle = config.augmentation();
+      ctx.reply(s"Searching for '$needle' in augmentations...");
+      val results = EPCompendium.findAugmentations(needle);
+      handleResults(results, config, ctx);
+    } else if (config.armourMod.isSupplied) {
+      val needle = config.armourMod();
+      ctx.reply(s"Searching for '$needle' in armour mods...");
+      val results = EPCompendium.findArmourMods(needle);
+      handleResults(results, config, ctx);
+    } else if (config.weaponAccessory.isSupplied) {
+      val needle = config.weaponAccessory();
+      ctx.reply(s"Searching for '$needle' in weapon accessories...");
+      val results = EPCompendium.findWeaponAccessories(needle);
+      handleResults(results, config, ctx);
+    } else {
+      error(s"Unsupported options supplied: ${config.args}");
     }
   }
 
@@ -203,18 +262,21 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
   private def argumentFrom(r: ChatRenderable, config: EPCompendiumDataConf): List[OptionApplication] = {
     val name = buttonSafeText(r.lookupName);
     r match {
-      case _: Ammo          => List(config.ammo <<= name)
-      case _: Armour        => List(config.armour <<= name)
-      case _: Derangement   => List(config.derangement <<= name)
-      case _: Disorder      => List(config.disorder <<= name)
-      case _: EPTrait       => List(config.epTrait <<= name)
-      case _: Gear          => List(config.gear <<= name)
-      case _: MorphModel    => List(config.morphModel <<= name)
-      case _: MorphInstance => List(config.morph <<= name)
-      case _: Software      => List(config.software <<= name)
-      case _: Substance     => List(config.substance <<= name)
-      case _: Weapon        => List(config.weapon <<= name)
-      case _                => List.empty
+      case _: Augmentation    => List(config.augmentation <<= name)
+      case _: Ammo            => List(config.ammo <<= name)
+      case _: Armour          => List(config.armour <<= name)
+      case _: ArmourMod       => List(config.armourMod <<= name)
+      case _: Derangement     => List(config.derangement <<= name)
+      case _: Disorder        => List(config.disorder <<= name)
+      case _: EPTrait         => List(config.epTrait <<= name)
+      case _: Gear            => List(config.gear <<= name)
+      case _: MorphModel      => List(config.morphModel <<= name)
+      case _: MorphInstance   => List(config.morph <<= name)
+      case _: Software        => List(config.software <<= name)
+      case _: Substance       => List(config.substance <<= name)
+      case _: Weapon          => List(config.weapon <<= name)
+      case _: WeaponAccessory => List(config.weaponAccessory <<= name)
+      case _                  => List.empty
     }
   }
 
@@ -240,6 +302,19 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
           c.label <<= buttonSafeText(w.templateTitle),
           c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
+      }
+      case a: Augmentation => {
+        val conf = this.minConf;
+        val prefix = "Related Item ";
+        a.related.zipWithIndex.map {
+          case (ref, i) => {
+            conf.forDataType(ref.dataType).map { opt =>
+              val button = EPCompendiumDataCommand.invoke(
+                ref.name, List(opt <<= buttonSafeText(ref.name)));
+              ((prefix + i) -> button)
+            }
+          }
+        }.flatten
       }
       case w: WeaponWithAmmo => {
         val c = SpecialRollsCommand.minConf;

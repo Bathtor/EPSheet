@@ -39,13 +39,20 @@ case class ArmourImport(a: Armour) extends Importable {
     char.createRepeating(ArmourItemSection.accessory, rowIdArmour) <<= a.accessory;
     char.createRepeating(ArmourItemSection.energyBonus, rowIdArmour) <<= a.armour._1;
     char.createRepeating(ArmourItemSection.kineticBonus, rowIdArmour) <<= a.armour._2;
-    // TODO uncomment once the field is used
-    // char.createRepeating(ArmourItemSection.description, rowIdArmour) <<= a.descr;
-    // For now just write description into gear
-    val rowIdGear = Some(idPool.generateRowId());
-    char.createRepeating(GearSection.itemName, rowIdGear) <<= a.name;
-    char.createRepeating(GearSection.amount, rowIdGear) <<= 1;
-    char.createRepeating(GearSection.description, rowIdGear) <<= a.descr;
+    char.createRepeating(ArmourItemSection.description, rowIdArmour) <<= a.descr;
+    Left("Ok")
+  }
+}
+
+case class ModdedArmourImport(a: ModdedArmour) extends Importable {
+  override def updateLabel: String = a.name;
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+    val rowIdArmour = Some(idPool.generateRowId());
+    char.createRepeating(ArmourItemSection.itemName, rowIdArmour) <<= a.name;
+    char.createRepeating(ArmourItemSection.accessory, rowIdArmour) <<= a.accessory;
+    char.createRepeating(ArmourItemSection.energyBonus, rowIdArmour) <<= a.armour._1;
+    char.createRepeating(ArmourItemSection.kineticBonus, rowIdArmour) <<= a.armour._2;
+    char.createRepeating(ArmourItemSection.description, rowIdArmour) <<= a.descr;
     Left("Ok")
   }
 }

@@ -78,6 +78,7 @@ case class WeaponImport(weapon: Weapon) extends Importable {
       case _: WeaponType.Ranged => {
         char.createRepeating(RangedWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(RangedWeaponSection.skillSearch, rowId) <<= weapon.`type`.skill;
+        char.createRepeating(RangedWeaponSection.miscMod, rowId) <<= weapon.attackBonus;
         char.createRepeating(RangedWeaponSection.armourPenetration, rowId) <<= weapon.ap;
         char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
         if (weapon.damage.dmgDiv != 1) {
@@ -171,6 +172,7 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
       case _: WeaponType.Ranged => {
         char.createRepeating(RangedWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(RangedWeaponSection.skillSearch, rowId) <<= weapon.weapon.`type`.skill;
+        char.createRepeating(RangedWeaponSection.miscMod, rowId) <<= weapon.weapon.attackBonus;
         char.createRepeating(RangedWeaponSection.armourPenetration, rowId) <<= weapon.ap;
         char.createRepeating(RangedWeaponSection.numDamageDice, rowId) <<= weapon.damage.dmgD10;
         if (weapon.damage.dmgDiv != 1) {

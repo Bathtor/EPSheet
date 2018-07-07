@@ -44,6 +44,7 @@ object Importable {
   implicit def trait2Import(t: EPTrait): EgoTraitImport = EgoTraitImport(t);
   implicit def disorder2Import(d: Disorder): DisorderImport = DisorderImport(d);
   implicit def armour2Import(a: Armour): ArmourImport = ArmourImport(a);
+  implicit def moddedarmour2Import(a: ModdedArmour): ModdedArmourImport = ModdedArmourImport(a);
   implicit def gear2Import(g: Gear): GearImport = GearImport(g);
   implicit def software2Import(s: Software): SoftwareImport = SoftwareImport(s);
   implicit def substance2Import(s: Substance): SubstanceImport = SubstanceImport(s);
