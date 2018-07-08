@@ -58,6 +58,9 @@ object Blocks {
   def flowpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.flowPar), elems);
   def flowrow(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.flowRow), elems);
   def indentpar(elems: SheetElement*): FieldGroup = GroupWithRenderer(FlowPar(EPStyle.indentPar), elems);
+  def descrpar(toggle: FlagField, descr: TextField): SheetElement = TagElement(div(
+    CoreTabRenderer.descriptionToggle(toggle),
+    p(EPStyle.description, EPStyle.indentPar, CoreTabRenderer.description(descr))));
   def buttonSeq(elems: SheetElement*) = GroupWithRenderer(ButtonSeq, elems);
   def arrowList(elems: SheetElement*) = GroupWithRenderer(ArrowList, elems);
   def rwd(roll: RollElement, descriptions: LabelI18N*) = RollWithDescription(roll, descriptions);

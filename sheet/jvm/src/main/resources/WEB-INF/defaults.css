@@ -506,7 +506,7 @@ span.sheet-skillSpec:not(:empty)::before {
     border-bottom: 4px solid transparent;
 }
 
-.sheet-description-toggle:not(:checked)~.sheet-description {
+.sheet-description-toggle:not(:checked)+.sheet-description {
     display: none;
 }
 

@@ -180,9 +180,9 @@ object GearTab extends FieldGroup {
             meleeDamageRollExcellent60.hidden,
             char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.meleeWeapons.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.meleeWeapons.showDescription,
+            char.meleeWeapons.description)),
         editOnly(tightcol(
           tightfrow(
             char.meleeWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
@@ -329,9 +329,9 @@ object GearTab extends FieldGroup {
             char.rangedWeapons.extremeRangeLower, span(raw("-")), char.rangedWeapons.extremeRangeUpper, span(raw("m")),
             char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.rangedWeapons.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.rangedWeapons.showDescription,
+            char.rangedWeapons.description)),
         editOnly(tightcol(
           tightfrow(
             char.rangedWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
@@ -397,9 +397,9 @@ object GearTab extends FieldGroup {
             span("(", span(name := char.armourItems.energyBonus.name), "/", span(name := char.armourItems.kineticBonus.name), ")"),
             char.armourItems.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.armourItems.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.armourItems.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.armourItems.showDescription,
+            char.armourItems.description)),
         editOnly(tightfrow(
           char.armourItems.active,
           char.armourItems.itemName.like(CoreTabRenderer.textWithPlaceholder(t.armourName.placeholder)),
@@ -407,7 +407,7 @@ object GearTab extends FieldGroup {
           (t.energy -> char.armourItems.energyBonus),
           (t.kinetic -> char.armourItems.kineticBonus),
           span(sty.inlineLabel, t.equipmentDescription),
-          MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow)))))
+          MarkupElement(char.armourItems.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val currency: SheetElement = sblock(t.currency, sty.nop,
@@ -426,9 +426,9 @@ object GearTab extends FieldGroup {
             span("["), char.equipment.amount.like(CoreTabRenderer.presEditableNum), span("]"),
             char.equipment.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.equipment.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.equipment.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.equipment.showDescription,
+            char.equipment.description)),
         editOnly(tightfrow(
           char.equipment.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           char.equipment.amount,
@@ -450,9 +450,9 @@ object GearTab extends FieldGroup {
             span(raw(")")),
             char.software.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.software.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.software.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.software.showDescription,
+            char.software.description)),
         editOnly(tightfrow(
           char.software.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           char.software.quality.like(CoreTabRenderer.textWithPlaceholder(t.softwareQuality.placeholder)),

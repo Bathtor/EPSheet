@@ -69,9 +69,9 @@ object CoreTab extends FieldGroup {
             char.effects.gameEffect,
             char.effects.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.effects.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.effects.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.effects.showDescription,
+            char.effects.description)),
         editOnly(tightfrow(
           char.effects.active,
           char.effects.effectName.like(CoreTabRenderer.textWithPlaceholder(t.effectName.placeholder)),
@@ -89,13 +89,13 @@ object CoreTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-          char.characterTraits.traitTypeShort.like(traitTypeRenderer),
-          char.characterTraits.traitName.like(GearTab.rowItemName),
-          char.characterTraits.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-          flexFill),
-          indentpar(
-            char.characterTraits.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.characterTraits.description.like(CoreTabRenderer.description))),
+            char.characterTraits.traitTypeShort.like(traitTypeRenderer),
+            char.characterTraits.traitName.like(GearTab.rowItemName),
+            char.characterTraits.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          descrpar(
+            char.characterTraits.showDescription,
+            char.characterTraits.description)),
         editOnly(tightfrow(
           char.characterTraits.traitType,
           char.characterTraits.traitName.like(CoreTabRenderer.textWithPlaceholder(t.traitName.placeholder)),
@@ -109,14 +109,14 @@ object CoreTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-          char.derangements.conditionName.like(GearTab.rowItemName),
-          span("["), char.derangements.duration.like(CoreTabRenderer.presEditableNum), span(t.hours), span("] "),
-          span("("), char.derangements.severity, span(")"),
-          char.derangements.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-          flexFill),
-          indentpar(
-            char.derangements.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.derangements.description.like(CoreTabRenderer.description))),
+            char.derangements.conditionName.like(GearTab.rowItemName),
+            span("["), char.derangements.duration.like(CoreTabRenderer.presEditableNum), span(t.hours), span("] "),
+            span("("), char.derangements.severity, span(")"),
+            char.derangements.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          descrpar(
+            char.derangements.showDescription,
+            char.derangements.description)),
         editOnly(tightfrow(
           char.derangements.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           (t.derangementDuration -> char.derangements.duration), span(t.hours),
@@ -131,14 +131,14 @@ object CoreTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-          char.disorders.conditionName.like(GearTab.rowItemName),
-          span(raw(" ~ ")), span(EPStyle.subtleInlineLabel, t.disorderRemainingTreatment),
-          char.disorders.treatmentRemaining.like(CoreTabRenderer.presEditableNum), span(t.hours),
-          char.disorders.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-          flexFill),
-          indentpar(
-            char.disorders.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.disorders.description.like(CoreTabRenderer.description))),
+            char.disorders.conditionName.like(GearTab.rowItemName),
+            span(raw(" ~ ")), span(EPStyle.subtleInlineLabel, t.disorderRemainingTreatment),
+            char.disorders.treatmentRemaining.like(CoreTabRenderer.presEditableNum), span(t.hours),
+            char.disorders.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          descrpar(
+            char.disorders.showDescription,
+            char.disorders.description)),
         editOnly(tightfrow(
           char.disorders.conditionName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
           (t.disorderRemainingTreatment -> char.disorders.treatmentRemaining), span(t.hours),

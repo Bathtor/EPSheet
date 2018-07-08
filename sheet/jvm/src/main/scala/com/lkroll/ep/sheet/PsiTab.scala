@@ -76,9 +76,9 @@ object PsiTab extends FieldGroup {
             char.psiChi.duration,
             char.psiChi.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.psiChi.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.psiChi.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.psiChi.showDescription,
+            char.psiChi.description)),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,
           char.psiChi.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
@@ -112,9 +112,9 @@ object PsiTab extends FieldGroup {
             char.psiGamma.duration,
             char.psiGamma.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
-          indentpar(
-            char.psiGamma.showDescription.like(CoreTabRenderer.descriptionToggle),
-            char.psiGamma.description.like(CoreTabRenderer.description))),
+          descrpar(
+            char.psiGamma.showDescription,
+            char.psiGamma.description)),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,
           char.psiGamma.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
