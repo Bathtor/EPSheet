@@ -289,6 +289,8 @@ object EPTranslation extends SheetI18N {
   val strainMod = text("psi-strain-mod");
   val strain = text("strain");
   val psiSkill = text("psi-skill");
+  val psychicStab = text("psychic-stab");
+  val psychicDamage = text("psychic-damage");
 
   // muse
   val muse = text("muse");
@@ -317,6 +319,8 @@ object EPTranslation extends SheetI18N {
   val miscInitiativeMod = text("misc-initiative-mod");
   val miscDurBonus = text("misc-dur-bonus");
   val chatOutput = text("chat-output");
+  val usingAPIScript = text("using-api-script");
+  val apiLookup = text("api-lookup");
 
   // template
   val rollsfor = text("rolls-for");

@@ -42,13 +42,13 @@ object PsiTab extends FieldGroup {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
-  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.strain(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
+  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.explained(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.strain),
       span(raw("1d10/2+")),
       char.psiChi.strainMod));
 
-  val gammaStrainDamageRoll = roll(char.psiGamma, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.strain(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
+  val gammaStrainDamageRoll = roll(char.psiGamma, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.explained(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.strain),
       span(raw("1d10/2+")),
@@ -62,19 +62,23 @@ object PsiTab extends FieldGroup {
     t.psiChi,
     char.psiChi {
       TightRepRow(
-        presOnly(flowpar(
-          char.psiChi.sleight.like(GearTab.rowItemName),
-          char.psiChi.psiTypeShort.like(ptRenderer),
-          span(raw(" [")),
-          chiStrainDamageRoll,
-          span(raw("] ")),
-          char.psiChi.range.like(CoreTabRenderer.italic),
-          span(raw(" ~ ")),
-          char.psiChi.action,
-          span(raw(" / ")),
-          char.psiChi.duration,
-          char.psiChi.description.like(CoreTabRenderer.inlineDescription),
-          flexFill)),
+        presOnly(
+          flowpar(
+            char.psiChi.sleight.like(GearTab.rowItemName),
+            char.psiChi.psiTypeShort.like(ptRenderer),
+            span(raw(" [")),
+            chiStrainDamageRoll,
+            span(raw("] ")),
+            char.psiChi.range.like(CoreTabRenderer.italic),
+            span(raw(" ~ ")),
+            char.psiChi.action,
+            span(raw(" / ")),
+            char.psiChi.duration,
+            char.psiChi.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          indentpar(
+            char.psiChi.showDescription.like(CoreTabRenderer.descriptionToggle),
+            char.psiChi.description.like(CoreTabRenderer.description))),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,
           char.psiChi.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
@@ -91,22 +95,26 @@ object PsiTab extends FieldGroup {
     t.psiGamma,
     char.psiGamma {
       TightRepRow(
-        presOnly(flowpar(
-          gammaSleightRoll,
-          char.psiGamma.psiTypeShort.like(ptRenderer),
-          span(raw(" (")),
-          char.psiGamma.skillName,
-          span(raw(") ")),
-          span(raw("[")),
-          gammaStrainDamageRoll,
-          span(raw("] ")),
-          char.psiGamma.range.like(CoreTabRenderer.italic),
-          span(raw(" ~ ")),
-          char.psiGamma.action,
-          span(raw(" / ")),
-          char.psiGamma.duration,
-          char.psiGamma.description.like(CoreTabRenderer.inlineDescription),
-          flexFill)),
+        presOnly(
+          flowpar(
+            gammaSleightRoll,
+            char.psiGamma.psiTypeShort.like(ptRenderer),
+            span(raw(" (")),
+            char.psiGamma.skillName,
+            span(raw(") ")),
+            span(raw("[")),
+            gammaStrainDamageRoll,
+            span(raw("] ")),
+            char.psiGamma.range.like(CoreTabRenderer.italic),
+            span(raw(" ~ ")),
+            char.psiGamma.action,
+            span(raw(" / ")),
+            char.psiGamma.duration,
+            char.psiGamma.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          indentpar(
+            char.psiGamma.showDescription.like(CoreTabRenderer.descriptionToggle),
+            char.psiGamma.description.like(CoreTabRenderer.description))),
         editOnly(tightfrow(
           sty.halfRemRowSeparator,
           char.psiGamma.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
@@ -123,6 +131,11 @@ object PsiTab extends FieldGroup {
           span(EPStyle.inlineLabel, t.sleightDescription),
           MarkupElement(char.psiGamma.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
+
+  val specialRolls = block(t.specialRolls, arrowList(
+    rwd(roll(char, "psychic-stab-dmg-roll", char.chatOutputOther,
+      EPDamageTemplate.explained(char.characterName, t.psychicStab, char.psychicStabDamage, t.psychicDamage),
+      span(sty.rollLabel, t.psychicStab)))));
 
   val members: Seq[SheetElement] = Seq(
     eprow(frow(
@@ -145,7 +158,8 @@ object PsiTab extends FieldGroup {
         psiChi),
       fcol(
         Seq(EPStyle.`flex-grow`, sty.exactly20rem),
-        psiGamma)));
+        psiGamma,
+        specialRolls)));
 
   override def renderer = CoreTabRenderer;
 }

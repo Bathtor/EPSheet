@@ -37,6 +37,7 @@ object CharacterTraitSection extends RepeatingSection {
   val traitName = text("name");
   val traitType = "type".options(TraitType).default(TraitType.Neutral);
   val traitTypeShort = text("type_short").editable(false);
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
 
@@ -65,6 +66,7 @@ object DerangementSection extends RepeatingSection {
   val conditionName = text("name");
   val severity = "severity".options(DerangementSeverity).default(DerangementSeverity.Minor);
   val description = text("description");
+  val showDescription = flag("show_description").default(false);
   val duration = "duration".default(0.0).validIn(0.0, 24.0, 0.5);
 }
 
@@ -77,5 +79,6 @@ object DisorderSection extends RepeatingSection {
 
   val conditionName = text("name");
   val description = text("description");
+  val showDescription = flag("show_description").default(false);
   val treatmentRemaining = "treatment_remaining".default(40).validIn(0, 40, 1);
 }

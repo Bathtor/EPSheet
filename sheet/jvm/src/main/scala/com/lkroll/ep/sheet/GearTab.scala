@@ -168,7 +168,6 @@ object GearTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-            char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             meleeAttackRoll,
             char.meleeWeapons.damageTypeShort.like(dtRenderer),
             span(" ("),
@@ -179,6 +178,7 @@ object GearTab extends FieldGroup {
             meleeDamageRoll.hidden,
             meleeDamageRollExcellent30.hidden,
             meleeDamageRollExcellent60.hidden,
+            char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
           indentpar(
             char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggle),
@@ -296,7 +296,6 @@ object GearTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-            char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             rangedAttackRoll,
             char.rangedWeapons.damageTypeShort.like(dtRenderer),
             span("["),
@@ -328,6 +327,7 @@ object GearTab extends FieldGroup {
             char.rangedWeapons.longRangeLower, span(raw("-")), char.rangedWeapons.longRangeUpper, span(raw("m ")),
             span(EPStyle.inlineLabel, t.extremeRange),
             char.rangedWeapons.extremeRangeLower, span(raw("-")), char.rangedWeapons.extremeRangeUpper, span(raw("m")),
+            char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
           indentpar(
             char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggle),
@@ -390,18 +390,24 @@ object GearTab extends FieldGroup {
     div(sty.smallWrapBoxTitle, sty.halfRemRowSeparator, span(t.armourActiveTotal)),
     char.armourItems {
       TightRepRow(
-        presOnly(tightfrow(
-          char.armourItems.active,
-          char.armourItems.itemName.like(rowItemName),
-          span("(", span(name := char.armourItems.energyBonus.name), "/", span(name := char.armourItems.kineticBonus.name), ")"),
-          flexFill)),
+        presOnly(
+          flowpar(
+            char.armourItems.active,
+            char.armourItems.itemName.like(rowItemName),
+            span("(", span(name := char.armourItems.energyBonus.name), "/", span(name := char.armourItems.kineticBonus.name), ")"),
+            char.armourItems.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
+            flexFill),
+          indentpar(
+            char.armourItems.showDescription.like(CoreTabRenderer.descriptionToggle),
+            char.armourItems.description.like(CoreTabRenderer.description))),
         editOnly(tightfrow(
           char.armourItems.active,
           char.armourItems.itemName.like(CoreTabRenderer.textWithPlaceholder(t.armourName.placeholder)),
           (t.armourAccessory -> char.armourItems.accessory),
           (t.energy -> char.armourItems.energyBonus),
           (t.kinetic -> char.armourItems.kineticBonus),
-          flexFill)))
+          span(sty.inlineLabel, t.equipmentDescription),
+          MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow)))))
     });
 
   val currency: SheetElement = sblock(t.currency, sty.nop,
@@ -416,9 +422,9 @@ object GearTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-            char.equipment.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             char.equipment.itemName.like(rowItemName),
-            span("["), char.equipment.amount.like(CoreTabRenderer.presEditableNum), span("] "),
+            span("["), char.equipment.amount.like(CoreTabRenderer.presEditableNum), span("]"),
+            char.equipment.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
           indentpar(
             char.equipment.showDescription.like(CoreTabRenderer.descriptionToggle),
@@ -436,13 +442,13 @@ object GearTab extends FieldGroup {
       TightRepRow(
         presOnly(
           flowpar(
-            char.software.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             char.software.itemName.like(rowItemName),
             span(raw("(")),
             char.software.qualityMod,
             span(raw(" – ")),
             char.software.quality,
-            span(raw(") ")),
+            span(raw(")")),
+            char.software.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
             flexFill),
           indentpar(
             char.software.showDescription.like(CoreTabRenderer.descriptionToggle),

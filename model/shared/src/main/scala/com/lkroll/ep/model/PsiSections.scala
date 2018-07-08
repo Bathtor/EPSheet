@@ -42,6 +42,7 @@ object PsiChiSection extends RepeatingSection {
   val duration = "duration".default("Constant");
   val strainMod = "strain_mod".default(0);
   val strainDamage = roll("strain_damage", ceil(Dice.d10.arith / 2) + strainMod); // Chi never targets others, and the user can hardly be below full sentience, thus no targetStrainQuery
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
 
@@ -64,5 +65,6 @@ object PsiGammaSection extends RepeatingSection {
   val skillName = "skill_name".editable(false).default("None");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val attackTarget = roll("attack_target", EPCharModel.targetQuery.arith + EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalMods);
+  val showDescription = flag("show_description").default(false);
   val description = text("description");
 }

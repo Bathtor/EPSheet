@@ -409,6 +409,8 @@ object EPStyle extends SheetStyle {
   val divisor = cls();
 
   val identities = cls();
+  val `api-only` = cls();
+  val `using-api` = cls();
 
   // ***  Templates ***
 

@@ -98,21 +98,26 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       val results = EPCompendium.findAnything(needle);
       handleResults(results, config, ctx);
     } else if (config.multiSearch.isSupplied) {
-      ctx.reply(s"Searching for multiple items in whole Compendium...");
-      val needles = config.multiSearch().split(",");
-      val results = needles.map { needle =>
-        val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>
-          val infoButton = this.invoke("?", argumentFrom(bestResult, config)).render;
-          s"${bestResult.templateTitle} ${infoButton}"
+      val s = config.multiSearch().trim;
+      if (s.isEmpty()) {
+        ctx.reply(s"Ignoring empty search.");
+      } else {
+        ctx.reply(s"Searching for multiple items in whole Compendium...");
+        val needles = s.split(",");
+        val results = needles.map { needle =>
+          val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>
+            val infoButton = this.invoke("?", argumentFrom(bestResult, config)).render;
+            s"${bestResult.templateTitle} ${infoButton}"
+          };
+          (needle, r)
         };
-        (needle, r)
-      };
-      val pretty = results.map {
-        case (needle, Some(r)) => s"<b>${needle}</b> &rarr; $r"
-        case (needle, None)    => s"<b>${needle}</b> &rarr; 404 Not Found"
-      }.mkString("<ul><li>", "</li><li>", "</li><ul>");
-      debug(s"About to send '$pretty'");
-      ctx.reply(pretty);
+        val pretty = results.map {
+          case (needle, Some(r)) => s"<b>${needle}</b> &rarr; $r"
+          case (needle, None)    => s"<b>${needle}</b> &rarr; 404 Not Found"
+        }.mkString("<ul><li>", "</li><li>", "</li><ul>");
+        debug(s"About to send '$pretty'");
+        ctx.reply(pretty);
+      }
     } else if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
       val needle = config.weapon();
       ctx.reply(s"Searching for '$needle' in weapons...");

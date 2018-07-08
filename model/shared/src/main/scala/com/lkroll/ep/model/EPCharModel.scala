@@ -158,7 +158,9 @@ object EPCharModel extends SheetModel {
   val morphVisibleGender = text("visible_gender").editable(false);
   val morphVisibleAge = text("visible_age").editable(false);
   val morphTraits = "morph_traits".editable(false).default("");
+  //val morphLookupTraits = "morph_traits_lookup".default(false);
   val morphImplants = "morph_implants".editable(false).default("");
+  //val morphLookupImplants = roll("implant_lookup", APIButton.)
   val morphMobilitySystem = "morph_mobility_system".editable(false).default("Walker 4/20");
   val morphDurability = "morph_durability".editable(false).default(0);
   val morphArmourEnergy = "morph_armour_energy".editable(false).default(0);
@@ -217,6 +219,7 @@ object EPCharModel extends SheetModel {
   val targetStrainQuery = targetStrainQueryRaw.expr.label("sentience mod");
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
+  val psychicStabDamage = roll("psychic-stab-damage", 1.d(10) + ceil(wilTotal / 10) + extraDamageQuery.arith);
 
   // MUSE
   val museName = text("muse_name");
@@ -259,6 +262,7 @@ object EPCharModel extends SheetModel {
   val chatOutputOther = "chat_output_other".default(Chat.Default);
   val chatOutputEPRolls = "chat_output_ep_rolls".default(Chat.Default);
   val chatOutputSelect = "chat_output_select".options(ChatOutput).default(ChatOutput.Public);
+  val usingAPIScript = "using_api_script".default(false);
 
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;

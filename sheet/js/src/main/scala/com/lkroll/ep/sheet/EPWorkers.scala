@@ -176,13 +176,13 @@ object EPWorkers extends SheetWorkerRoot {
     case (targetS) => {
       import ChatOutput._;
       val target = ChatOutput.withName(targetS);
-      val (ccep, cco) = target match {
-        case Public       => (Chat.Default, Chat.Default)
-        case GM           => (Chat.GM, Chat.GM)
-        case PublicScript => (Chat.API("eproll", ""), Chat.Default)
-        case GMScript     => (Chat.API("eproll", "-o GM"), Chat.GM)
+      val (ccep, cco, api) = target match {
+        case Public       => (Chat.Default, Chat.Default, false)
+        case GM           => (Chat.GM, Chat.GM, false)
+        case PublicScript => (Chat.API("eproll", ""), Chat.Default, true)
+        case GMScript     => (Chat.API("eproll", "-o GM"), Chat.GM, true)
       };
-      Seq(chatOutputEPRolls <<= ccep, chatOutputOther <<= cco)
+      Seq(chatOutputEPRolls <<= ccep, chatOutputOther <<= cco, usingAPIScript <<= api)
     }
   }
 

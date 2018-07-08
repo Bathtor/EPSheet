@@ -418,7 +418,7 @@ span.sheet-h2hr:after {
 
 .sheet-presentation span {
     color: ${input-colour};
-    white-space: pre-wrap;
+    /*white-space: pre-wrap; doesn't seem to behave nicely*/
 }
 
 /*.sheet-left-top-corner {
@@ -474,8 +474,8 @@ span.sheet-skillSpec:not(:empty)::before {
     line-height: 1.4em;
     margin-top: 0px;
     margin-bottom: -1px;
-    margin-left: 0px;
-    margin-right: 3px;
+    margin-left: 0.5em;
+    margin-right: 0px;
 }
 
 .sheet-toggle-wrapper-label input {
@@ -524,6 +524,14 @@ input.sheet-divide-not-one:checked~.sheet-divisor {
 
 input.sheet-divide-not-one:checked~.sheet-divisor::before {
     content: "%";
+}
+
+input.sheet-using-api[value="on"]+.sheet-api-only {
+    display: initial;
+}
+
+input.sheet-using-api[value="0"]+.sheet-api-only {
+    display: none;
 }
 
 /*

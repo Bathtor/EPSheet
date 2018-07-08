@@ -25,6 +25,7 @@
 
 package com.lkroll.ep.sheet
 
+import com.lkroll.roll20.core.Renderable
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.ep.model._
@@ -63,22 +64,38 @@ object MorphTab extends FieldGroup {
 
   val members: Seq[SheetElement] = Seq(
     eprow(
-    epcol(fblock(t.activeMorph, EPStyle.min5rem,
-      char.morphSkillBoni.hidden,
-      char.currentMorph.hidden,
-      //char.morphLabel,
-      (t.morphName -> char.morphName),
-      (t.morphType -> char.morphType),
-      (t.morphVisibleGender -> char.morphVisibleGender),
-      (t.morphVisibleAge -> char.morphVisibleAge),
-      (t.morphDurability -> char.morphDurability),
-      (t.morphMobilitySystem -> char.morphMobilitySystem),
-      (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
-      (t.morphTraits -> char.morphTraits),
-      (t.morphImplants -> char.morphImplants),
-      (t.morphDescription -> char.morphDescription)))),
+      epcol(fblock(t.activeMorph, EPStyle.min5rem,
+        char.morphSkillBoni.hidden,
+        char.currentMorph.hidden,
+        (t.morphName -> char.morphName),
+        (t.morphType -> char.morphType),
+        (t.morphVisibleGender -> char.morphVisibleGender),
+        (t.morphVisibleAge -> char.morphVisibleAge),
+        (t.morphDurability -> char.morphDurability),
+        (t.morphMobilitySystem -> char.morphMobilitySystem),
+        (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
+        (t.morphTraits -> textWithLookup(
+          char.morphTraits,
+          roll(char, "morph-traits-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> char.morphTraits), span(t.apiLookup)))),
+        (t.morphImplants -> textWithLookup(
+          char.morphImplants,
+          roll(char, "morph-implants-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> char.morphImplants), span(t.apiLookup)))),
+        (t.morphDescription -> char.morphDescription)))),
     h2(sty.`h2hr`, t.morphBank),
     morphsSection);
 
   override def renderer = CoreTabRenderer;
+
+  def textWithLookup(f: TextField, roll: RollElement): SheetElement = {
+    roll.child match {
+      case TagElement(t) => span(
+        input(`type` := "hidden", name := f.name),
+        span(sty.labelledValue, name := f.name),
+        input(sty.`using-api`, `type` := "hidden", name := char.usingAPIScript.name),
+        span(sty.`api-only`, sty.rollLabel, raw(" ◀ ︎"), button(sty.rollLabel, `type` := "roll", name := roll.roll.name, value := roll.roll.roll.render, t)))
+      case _ => ??? // fail please
+    }
+
+  }
+
 }

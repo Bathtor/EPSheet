@@ -37,17 +37,20 @@ object EPDamageTemplate extends RollTemplate {
   val t = EPTranslation;
   val sty = EPStyle;
 
-  def strain(cf: Field[String], af: Field[String], rf: RollField[Int], de: LabelI18N): TemplateApplication =
-    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageExplanation <<= de)
+  def explained(cf: Field[String], af: Field[String], rf: RollField[Int], de: LabelI18N): TemplateApplication =
+    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageExplanation <<= de);
+
+  def explained(cf: Field[String], al: LabelI18N, rf: RollField[Int], de: LabelI18N): TemplateApplication =
+    apply(character <<= cf, attributeLabel <<= al, damageRoll <<= rf, damageExplanation <<= de);
 
   def apply(cf: Field[String], al: LabelI18N, rf: RollField[Int]): TemplateApplication =
-    apply(character <<= cf, attributeLabel <<= al, damageRoll <<= rf)
+    apply(character <<= cf, attributeLabel <<= al, damageRoll <<= rf);
 
   def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int]): TemplateApplication =
     apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf);
 
   def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int], xdbf: CommandButton, xdfa: CommandButton): TemplateApplication =
-    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, concentrateBF <<= xdbf, concentrateFA <<= xdfa)
+    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, concentrateBF <<= xdbf, concentrateFA <<= xdfa);
 
   // **** Fields ****
   val character = attribute[String]("character");

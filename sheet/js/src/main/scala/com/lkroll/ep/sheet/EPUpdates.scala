@@ -54,4 +54,8 @@ object EPUpdates extends MinorVersionUpdateManager {
     val assignDMax = op(model.durability).update(dur => Seq(model.damageMax <<= dur));
     List(assignDMax)
   }
+  forVersion("1.7.0") {
+    val calc = nop { _: Option[Unit] => EPWorkers.chatOutputCalc().map(_ => ()) }; // workaround for initialisation timing
+    List(calc)
+  }
 }

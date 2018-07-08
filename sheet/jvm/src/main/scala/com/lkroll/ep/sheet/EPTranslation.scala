@@ -283,6 +283,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val strainMod = keys.strainMod <~ "Strain Mod";
   val strain = keys.strain <~ "Strain";
   val psiSkill = keys.psiSkill <~ "Skill";
+  val psychicStab = keys.psychicStab <~ "Psychic Stab Damage";
+  val psychicDamage = keys.psychicDamage <~ "Psychic";
 
   // muse
   val muse = keys.muse <~ "Muse";
@@ -393,6 +395,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
     case ChatOutput.PublicScript => "Public via API"
     case ChatOutput.GMScript     => "Whisper to GM via API"
   }
+  val usingAPIScript = keys.usingAPIScript <~ "Use API Script?";
+  val apiLookup = keys.apiLookup <~ "Lookup";
   // ****************
   // ADD OPTIONS HERE
   // ****************
