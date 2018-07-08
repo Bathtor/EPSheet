@@ -299,6 +299,7 @@ span.sheet-h2hr:after {
 .sheet-smallDescription,
 .sheet-labelledValue {
     user-select: text;
+    white-space: pre-wrap;
 }
 
 .sheet-ep-row, .sheet-ep-twocolrow, .sheet-ep-threecolrow {
@@ -418,7 +419,6 @@ span.sheet-h2hr:after {
 
 .sheet-presentation span {
     color: ${input-colour};
-    /*white-space: pre-wrap; doesn't seem to behave nicely*/
 }
 
 /*.sheet-left-top-corner {
