@@ -526,9 +526,9 @@ input.sheet-divide-not-one:checked~.sheet-divisor::before {
     content: "%";
 }
 
-input.sheet-using-api[value="on"]+.sheet-api-only {
+/*input.sheet-using-api[value="on"]+.sheet-api-only {
     display: initial;
-}
+}*/
 
 input.sheet-using-api[value="0"]+.sheet-api-only {
     display: none;

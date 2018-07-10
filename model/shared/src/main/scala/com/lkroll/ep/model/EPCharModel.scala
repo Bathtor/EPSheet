@@ -133,12 +133,14 @@ object EPCharModel extends SheetModel {
   val deathRating = "death_rating".editable(false).default(0);
   val initiative = "initiative".editable(false).default(0);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
-  lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - trauma + miscInitiativeMod & RollOptions.Tracker);
+  lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
   val speed = "speed".default(1).validIn(0, 99, 1);
   val mentalOnlyActions = "mental_only_actions".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
   val trauma = "trauma".default(0).validIn(0, 99, 1);
+  val traumasIgnored = "traumas_ignored".default(0).validIn(0, 99, 1);
+  val traumasApplied = "traumas_applied".editable(false).default(0);
   val traumaMod = "trauma_mod".editable(false).default(0);
   val damage = "damage".default(0).validIn(0, 999, 1);
   val damageMax = "damage_max".editable(false).default(0);
@@ -263,6 +265,7 @@ object EPCharModel extends SheetModel {
   val chatOutputEPRolls = "chat_output_ep_rolls".default(Chat.Default);
   val chatOutputSelect = "chat_output_select".options(ChatOutput).default(ChatOutput.Public);
   val usingAPIScript = "using_api_script".default(false);
+  val apiText = text("api_text");
 
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;

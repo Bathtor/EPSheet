@@ -76,8 +76,12 @@ object EPWorkers extends SheetWorkerRoot {
     }
   }
 
-  val traumaCalc = bind(op(trauma)) update {
-    case (tr) => Seq(traumaMod <<= tr * 10)
+  val traumaCalc = bind(op(trauma, traumasIgnored)) update {
+    case (curTraumas, traumasIgn) => {
+      val traumasApl = Math.max(curTraumas - traumasIgn, 0);
+      val traumasMod = traumasApl * 10;
+      Seq(traumasApplied <<= traumasApl, traumaMod <<= traumasMod)
+    }
   }
 
   val museTraumaCalc = bind(op(museTrauma)) update {

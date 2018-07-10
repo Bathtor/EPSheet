@@ -53,6 +53,7 @@ object OptionsTab extends FieldGroup {
         Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
         fblock(t.miscModifiers, EPStyle.min5rem,
           (t.woundsIgnored -> char.woundsIgnored),
+          (t.traumasIgnored -> char.traumasIgnored),
           (t.miscActionMod -> char.miscActionMod),
           (t.miscPhysicalMod -> char.miscPhysicalMod),
           (t.miscInitiativeMod -> char.miscInitiativeMod),
@@ -61,10 +62,14 @@ object OptionsTab extends FieldGroup {
     frow(
       sty.`flex-stretch`,
       fcol(
-        Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
+        Seq(EPStyle.`flex-grow`, sty.marginr1rem, sty.exactly15rem),
         block(
           t.miscNotes,
-          char.miscNotes.like(CoreTabRenderer.largeTextareaField)))));
+          char.miscNotes.like(CoreTabRenderer.largeTextareaField)),
+        condBlock(
+          char.usingAPIScript,
+          t.apiText,
+          char.apiText.like(CoreTabRenderer.largeTextareaField)))));
 
   override def renderer = CoreTabRenderer;
 }

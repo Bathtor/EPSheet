@@ -121,6 +121,7 @@ object EPTranslation extends SheetI18N {
   val stress = text("stress");
   val stressValue = abbr("sv", "stress-value");
   val trauma = text("trauma");
+  val traumasIgnored = text("traumas-ignored");
   val physicalHealth = text("physical-health");
   val damage = text("damage");
   val wounds = text("wounds");
@@ -321,6 +322,7 @@ object EPTranslation extends SheetI18N {
   val chatOutput = text("chat-output");
   val usingAPIScript = text("using-api-script");
   val apiLookup = text("api-lookup");
+  val apiText = text("api-text");
 
   // template
   val rollsfor = text("rolls-for");

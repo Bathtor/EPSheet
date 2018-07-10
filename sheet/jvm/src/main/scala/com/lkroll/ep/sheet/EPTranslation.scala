@@ -124,6 +124,7 @@ object EPTranslation extends SheetI18NDefaults {
   val stress = keys.stress <~ "Stress";
   val stressValue = keys.stressValue <~ ("SV", "Stress Value");
   val trauma = keys.trauma <~ "Trauma";
+  val traumasIgnored = keys.traumasIgnored <~ "Ignored Traumas";
   val physicalHealth = keys.physicalHealth <~ "Physical Health";
   val damage = keys.damage <~ "Damage";
   val wounds = keys.wounds <~ "Wounds";
@@ -313,6 +314,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscInitiativeMod = keys.miscInitiativeMod <~ "Misc. Initiative Modifier";
   val miscDurBonus = keys.miscDurBonus <~ "Misc. Durability Bonus";
   val chatOutput = keys.chatOutput <~ "Chat Output";
+  val apiText = keys.apiText <~ "API Text Exchange";
 
   // template
   val rollsfor = keys.rollsfor <~ "rolls for";

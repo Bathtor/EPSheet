@@ -34,6 +34,7 @@ import SheetImplicits._
 
 object Blocks {
   def block(title: LabelsI18N, elems: SheetElement*): CoreBlock = CoreBlock(title, elems);
+  def condBlock(cond: FlagField, title: LabelsI18N, elems: SheetElement*): CondBlock = CondBlock(cond, title, elems);
   def fblock(title: LabelsI18N, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(Left(title)), growStyle, elems);
   def fblock(title: TextField, growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(Some(Right(title)), growStyle, elems);
   def fblock(growStyle: scalatags.stylesheet.Cls, elems: SheetElement*): FlexBlock = FlexBlock(None, growStyle, elems);
@@ -153,6 +154,32 @@ case class CoreBlock(title: LabelsI18N, members: Seq[SheetElement]) extends Fiel
         EPStyle.wrapBox,
         tags,
         div(EPStyle.wrapBoxTitle, title.attrs))
+    };
+
+    override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
+      div(
+        EPStyle.labelGroup,
+        e,
+        div(EPStyle.subLabel, l.attrs));
+
+    override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
+  }
+}
+
+case class CondBlock(flag: FlagField, title: LabelsI18N, members: Seq[SheetElement]) extends FieldGroup {
+  override def renderer = coreBlockRenderer;
+
+  val coreBlockRenderer = new GroupRenderer {
+    import GroupRenderer._
+
+    override def fieldCombiner: FieldCombiner = { tags =>
+      div(
+        input(`type` := "hidden", name := flag.name, EPStyle.`using-api`),
+        div(
+          EPStyle.wrapBox,
+          EPStyle.`api-only`,
+          tags,
+          div(EPStyle.wrapBoxTitle, title.attrs)))
     };
 
     override def renderLabelled(l: LabelsI18N, e: Tag): Tag =

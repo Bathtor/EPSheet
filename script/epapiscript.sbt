@@ -11,7 +11,7 @@ scalaVersion := "2.12.4"
 
 libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.8.+"
 libraryDependencies += "com.lkroll.ep" %%% "epcompendium-core" % "2.1.1"
-libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.8.0"
+libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.8.1"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
 libraryDependencies += "org.rogach" %%% "scallop" % "3.1.+"
 libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.4"
