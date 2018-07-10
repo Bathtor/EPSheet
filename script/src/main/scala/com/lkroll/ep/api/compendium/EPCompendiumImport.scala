@@ -29,6 +29,7 @@ import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
+import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
 
@@ -53,6 +54,7 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val gear = opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val software = opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val substance = opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val fromSheet = opt[Boolean]("from-sheet", descr = "Import a JSON formatted item from the API Text Exchange field on the character sheet linked with a selected token");
 
   dependsOnAll(withAmmo, List(weapon));
   dependsOnAll(withAccessory, List(weapon));
@@ -286,6 +288,22 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
               i.importInto(char, idPool, importCache) match {
                 case Left(msg)  => updates ::= s"Imported ${i.updateLabel} ($msg)"
                 case Right(msg) => updates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+              }
+            }
+
+            if (config.fromSheet()) {
+              val text = char.attribute(epmodel.apiText)();
+              EPCompendium.readData(text) match {
+                case Success(d) => {
+                  Importable.fromData(d) match {
+                    case Some(i) => i.importInto(char, idPool, importCache) match {
+                      case Left(msg)  => updates ::= s"Imported ${i.updateLabel} ($msg)"
+                      case Right(msg) => updates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                    }
+                    case None => updates ::= s"Data from sheet (${d.getClass}) is not importable."
+                  }
+                }
+                case Failure(e) => updates ::= s"Failed to parse data from sheet: ${e.getMessage}"
               }
             }
 

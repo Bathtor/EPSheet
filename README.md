@@ -12,4 +12,4 @@ Current release candidate for the sheet is version `1.8.0`, which can be found [
 
 Current pre-release for the script is version `0.6.0`, which can be found [here](https://github.com/Bathtor/EPSheet/releases/tag/script-v0.6.0).
 
-Work on the sheet itself is mostly bugfixes and small improvemetns at the moment, while most of the time goes into the API script now.
+Work on the sheet itself is mostly bugfixes and small improvements at the moment, while most of the time goes into the API script now.

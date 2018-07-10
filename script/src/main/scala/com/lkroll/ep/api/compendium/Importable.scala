@@ -48,6 +48,22 @@ object Importable {
   implicit def gear2Import(g: Gear): GearImport = GearImport(g);
   implicit def software2Import(s: Software): SoftwareImport = SoftwareImport(s);
   implicit def substance2Import(s: Substance): SubstanceImport = SubstanceImport(s);
+
+  def fromData(d: Data): Option[Importable] = d match {
+    case a: Armour           => Some(a)
+    case ma: ModdedArmour    => Some(ma)
+    case wwa: WeaponWithAmmo => Some(wwa)
+    case w: Weapon           => Some(w)
+    case d: Derangement      => Some(DerangementImport(d, 0.0f))
+    case d: Disorder         => Some(d)
+    case t: EPTrait          => Some(t)
+    case g: Gear             => Some(g)
+    case s: Software         => Some(s)
+    case s: Substance        => Some(s)
+    case mm: MorphModel      => Some(mm)
+    case mi: MorphInstance   => Some(mi)
+    case _                   => None
+  };
 }
 
 class ImportCache(val char: Character) {
