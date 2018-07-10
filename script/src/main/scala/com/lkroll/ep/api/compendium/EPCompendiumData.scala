@@ -37,7 +37,7 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   banner("Search and view data loaded into the Eclipse Phase Compendium.")
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val multiSearch = opt[String]("multi-search", descr = "Search for a comma-separated list of items, showing best matches only.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val multiSearch = opt[Boolean]("multi-search", descr = "Search for a comma-separated list of items (after --), showing best matches only.");
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
   val rankMax = opt[Int]("rank-max", descr = "Rank the top &lt;param&gt; significant results, instead of showing highest one only.");
@@ -57,11 +57,13 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val augmentation = opt[String]("augmentation", descr = "Search for matches with &lt;param&gt; in augmentations.")(ScallopUtils.singleArgSpacedConverter(identity));
   val armourMod = opt[String]("armour-mod", descr = "Search for matches with &lt;param&gt; in armour mods.")(ScallopUtils.singleArgSpacedConverter(identity));
   val weaponAccessory = opt[String]("weapon-accessory", descr = "Search for matches with &lt;param&gt; in weapon accessories.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val trailing = trailArg[List[String]]("trailing", hidden = true, required = false);
 
   dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
   dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
   dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
   dependsOnAll(withAmmo, List(weapon));
+  dependsOnAll(multiSearch, List(trailing));
   requireOne(search, multiSearch, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory);
   verify();
 
@@ -97,13 +99,13 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       ctx.reply(s"Searching for '$needle' in whole Compendium...");
       val results = EPCompendium.findAnything(needle);
       handleResults(results, config, ctx);
-    } else if (config.multiSearch.isSupplied) {
-      val s = config.multiSearch().trim;
+    } else if (config.multiSearch()) {
+      val s = config.trailing().mkString(" ");
       if (s.isEmpty()) {
         ctx.reply(s"Ignoring empty search.");
       } else {
         ctx.reply(s"Searching for multiple items in whole Compendium...");
-        val needles = s.split(",");
+        val needles = s.split(",").map(_.trim);
         val results = needles.map { needle =>
           val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>
             val infoButton = this.invoke("?", argumentFrom(bestResult, config)).render;

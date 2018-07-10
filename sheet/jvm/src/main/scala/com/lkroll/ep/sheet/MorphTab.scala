@@ -76,10 +76,10 @@ object MorphTab extends FieldGroup {
         (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
         (t.morphTraits -> textWithLookup(
           char.morphTraits,
-          roll(char, "morph-traits-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> char.morphTraits), span(t.apiLookup)))),
+          roll(char, "morph-traits-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> ""), Some(char.morphTraits), span(t.apiLookup)))),
         (t.morphImplants -> textWithLookup(
           char.morphImplants,
-          roll(char, "morph-implants-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> char.morphImplants), span(t.apiLookup)))),
+          roll(char, "morph-implants-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> ""), Some(char.morphImplants), span(t.apiLookup)))),
         (t.morphDescription -> char.morphDescription)))),
     h2(sty.`h2hr`, t.morphBank),
     morphsSection);
