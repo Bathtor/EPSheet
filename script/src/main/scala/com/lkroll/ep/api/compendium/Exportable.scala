@@ -24,14 +24,28 @@
  */
 package com.lkroll.ep.api.compendium
 
+import com.lkroll.ep.compendium._
+import com.lkroll.ep.compendium.utils.OptionPickler._
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
-import com.lkroll.roll20.api.conf._
-import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
-import util.{ Try, Success, Failure }
-import org.rogach.scallop.singleArgConverter
+import com.lkroll.ep.model.{ EPCharModel => epmodel }
 
-object CompendiumScript extends APIScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand, EPCompendiumExportCommand);
+trait Exportable {
+  def updateLabel: String;
+  def exportFrom(char: AttributeCache): Either[Data, String];
+}
+
+object Export {
+  import APIImplicits._;
+
+  def export(char: AttributeCache, exp: Exportable): Either[String, String] = {
+    exp.exportFrom(char) match {
+      case Left(d) => {
+        val json = write(d.described);
+        char.attribute(epmodel.apiText) <<= json;
+        Left("Ok")
+      }
+      case Right(e) => Right(e)
+    }
+  }
 }

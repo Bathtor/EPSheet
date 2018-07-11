@@ -33,6 +33,7 @@ import SheetWorkerTypeShorthands._
 import util.{ Success, Failure }
 import concurrent.{ Future, Promise, ExecutionContext }
 import scala.scalajs.js
+import com.lkroll.ep.model.ValueParsers
 
 object SkillWorkers extends SheetWorker {
   import EPCharModel._
@@ -470,46 +471,50 @@ object SkillWorkers extends SheetWorker {
       activeTuples <- activeTuplesF
       knowledgeTuples <- knowledgeTuplesF
     } yield {
-      val data = skillBoniO match {
+      val data: Map[FieldLike[Any], Any] = skillBoniO match {
         case Some(skillBoniS) if !skillBoniS.isEmpty() => {
-          val skillBoni = ValueParsers.skillsFrom(skillBoniS);
-          debug(s"Applying Skill Boni:\n${skillBoni.mkString(",")}");
-          val activeUpdates = activeTuples.map { t =>
-            val bonus = skillBoni.flatMap { sm =>
-              t.name.flatMap { tname =>
-                if (sm.skill.equalsIgnoreCase(tname)) {
-                  val fieldMatch = for {
-                    smField <- sm.field;
-                    tField <- t.field
-                  } yield smField.equalsIgnoreCase(tField);
-                  fieldMatch match {
-                    case Some(true) | None => Some(sm.mod)
-                    case Some(false)       => None
+          ValueParsers.skillsFrom(skillBoniS) match {
+            case Success(skillBoni) => {
+              debug(s"Applying Skill Boni:\n${skillBoni.mkString(",")}");
+              val activeUpdates = activeTuples.map { t =>
+                val bonus = skillBoni.flatMap { sm =>
+                  t.name.flatMap { tname =>
+                    if (sm.skill.equalsIgnoreCase(tname)) {
+                      val fieldMatch = for {
+                        smField <- sm.field;
+                        tField <- t.field
+                      } yield smField.equalsIgnoreCase(tField);
+                      fieldMatch match {
+                        case Some(true) | None => Some(sm.mod)
+                        case Some(false)       => None
+                      }
+                    } else None
                   }
-                } else None
-              }
-            }.sum;
-            activeSkills.at(t.id, activeSkills.morphBonus) <<= bonus
-          };
-          val knowledgeUpdates = knowledgeTuples.map { t =>
-            val bonus = skillBoni.flatMap { sm =>
-              t.name.flatMap { tname =>
-                if (sm.skill.equalsIgnoreCase(tname)) {
-                  val fieldMatch = for {
-                    smField <- sm.field;
-                    tFieldRaw <- t.field;
-                    tField <- if (tFieldRaw == "???") None else Some(tFieldRaw)
-                  } yield smField.equalsIgnoreCase(tField);
-                  fieldMatch match {
-                    case Some(true) | None => Some(sm.mod)
-                    case Some(false)       => None
+                }.sum;
+                activeSkills.at(t.id, activeSkills.morphBonus) <<= bonus
+              };
+              val knowledgeUpdates = knowledgeTuples.map { t =>
+                val bonus = skillBoni.flatMap { sm =>
+                  t.name.flatMap { tname =>
+                    if (sm.skill.equalsIgnoreCase(tname)) {
+                      val fieldMatch = for {
+                        smField <- sm.field;
+                        tFieldRaw <- t.field;
+                        tField <- if (tFieldRaw == "???") None else Some(tFieldRaw)
+                      } yield smField.equalsIgnoreCase(tField);
+                      fieldMatch match {
+                        case Some(true) | None => Some(sm.mod)
+                        case Some(false)       => None
+                      }
+                    } else None
                   }
-                } else None
-              }
-            }.sum;
-            knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= bonus
-          };
-          (activeUpdates ++ knowledgeUpdates).toMap
+                }.sum;
+                knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= bonus
+              };
+              (activeUpdates ++ knowledgeUpdates).toMap
+            }
+            case Failure(e) => error(e); Map.empty
+          }
         }
         case _ => {
           debug("No skill boni to apply. Resetting.");

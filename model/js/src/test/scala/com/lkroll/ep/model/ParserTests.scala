@@ -1,6 +1,7 @@
-package com.lkroll.ep.sheet
+package com.lkroll.ep.model
 
 import org.scalatest._
+import org.scalactic.source.Position.apply
 
 class ParserTests extends FunSuite with Matchers {
 
@@ -13,7 +14,7 @@ class ParserTests extends FunSuite with Matchers {
   "mod": -5
 }
 """;
-    val resSingle = ValueParsers.skillsFrom(singleJsonData);
+    val resSingle = ValueParsers.skillsFrom(singleJsonData).get;
     resSingle should have length 1;
     val singleValue = resSingle(0);
     singleValue.skill shouldBe "Test";
@@ -26,7 +27,7 @@ class ParserTests extends FunSuite with Matchers {
   "mod": 10
 }
 """;
-    val resSecond = ValueParsers.skillsFrom(secondJsonData);
+    val resSecond = ValueParsers.skillsFrom(secondJsonData).get;
     resSecond should have length 1;
     val secondValue = resSecond(0);
     secondValue.skill shouldBe "Second Test";
@@ -34,7 +35,7 @@ class ParserTests extends FunSuite with Matchers {
     secondValue.mod shouldBe 10;
     // #3
     val multiJsonData = s"[$singleJsonData, $secondJsonData]";
-    val resMulti = ValueParsers.skillsFrom(multiJsonData);
+    val resMulti = ValueParsers.skillsFrom(multiJsonData).get;
     resMulti should have length 2;
     val firstValue = resMulti(0);
     firstValue.skill shouldBe "Test";
@@ -49,7 +50,7 @@ class ParserTests extends FunSuite with Matchers {
   test("Should parse text formatted skills") {
     // #1
     val singleData = "+30 Beam Weapons skill";
-    val resSingle = ValueParsers.skillsFrom(singleData);
+    val resSingle = ValueParsers.skillsFrom(singleData).get;
     resSingle should have length 1;
     val singleValue = resSingle(0);
     singleValue.skill shouldBe "Beam Weapons";
@@ -57,7 +58,7 @@ class ParserTests extends FunSuite with Matchers {
     singleValue.mod shouldBe 30;
     // #2
     val singleDataField = "+30 Beam Weapons (Underwater)";
-    val resSingleField = ValueParsers.skillsFrom(singleDataField);
+    val resSingleField = ValueParsers.skillsFrom(singleDataField).get;
     resSingleField should have length 1;
     val singleValueField = resSingleField(0);
     singleValueField.skill shouldBe "Beam Weapons";
@@ -65,7 +66,7 @@ class ParserTests extends FunSuite with Matchers {
     singleValueField.mod shouldBe 30;
     // #3
     val multiData = s"$singleData, $singleDataField";
-    val resMulti = ValueParsers.skillsFrom(multiData);
+    val resMulti = ValueParsers.skillsFrom(multiData).get;
     resMulti should have length 2;
     val firstValue = resMulti(0);
     firstValue.skill shouldBe "Beam Weapons";

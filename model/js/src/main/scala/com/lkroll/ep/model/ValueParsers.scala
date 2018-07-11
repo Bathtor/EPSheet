@@ -23,19 +23,39 @@
  *
  */
 
-package com.lkroll.ep.sheet
+package com.lkroll.ep.model
 
 import scalajs.js
 import util.{ Try, Success, Failure }
 import com.lkroll.ep.model._
+import scala.collection.Seq
+import scala.scalajs.js.Any.jsArrayOps
+import scala.reflect.ClassTag
 
 object ValueParsers {
-  def aptitudesFrom(s: String): AptitudeValues = {
-    try {
-      if (s.startsWith("{")) {
-        EPWorkers.log(s"Trying to parse $s as json.");
+  implicit class Sequenceable[V: ClassTag](arr: Array[Try[V]]) {
+    def sequence: Try[Array[V]] = {
+      arr.foldLeft(Try(Array.empty[V])) { (acc, tv) =>
+        acc match {
+          case Success(a) => tv match {
+            case Success(v) => Success(a :+ v)
+            case Failure(e) => Failure(e)
+          }
+          case f: Failure[Array[V]] => f
+        }
+      }
+    }
+  }
+
+  def aptitudesFrom(sraw: String): Try[AptitudeValues] = {
+    val s = sraw.trim();
+    val r = Try {
+      if (s.isEmpty()) {
+        Success(Aptitude.defaultValues)
+      } else if (s.startsWith("{")) {
+        //EPWorkers.log(s"Trying to parse $s as json.");
         val res = js.JSON.parse(s);
-        EPWorkers.log(s"Got dynamic: $res.");
+        //EPWorkers.log(s"Got dynamic: $res.");
         //        val value: Any = PicklerRegistry.unpickle(res);
         //        EPWorkers.log(s"Got value: $res.");
 
@@ -46,31 +66,29 @@ object ValueParsers {
         val sav = dynamicToOption[Int](res.sav);
         val som = dynamicToOption[Int](res.som);
         val wil = dynamicToOption[Int](res.wil);
-        return AptitudeValues(cog, coo, int, ref, sav, som, wil)
+        Success(AptitudeValues(cog, coo, int, ref, sav, som, wil))
       } else {
-        EPWorkers.log(s"Trying to parse $s as comma separated string.");
+        //EPWorkers.log(s"Trying to parse $s as comma separated string.");
         val commaSplit = s.split(',').map(_.trim());
         if (commaSplit.length == 1) {
-          EPWorkers.log(s"Split is of length 1: ${commaSplit(0)}");
+          //EPWorkers.log(s"Split is of length 1: ${commaSplit(0)}");
           val iT = Try(commaSplit(0).toInt);
           val aT = iT.map { i =>
-            EPWorkers.log(s"Single parsing successful: $i");
+            //EPWorkers.log(s"Single parsing successful: $i");
             val aptsMap = Aptitude.values.map(a => (a -> i)).toMap;
             val apts = Aptitude.valuesFrom(aptsMap);
-            EPWorkers.log(s"Aptitudes: ${aptsMap.mkString(",")} -> $apts");
+            //EPWorkers.log(s"Aptitudes: ${aptsMap.mkString(",")} -> $apts");
             apts;
           };
-          if (aT.isSuccess) {
-            return aT.get
-          }
+          aT
         }
         val parsed = commaSplit.zipWithIndex.map {
           case (in, index) =>
-            EPWorkers.log(s"Mapping $index -> ${in}");
+            //EPWorkers.log(s"Mapping $index -> ${in}");
             val oT = Try((Aptitude(index) -> in.toInt)).recoverWith {
               case _ =>
                 val spaceSplit = in.split(" ");
-                EPWorkers.log(s"Wasn't just a number: ${spaceSplit.mkString(",")}");
+                //EPWorkers.log(s"Wasn't just a number: ${spaceSplit.mkString(",")}");
                 if (spaceSplit.length == 2) {
                   for {
                     i <- Try(spaceSplit(0).toInt);
@@ -80,17 +98,12 @@ object ValueParsers {
                   Failure(new IllegalArgumentException(in))
                 }
             }
-            if (oT.isFailure) {
-              EPWorkers.error(oT.toString)
-            }
-            oT.toOption
+            oT
         };
-        return Aptitude.valuesFrom(parsed.flatten.toMap)
+        parsed.sequence.map(p => Aptitude.valuesFrom(p.toMap))
       }
-    } catch {
-      case e: Throwable => EPWorkers.error(e);
-    }
-    return AptitudeValues(None, None, None, None, None, None, None);
+    };
+    r.flatten
   }
 
   def aptFrom(s: String): Aptitude.Aptitude = Aptitude.withName(s);
@@ -106,23 +119,25 @@ object ValueParsers {
     expr.r
   }
 
-  def skillsFrom(sraw: String): Seq[SkillMod] = {
+  def skillsFrom(sraw: String): Try[Seq[SkillMod]] = {
     val s = sraw.trim;
-    try {
-      if (s.startsWith("{")) {
-        EPWorkers.log(s"Trying to parse $s as single json object.");
+    val r = Try {
+      if (s.isEmpty()) {
+        Success(Seq.empty)
+      } else if (s.startsWith("{")) {
+        //EPWorkers.log(s"Trying to parse $s as single json object.");
         val res = js.JSON.parse(s);
-        EPWorkers.log(s"Got dynamic: $res.");
-        skillFromJson(res).toSeq
+        //EPWorkers.log(s"Got dynamic: $res.");
+        Success(skillFromJson(res).toSeq)
       } else if (s.startsWith("[")) {
-        EPWorkers.log(s"Trying to parse $s as json list.");
+        //EPWorkers.log(s"Trying to parse $s as json list.");
         val res = js.JSON.parse(s);
-        EPWorkers.log(s"Got dynamic: $res.");
+        //EPWorkers.log(s"Got dynamic: $res.");
         dynamicToOption[js.Array[js.Dynamic]](res) match {
           case Some(data) => {
-            data.flatMap(skillFromJson).toSeq
+            Success(data.flatMap(skillFromJson).toSeq)
           }
-          case None => EPWorkers.error("Object was not an array!"); Seq.empty
+          case None => Failure(new ParsingException("Object was not an array")) //EPWorkers.error("Object was not an array!"); Seq.empty
         }
       } else {
         val commaSplit = s.split(",");
@@ -133,11 +148,10 @@ object ValueParsers {
             case _                               => println(s"Extracted nothing from: $group"); None
           }
         };
-        res.toSeq
+        Success(res.toSeq)
       }
-    } catch {
-      case e: Throwable => EPWorkers.error(e); Seq.empty
-    }
+    };
+    r.flatten
   }
 
   private lazy val finalSkillPattern = """(.*)\sskill""".r;
@@ -158,4 +172,20 @@ object ValueParsers {
   }
 
   private def dynamicToOption[T](d: Dynamic): Option[T] = if (js.isUndefined(d)) { None } else { Some(d.asInstanceOf[T]) }
+}
+
+class ParsingException(message: String) extends Exception(message) {
+
+  def this(message: String, cause: Throwable) {
+    this(message)
+    initCause(cause)
+  }
+
+  def this(cause: Throwable) {
+    this(Option(cause).map(_.toString).orNull, cause)
+  }
+
+  def this() {
+    this(null: String)
+  }
 }
