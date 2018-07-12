@@ -36,7 +36,7 @@ import fastparse.all._
 import util.{ Try, Success, Failure }
 
 object EPScripts extends APIScriptRoot {
-  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, compendium.CompendiumScript, BattleManagerScript);
+  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, compendium.CompendiumScript, BattleManagerScript, CharCleanerScript);
 
   val version = BuildInfo.version;
   val author = "Lars Kroll";

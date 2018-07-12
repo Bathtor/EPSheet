@@ -52,14 +52,16 @@ object MorphWorkers extends SheetWorker {
       current <- currentF
     } yield {
       log(s"Got rows:\n${rowAttrs.mkString(",")}");
-      val activeRow = rowAttrs(simpleRowId);
-      val activeActive = activeRow(morphs.active);
+      val activeRow = rowAttrs.find {
+        case (key, value) => key.equalsIgnoreCase(simpleRowId) // because Roll20 is inconsistent between API and Browser
+      } map { _._2 };
+      val activeActive = activeRow.flatMap(_.apply(morphs.active));
       (current, activeActive) match {
         case (_, None) => log(s"No active value. Probably deleted a row?");
-        case (Some(currentId), Some(true)) if (currentId == rowId) => log("Active morph is already current. What triggered the change?");
-        case (Some(currentId), Some(true)) if (currentId != rowId) => {
+        case (Some(currentId), Some(true)) if currentId.equalsIgnoreCase(rowId) => log("Active morph is already current. What triggered the change?");
+        case (Some(currentId), Some(true)) if (!currentId.equalsIgnoreCase(rowId)) => {
           log(s"Active morph changed to ${rowId}");
-          val updates = rowAttrs.filterKeys(_ != simpleRowId).mapValues(attrs => attrs(morphs.active) match {
+          val updates = rowAttrs.filterKeys(!_.equalsIgnoreCase(simpleRowId)).mapValues(attrs => attrs(morphs.active) match {
             case Some(b) => b
             case None    => false
           }).filter({
@@ -76,11 +78,11 @@ object MorphWorkers extends SheetWorker {
             case Failure(e) => error(e);
           }
         }
-        case (Some(currentId), Some(false)) if (currentId == rowId) => {
+        case (Some(currentId), Some(false)) if currentId.equalsIgnoreCase(rowId) => {
           log("All morphs deactivated.");
           resetMorphDefaults(Seq(morphs.at(simpleRowId, morphs.morphLocation) <<= morphs.morphLocation.resetValue));
         }
-        case (Some(currentId), Some(false)) if (currentId != rowId) => log("Morph was already deactivated. What triggered the change?");
+        case (Some(currentId), Some(false)) if !currentId.equalsIgnoreCase(rowId) => log("Morph was already deactivated. What triggered the change?");
         case x => log(s"Got something unexpected: ${x}");
       }
     };
