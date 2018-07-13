@@ -58,4 +58,24 @@ object EPUpdates extends MinorVersionUpdateManager {
     val calc = nop { _: Option[Unit] => EPWorkers.chatOutputCalc().map(_ => ()) }; // workaround for initialisation timing
     List(calc)
   }
+  forVersion("1.8.0") {
+    val speedUpdate = op(model.speed).update(oldSpeed => {
+      val extraSpeed = if (oldSpeed <= 1) { // if it's < 1 something is weird, but we shouldn't touch it
+        0 // just leave everything as it is...morphSpeed will be 1 and speedExtra 0 so it'd sum to 1 anyway
+      } else {
+        oldSpeed - 1; // since 1 is coming from morphSpeed
+      };
+      Seq(model.speedExtra <<= extraSpeed)
+    });
+    val moaUpdate = op(model.mentalOnlyActions).update(oldMOA => {
+      val extraMOA = if (oldMOA == 0) { // can't be < 0 since the input field doesn't allow that
+        0 // just leave everything as it is...morphMOA will be 0 and moaExtra 0 so it'd sum to 0 anyway
+      } else {
+        oldMOA // since 0 is coming from morphMOA
+      };
+      Seq(model.mentalOnlyActionsExtra <<= oldMOA)
+    });
+
+    List(speedUpdate, moaUpdate)
+  }
 }

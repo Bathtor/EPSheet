@@ -27,6 +27,7 @@ package com.lkroll.ep.api.compendium
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
+import com.lkroll.ep.compendium.Effect._
 import com.lkroll.ep.compendium.utils.OptionPickler._
 import com.lkroll.ep.model.{ EPCharModel => epmodel, MorphSection, ValueParsers, Aptitude, MorphType => ModelMorphType }
 import APIImplicits._;
@@ -54,10 +55,37 @@ case class MorphModelImport(morph: MorphModel) extends Importable {
     }
     char.createRepeating(MorphSection.aptitudeBoni, rowId) <<= write(morph.aptitudeBonus);
     char.createRepeating(MorphSection.aptitudeMax, rowId) <<= write(morph.aptitudeMax);
-    char.createRepeating(MorphSection.skillBoni, rowId) <<= write(morph.skillBonus);
+
+    var speed = 1;
+    var moa = 0;
+    var skillBoni = List.empty[String];
+    var iniBonus = 0;
+    var ignoredWounds = 0;
+    var notes = List.empty[String];
+    morph.otherEffects.foreach {
+      case SpeedMod(mod)    => speed += mod
+      case MOAMod(mod)      => moa += mod
+      case IniMod(mod)      => iniBonus += mod
+      case _: AptitudeMod   => notes ::= "Not importing AptitudeMod. Use Aptitude Boni field instead."
+      case s: SkillMod      => skillBoni ::= s.text
+      case _: DurMod        => notes ::= "Not importing DurMod. Use Durability field instead."
+      case IgnoreWounds(w)  => ignoredWounds += w
+      case _: IgnoreTraumas => notes ::= "Not importing IgnoreTraumas."
+      case _: LucMod        => notes ::= "Not importing LucMod."
+      case _: DamageEffect  => notes ::= "Not importing DamageEffect."
+      case _: FreeForm      => notes ::= "Not importing FreeForm."
+    }
+    char.createRepeating(MorphSection.speed, rowId) <<= speed;
+    char.createRepeating(MorphSection.moa, rowId) <<= moa;
+    char.createRepeating(MorphSection.skillBoni, rowId) <<= skillBoni.mkString(", ");
+    char.createRepeating(MorphSection.iniBonus, rowId) <<= iniBonus;
+    char.createRepeating(MorphSection.ignoredWounds, rowId) <<= ignoredWounds;
+
+    val notesS = if (notes.isEmpty) "" else notes.mkString(" [", ", ", "]");
+
     morph.playerDecisions match {
-      case Some(s) => Left(s"TODO: $s")
-      case None    => Left("Ok")
+      case Some(s) => Left(s"TODO: $s $notesS")
+      case None    => Left("Ok" ++ notesS)
     }
   }
   override def children: List[Importable] = morph.attacks.map(a => WeaponImport(a)).toList;
@@ -97,8 +125,33 @@ case class MorphInstanceImport(morph: MorphInstance) extends Importable {
     }
     char.createRepeating(MorphSection.aptitudeBoni, rowId) <<= write(morph.aptitudeBonus);
     char.createRepeating(MorphSection.aptitudeMax, rowId) <<= write(morph.aptitudeMax);
-    char.createRepeating(MorphSection.skillBoni, rowId) <<= write(morph.skillBonus);
-    Left("Ok")
+    var speed = 1;
+    var moa = 0;
+    var skillBoni = List.empty[String];
+    var iniBonus = 0;
+    var ignoredWounds = 0;
+    var notes = List.empty[String];
+    morph.otherEffects.foreach {
+      case SpeedMod(mod)    => speed += mod
+      case MOAMod(mod)      => moa += mod
+      case IniMod(mod)      => iniBonus += mod
+      case _: AptitudeMod   => notes ::= "Not importing AptitudeMod. Use Aptitude Boni field instead."
+      case s: SkillMod      => skillBoni ::= s.text
+      case _: DurMod        => notes ::= "Not importing DurMod. Use Durability field instead."
+      case IgnoreWounds(w)  => ignoredWounds += w
+      case _: IgnoreTraumas => notes ::= "Not importing IgnoreTraumas."
+      case _: LucMod        => notes ::= "Not importing LucMod."
+      case _: DamageEffect  => notes ::= "Not importing DamageEffect."
+      case _: FreeForm      => notes ::= "Not importing FreeForm."
+    }
+    char.createRepeating(MorphSection.speed, rowId) <<= speed;
+    char.createRepeating(MorphSection.moa, rowId) <<= moa;
+    char.createRepeating(MorphSection.skillBoni, rowId) <<= skillBoni.mkString(", ");
+    char.createRepeating(MorphSection.iniBonus, rowId) <<= iniBonus;
+    char.createRepeating(MorphSection.ignoredWounds, rowId) <<= ignoredWounds;
+
+    val notesS = if (notes.isEmpty) "" else notes.mkString(" [", ", ", "]");
+    Left("Ok" ++ notesS)
   }
   override def children: List[Importable] = morph.attacks.map(a => WeaponImport(a)).toList;
 }
@@ -150,15 +203,31 @@ object MorphInstanceExport extends Exportable {
         toTryOr("").
         flatMap(ValueParsers.skillsFrom(_)).
         map(toCompendiumSkills(_));
+      val mSpeed = char.repeatingAt(rowId)(MorphSection.speed).map(_.apply()).getOrElse(1);
+      val mMOA = char.repeatingAt(rowId)(MorphSection.moa).map(_.apply()).getOrElse(0);
+      val mIni = char.repeatingAt(rowId)(MorphSection.iniBonus).map(_.apply()).getOrElse(0);
+      val mIgnoredWounds = char.repeatingAt(rowId)(MorphSection.ignoredWounds).map(_.apply()).getOrElse(0);
 
       val r = for {
         mAptBonus <- mAptBonusT;
         mAptMax <- mAptMaxT;
         mSkillBonus <- mSkillBonusT;
         mType <- mTypeO.toTry("Invalid Morph Type")
-      } yield MorphInstance(mLabel, mModel, mType, mDescr, mGender, mAge, mLocation,
-        mImplants, mTraits, mMovement, mAptMax, mAptBonus, mSkillBonus,
-        Seq.empty, mDur, mArmour);
+      } yield {
+        val speedBonus: List[Effect] = if (mSpeed > 1) List(SpeedMod(mSpeed - 1)) else List.empty;
+        val moaBonus: List[Effect] = if (mMOA > 0) List(MOAMod(mMOA)) else List.empty;
+        val iniBonus: List[Effect] = if (mIni > 0) List(IniMod(mIni)) else List.empty;
+        val ignWounds: List[Effect] = if (mIgnoredWounds > 0) List(IgnoreWounds(mIgnoredWounds)) else List.empty;
+        val effects: List[Effect] = mSkillBonus.toList ++
+          speedBonus ++
+          moaBonus ++
+          iniBonus ++
+          ignWounds;
+
+        MorphInstance(mLabel, mModel, mType, mDescr, mGender, mAge, mLocation,
+          mImplants, mTraits, mMovement, mAptMax, mAptBonus, effects,
+          Seq.empty, mDur, mArmour)
+      };
 
       r match {
         case Success(d) => Left(d)

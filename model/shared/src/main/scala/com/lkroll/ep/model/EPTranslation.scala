@@ -115,7 +115,9 @@ object EPTranslation extends SheetI18N {
   val dr = abbr("dr", "death-rating");
   val init = abbr("init", "initiative");
   val spd = abbr("spd", "speed");
+  val spdExtra = abbr("spd-extra", "speed-extra");
   val moa = abbr("moa", "mental-only-actions");
+  val moaExtra = abbr("moa-extra", "mental-only-actions-extra");
   val db = abbr("db", "damage-bonus");
   val mentalHealth = text("mental-health");
   val stress = text("stress");
@@ -199,6 +201,10 @@ object EPTranslation extends SheetI18N {
   val morphSkillBoni = text("morph-skill-boni");
   val morphVisibleAge = text("morph-visible-age");
   val morphVisibleGender = text("morph-visible-gender");
+  val morphSpeed = abbr("morph-spd", "morph-speed");
+  val morphMOA = abbr("morph-moa", "morph-mental-only-actions");
+  val morphIniBonus = abbr("morph-ini-mod", "morph-initiative_modifier");
+  val morphIgnoredWounds = text("morph-ignored-wounds");
 
   // gear
   val gear = text("gear");

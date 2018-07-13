@@ -118,7 +118,9 @@ object EPTranslation extends SheetI18NDefaults {
   val dr = keys.dr <~ ("DR", "Death Rating");
   val init = keys.init <~ ("INIT", "Initiative");
   val spd = keys.spd <~ ("SPD", "Speed");
+  val spdExtra = keys.spdExtra <~ ("SPD+", "Extra Speed");
   val moa = keys.moa <~ ("MOA", "Mental Only Actions");
+  val moaExtra = keys.moaExtra <~ ("MOA+", "Extra Mental Only Actions");
   val db = keys.db <~ ("DB", "Damage Bonus");
   val mentalHealth = keys.mentalHealth <~ "Mental Health";
   val stress = keys.stress <~ "Stress";
@@ -184,6 +186,10 @@ object EPTranslation extends SheetI18NDefaults {
   val morphSkillBoni = keys.morphSkillBoni <~ "Skill Boni";
   val morphVisibleAge = keys.morphVisibleAge <~ "Visible Age";
   val morphVisibleGender = keys.morphVisibleGender <~ "Visible Gender";
+  val morphSpeed = keys.morphSpeed <~ ("SPD", "Speed");
+  val morphMOA = keys.morphMOA <~ ("MOA", "Mental Only Actions");
+  val morphIniBonus = keys.morphIniBonus <~ ("INI MOD", "Initiative Modifier");
+  val morphIgnoredWounds = keys.morphIgnoredWounds <~ "Ignored Wounds";
 
   // gear
   val gear = keys.gear <~ "Gear";

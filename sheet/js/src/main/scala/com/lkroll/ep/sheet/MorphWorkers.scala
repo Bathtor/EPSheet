@@ -91,8 +91,8 @@ object MorphWorkers extends SheetWorker {
     }
   });
 
-  private val morphAttrsCalc: Tuple15[Boolean, String, String, String, String, Int, String, Int, Int, String, String, String, String, String, String] => UpdateDecision = {
-    case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB) => if (active) {
+  private val morphAttrsCalc: Tuple19[Boolean, String, String, String, String, Int, String, Int, Int, String, String, String, String, String, String, Int, Int, Int, Int] => UpdateDecision = {
+    case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB, spd, moa, iniB, ignWounds) => if (active) {
       val rowId = Roll20.getActiveRepeatingField();
       log(s"Current row: ${rowId}");
       val updates = Seq(morphs.id <<= rowId, morphs.morphLocation <<= "ACTIVE",
@@ -100,7 +100,10 @@ object MorphWorkers extends SheetWorker {
         morphVisibleGender <<= gender, morphVisibleAge <<= age,
         morphName <<= name, morphDescription <<= descr, morphTraits <<= traits,
         morphImplants <<= imp, morphMobilitySystem <<= mob, morphDurability <<= dur,
-        morphArmourEnergy <<= ae, morphArmourKinetic <<= ak, morphSkillBoni <<= skillB) ++ morphAptBoni(aptB) ++ morphAptMax(aptMax);
+        morphArmourEnergy <<= ae, morphArmourKinetic <<= ak, morphSkillBoni <<= skillB,
+        morphSpeed <<= spd, morphMOA <<= moa, morphIniBonus <<= iniB,
+        morphIgnoredWounds <<= ignWounds) ++
+        morphAptBoni(aptB) ++ morphAptMax(aptMax);
       (updates, ExecuteChain)
     } else {
       log("********** No updates, skipping chain **********")
@@ -111,17 +114,29 @@ object MorphWorkers extends SheetWorker {
   val morphAttrs = bind(
     op(morphs.active, morphs.morphName, morphs.morphType, morphs.visibleGender, morphs.visibleAge, morphs.durability, morphs.mobilitySystem,
       morphs.armourEnergy, morphs.armourKinetic, morphs.implants, morphs.traits,
-      morphs.description, morphs.aptitudeBoni, morphs.aptitudeMax, morphs.skillBoni)).
-    update(morphAttrsCalc, EPWorkers.aptTotalsAll ++ List(EPWorkers.durStatsCalc, GearWorkers.armourTotalCalc, SkillWorkers.morphSkillBoniCalc, SkillWorkers.skillTotalCalc));
+      morphs.description, morphs.aptitudeBoni, morphs.aptitudeMax, morphs.skillBoni, morphs.speed, morphs.moa, morphs.iniBonus, morphs.ignoredWounds)).
+    update(morphAttrsCalc, EPWorkers.aptTotalsAll ++
+      List(EPWorkers.durStatsCalc, EPWorkers.initCalc, EPWorkers.woundCalc,
+        EPWorkers.spdCalc, EPWorkers.moaCalc, GearWorkers.armourTotalCalc,
+        SkillWorkers.morphSkillBoniCalc, SkillWorkers.skillTotalCalc));
 
   private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty) {
     val updates = Seq(currentMorph, morphType,
       morphName, morphDescription, morphTraits,
       morphImplants, morphMobilitySystem, morphDurability,
-      morphArmourEnergy, morphArmourKinetic, morphSkillBoni).map({ case f: Field[Any] => (f -> f.resetValue) }) ++ morphAptBoni("") ++ morphAptMax("");
+      morphArmourEnergy, morphArmourKinetic, morphSkillBoni, morphSpeed,
+      morphMOA, morphIniBonus, morphIgnoredWounds).
+      map({ case f: Field[Any] => (f -> f.resetValue) }) ++ morphAptBoni("") ++ morphAptMax("");
     val setF = setAttrs((extraUpdates ++ updates).toMap);
     setF.onComplete {
-      case Success(_) => EPWorkers.aptTotalsAll.andThen(EPWorkers.durStatsCalc).andThen(SkillWorkers.morphSkillBoniCalc).andThen(SkillWorkers.skillTotalCalc)()
+      case Success(_) => EPWorkers.aptTotalsAll.
+        andThen(EPWorkers.durStatsCalc).
+        andThen(EPWorkers.initCalc).
+        andThen(EPWorkers.woundCalc).
+        andThen(EPWorkers.spdCalc).
+        andThen(EPWorkers.moaCalc).
+        andThen(SkillWorkers.morphSkillBoniCalc).
+        andThen(SkillWorkers.skillTotalCalc)()
       case Failure(e) => error(e)
     }
   }

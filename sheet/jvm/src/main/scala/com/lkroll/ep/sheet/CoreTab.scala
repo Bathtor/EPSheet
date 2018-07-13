@@ -226,8 +226,10 @@ object CoreTab extends FieldGroup {
     roll(char, "dur-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.dur.fullLabel, char.epRoll, char.durTarget), (t.dur -> char.durability)),
     (t.dr -> char.deathRating),
     roll(char, "initiative-roll", char.chatOutputOther, EPIniTemplate(char.characterName, char.iniRoll), (t.init -> char.initiative)),
-    (t.spd -> dualMode(char.speed)),
-    (t.moa -> dualMode(char.mentalOnlyActions)),
+    (t.spd -> char.speed),
+    editOnly(t.spdExtra -> char.speedExtra),
+    (t.moa -> char.mentalOnlyActions),
+    editOnly(t.moaExtra -> char.mentalOnlyActionsExtra),
     (t.db -> char.damageBonus));
 
   val topRow = eprow(frow(

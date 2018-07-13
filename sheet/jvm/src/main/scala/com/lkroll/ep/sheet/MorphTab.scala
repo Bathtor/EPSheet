@@ -58,6 +58,10 @@ object MorphTab extends FieldGroup {
         (t.morphMobilitySystem -> dualMode(char.morphs.mobilitySystem)),
         (t.morphArmourEnergy -> dualMode(char.morphs.armourEnergy)),
         (t.morphArmourKinetic -> dualMode(char.morphs.armourKinetic)),
+        (t.morphSpeed -> dualMode(char.morphs.speed)),
+        (t.morphMOA -> dualMode(char.morphs.moa)),
+        (t.morphIniBonus -> dualMode(char.morphs.iniBonus)),
+        (t.morphIgnoredWounds -> dualMode(char.morphs.ignoredWounds)),
         (t.morphTraits -> dualMode(char.morphs.traits.like(CoreTabRenderer.textareaField))),
         (t.morphImplants -> dualMode(char.morphs.implants.like(CoreTabRenderer.textareaField))),
         (t.morphDescription -> dualMode(char.morphs.description.like(CoreTabRenderer.textareaField)))))));
@@ -74,6 +78,10 @@ object MorphTab extends FieldGroup {
         (t.morphDurability -> char.morphDurability),
         (t.morphMobilitySystem -> char.morphMobilitySystem),
         (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
+        (t.morphSpeed -> char.morphSpeed),
+        (t.morphMOA -> char.morphMOA),
+        (t.morphIniBonus -> char.morphIniBonus),
+        (t.morphIgnoredWounds -> char.morphIgnoredWounds),
         (t.morphTraits -> textWithLookup(
           char.morphTraits,
           roll(char, "morph-traits-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> ""), Some(char.morphTraits), span(t.apiLookup)))),

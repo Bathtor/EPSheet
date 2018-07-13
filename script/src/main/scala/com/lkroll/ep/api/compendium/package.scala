@@ -26,7 +26,7 @@ package com.lkroll.ep.api
 
 import scala.util.{ Try, Success, Failure }
 import com.lkroll.ep.model.{ AptitudeValues => ModelAptitudes, SkillMod => ModelSkillMod, MorphType => ModelMorphType };
-import com.lkroll.ep.compendium.{ AptitudeValues => CompendiumAptitudes, SkillMod => CompendiumSkillMod, MorphType => CompendiumMorphType }
+import com.lkroll.ep.compendium.{ AptitudeValues => CompendiumAptitudes, MorphType => CompendiumMorphType, Effect }
 
 package object compendium {
   implicit class OptionOps[A](opt: Option[A]) {
@@ -49,10 +49,10 @@ package object compendium {
     }
   }
 
-  def toCompendiumSkills(apts: Seq[ModelSkillMod]): Seq[CompendiumSkillMod] = {
+  def toCompendiumSkills(apts: Seq[ModelSkillMod]): Seq[Effect.SkillMod] = {
     apts.map {
       case ModelSkillMod(skill, field, mod) =>
-        CompendiumSkillMod(skill, field, mod)
+        Effect.SkillMod(skill, field, mod)
     }
   }
 

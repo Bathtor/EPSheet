@@ -134,8 +134,10 @@ object EPCharModel extends SheetModel {
   val initiative = "initiative".editable(false).default(0);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
   lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
-  val speed = "speed".default(1).validIn(0, 99, 1);
-  val mentalOnlyActions = "mental_only_actions".default(0).validIn(0, 99, 1);
+  val speed = "speed".editable(false).default(1);
+  val speedExtra = "speed_extra".default(1).validIn(0, 99, 1);
+  val mentalOnlyActions = "mental_only_actions".editable(false).default(0);
+  val mentalOnlyActionsExtra = "mental_only_actions_extra".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
   val trauma = "trauma".default(0).validIn(0, 99, 1);
@@ -168,6 +170,10 @@ object EPCharModel extends SheetModel {
   val morphArmourEnergy = "morph_armour_energy".editable(false).default(0);
   val morphArmourKinetic = "morph_armour_kinetic".editable(false).default(0);
   val morphSkillBoni = "morph_skill_boni".editable(false).default("");
+  val morphSpeed = "morph_speed".editable(false).default(1);
+  val morphMOA = "morph_moa".editable(false).default(0);
+  val morphIniBonus = "morph_ini_bonus".editable(false).default(0);
+  val morphIgnoredWounds = "morph_ignored_wounds".editable(false).default(0);
 
   // skills
   lazy val activeSkills = ActiveSkillSection;

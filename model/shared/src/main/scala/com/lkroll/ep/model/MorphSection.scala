@@ -52,4 +52,8 @@ object MorphSection extends RepeatingSection {
   val aptitudeBoni = "aptitude_boni".default("");
   val aptitudeMax = "aptitude_maximum".default("");
   val skillBoni = "skill_boni".default("");
+  val speed = "speed".default(1);
+  val moa = "moa".default(0);
+  val iniBonus = "ini_bonus".default(0);
+  val ignoredWounds = "ignored_wounds".default(0);
 }

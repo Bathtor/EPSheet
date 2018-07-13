@@ -60,21 +60,33 @@ object EPWorkers extends SheetWorkerRoot {
     case (base, tmp, morph, morphMax) => Seq(aptField <<= aptTotal(base, tmp, morph, morphMax));
   }
 
-  val initCalc = op(intTotal, refTotal) update {
-    case (int, ref) => Seq(initiative <<= Math.ceil((int + ref).toFloat / 5.0f).toInt)
-  }
+  val initCalc = op(intTotal, refTotal, morphIniBonus) update {
+    case (int, ref, morph) => {
+      val baseIni = Math.ceil((int + ref).toFloat / 5.0f).toInt;
+      val ini = baseIni + morph;
+      Seq(initiative <<= ini)
+    }
+  };
 
   val dbCalc = op(somTotal) update {
     case (som) => Seq(damageBonus <<= som / 10) // this is round down, funnily
-  }
+  };
 
-  val woundCalc = bind(op(wounds, woundsIgnored)) update {
-    case (curWounds, woundsIgn) => {
-      val woundsApl = Math.max(curWounds - woundsIgn, 0);
+  val spdCalc = bind(op(morphSpeed, speedExtra)) update {
+    case (morph, extra) => Seq(speed <<= (morph + extra))
+  };
+
+  val moaCalc = bind(op(morphMOA, mentalOnlyActionsExtra)) update {
+    case (morph, extra) => Seq(mentalOnlyActions <<= (morph + extra))
+  };
+
+  val woundCalc = bind(op(wounds, woundsIgnored, morphIgnoredWounds)) update {
+    case (curWounds, woundsIgn, morph) => {
+      val woundsApl = Math.max(curWounds - woundsIgn - morph, 0);
       val woundsModifier = woundsApl * 10;
       Seq(woundsApplied <<= woundsApl, woundMod <<= woundsModifier)
     }
-  }
+  };
 
   val traumaCalc = bind(op(trauma, traumasIgnored)) update {
     case (curTraumas, traumasIgn) => {
@@ -82,11 +94,11 @@ object EPWorkers extends SheetWorkerRoot {
       val traumasMod = traumasApl * 10;
       Seq(traumasApplied <<= traumasApl, traumaMod <<= traumasMod)
     }
-  }
+  };
 
   val museTraumaCalc = bind(op(museTrauma)) update {
     case (tr) => Seq(museTraumaMod <<= tr * 10)
-  }
+  };
 
   val willStatsCalc = op(wilTotal) update {
     case (wil) => {

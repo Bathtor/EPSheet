@@ -54,4 +54,14 @@ object OldModels {
       val aptitudeMax = "aptitude_max".default(""); // this causes to roll20 to think there's a current aptitude field
     }
   }
+
+  object V8 extends SheetModel {
+    import FieldImplicitsLabels._
+    implicit val ctx = this.renderingContext;
+
+    override def version = "1.8.0";
+
+    val speed = "speed".default(1).validIn(0, 99, 1);
+    val mentalOnlyActions = "mental_only_actions".default(0).validIn(0, 99, 1);
+  }
 }
