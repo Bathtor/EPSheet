@@ -84,63 +84,47 @@ object EPTokensCommand extends APICommand[EPTokensConf] {
   override def command = "eptoken";
   override def options = (args) => new EPTokensConf(args);
   override def apply(config: EPTokensConf, ctx: ChatContext): Unit = {
-    val graphicTokens = ctx.selected;
-    if (graphicTokens.isEmpty) {
-      ctx.reply("No tokens selected. Nothing to do...");
-    } else {
-      val tokens = graphicTokens.flatMap {
-        case t: Token => Some(t)
-        case c        => debug(s"Ignoring non-Token $c"); None
-      };
-      val updatedCharacters = tokens.flatMap { token =>
-        debug(s"Working on token: ${token.name} (${token.id})");
-        token.represents match {
-          case Some(char) => {
-            var updates = List.empty[String];
-            debug(s"Token represents $char");
-            if (config.clear()) {
-              val existing = char.abilities;
-              debug(s"Found existing abilities to be removed for char=${char.name}:\n${existing.mkString("\n");}", true);
-              existing.foreach(_.remove());
-              updates ::= config.clear.name;
-            }
-            if (config.ini()) {
-              if (createAbility(SupportedAbilities.ini, char, config.force())) {
-                updates ::= config.ini.name;
-              }
-            }
-            if (config.fray()) {
-              if (createAbility(SupportedAbilities.fray, char, config.force())) {
-                updates ::= config.fray.name;
-              }
-            }
-            if (config.frayHalved()) {
-              if (createAbility(SupportedAbilities.frayHalved, char, config.force())) {
-                updates ::= config.frayHalved.name;
-              }
-            }
-            if (config.skill.isSupplied) {
-              //              if (createAbility(SupportedAbilities.fromSkill(config.skill()), char, config.force())) {
-              //                updates ::= config.skill.name + s"(${config.skill()})";
-              //              }
-              config.skill().foreach { skillName =>
-                if (createAbility(SupportedAbilities.fromSkill(skillName), char, config.force())) {
-                  updates ::= config.skill.name + s"($skillName)";
-                }
-              }
-            }
-            Some(char.name -> updates)
-          }
-          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
+    val updatedCharacters = ctx.forChar { char =>
+      var updates = List.empty[String];
+      debug(s"Token represents $char");
+      if (config.clear()) {
+        val existing = char.abilities;
+        debug(s"Found existing abilities to be removed for char=${char.name}:\n${existing.mkString("\n");}", true);
+        existing.foreach(_.remove());
+        updates ::= config.clear.name;
+      }
+      if (config.ini()) {
+        if (createAbility(SupportedAbilities.ini, char, config.force())) {
+          updates ::= config.ini.name;
         }
-
-      };
-      val updates = updatedCharacters.map(_ match {
-        case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
-      debug(s"Updates: $updates")
-      ctx.reply(s"Updated Characters $updates");
-    }
+      }
+      if (config.fray()) {
+        if (createAbility(SupportedAbilities.fray, char, config.force())) {
+          updates ::= config.fray.name;
+        }
+      }
+      if (config.frayHalved()) {
+        if (createAbility(SupportedAbilities.frayHalved, char, config.force())) {
+          updates ::= config.frayHalved.name;
+        }
+      }
+      if (config.skill.isSupplied) {
+        //              if (createAbility(SupportedAbilities.fromSkill(config.skill()), char, config.force())) {
+        //                updates ::= config.skill.name + s"(${config.skill()})";
+        //              }
+        config.skill().foreach { skillName =>
+          if (createAbility(SupportedAbilities.fromSkill(skillName), char, config.force())) {
+            updates ::= config.skill.name + s"($skillName)";
+          }
+        }
+      }
+      (char.name -> updates)
+    };
+    val updates = updatedCharacters.map(_ match {
+      case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
+    }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+    debug(s"Updates: $updates")
+    ctx.reply(s"Updated Characters $updates");
   }
 
   private def createAbility(ability: AbilityTemplate, char: Character, force: Boolean): Boolean = {

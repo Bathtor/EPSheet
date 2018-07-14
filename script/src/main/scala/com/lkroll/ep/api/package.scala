@@ -1,11 +1,80 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2017 Lars Kroll <bathtor@googlemail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
 package com.lkroll.ep
 
 import com.lkroll.ep.compendium.ChatRenderable
 import com.lkroll.roll20.core.{ Rolls, APIButton, RollExpression }
 import com.lkroll.ep.model.{ EPCharModel => epmodel }
+import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.templates._
 
 package object api {
+  implicit class EnhancedContext(ctx: ChatContext) {
+    import com.lkroll.roll20.core._
+    def withChars(f: List[Character] => Unit): Unit = {
+      val graphicTokens = ctx.selected;
+      if (graphicTokens.isEmpty) {
+        ctx.reply("No tokens selected. Nothing to do...");
+      } else {
+        val tokens = graphicTokens.flatMap {
+          case t: Token => Some(t)
+          case c        => APILogger.debug(s"Ignoring non-Token $c"); None
+        };
+        val chars = tokens.flatMap { token =>
+          APILogger.debug(s"Working on token: ${token.name} (${token.id})");
+          val tO = token.represents;
+          if (tO.isEmpty) {
+            ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!");
+          }
+          tO
+        }
+        f(chars)
+      }
+    }
+
+    def forChar[T](f: Character => T): List[T] = {
+      val graphicTokens = ctx.selected;
+      if (graphicTokens.isEmpty) {
+        ctx.reply("No tokens selected. Nothing to do...");
+        List.empty
+      } else {
+        val tokens = graphicTokens.flatMap {
+          case t: Token => Some(t)
+          case c        => APILogger.debug(s"Ignoring non-Token $c"); None
+        };
+        tokens.flatMap { token =>
+          APILogger.debug(s"Working on token: ${token.name} (${token.id})");
+          token.represents match {
+            case Some(char) => Some(f(char))
+            case None       => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
+          }
+        }
+      }
+    }
+  }
+
   import TemplateImplicits._;
 
   def asInfoTemplate(title: String, subtitle: String, importButton: Option[APIButton], keys: List[(String, String)], description: String): String = {

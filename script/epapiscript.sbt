@@ -5,7 +5,7 @@ name := "EP API Script"
 
 organization := "com.lkroll.ep"
 
-version := "0.7.1"
+version := "0.7.2"
 
 scalaVersion := "2.12.4"
 
