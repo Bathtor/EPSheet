@@ -112,6 +112,7 @@ object EPTranslation extends SheetI18NDefaults {
   val mox = keys.mox <~ ("MOX", "Moxie");
   val tt = keys.tt <~ ("TT", "Trauma Threshold");
   val luc = keys.luc <~ ("LUC", "Lucidity");
+  val lucExtra = keys.lucExtra <~ ("LUC+", "Extra Lucidity");
   val ir = keys.ir <~ ("IR", "Insanity Rating");
   val wt = keys.wt <~ ("WT", "Wound Threshold");
   val dur = keys.dur <~ ("DUR", "Durability");

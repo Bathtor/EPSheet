@@ -75,7 +75,7 @@ object EPUpdates extends MinorVersionUpdateManager {
       };
       Seq(model.mentalOnlyActionsExtra <<= oldMOA)
     });
-
-    List(speedUpdate, moaUpdate)
+    val assignSMax = op(model.lucidity).update(luc => Seq(model.stressMax <<= luc));
+    List(speedUpdate, moaUpdate, assignSMax)
   }
 }

@@ -109,6 +109,7 @@ object EPTranslation extends SheetI18N {
   val mox = abbr("mox", "moxie");
   val tt = abbr("tt", "trauma-threshold");
   val luc = abbr("luc", "lucidity");
+  val lucExtra = abbr("luc-extra", "lucidity-extra");
   val ir = abbr("ir", "insanity-rating");
   val wt = abbr("wt", "wound-threshold");
   val dur = abbr("dur", "durability");

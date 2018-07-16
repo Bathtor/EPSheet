@@ -221,6 +221,7 @@ object CoreTab extends FieldGroup {
   val stats = fblock(t.stats, EPStyle.max2p5rem,
     (t.tt -> char.traumaThreshold),
     roll(char, "lucidity-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.luc.fullLabel, char.epRoll, char.lucidityTarget), (t.luc -> char.lucidity)),
+    editOnly(t.lucExtra -> char.lucidityExtra),
     (t.ir -> char.insanityRating),
     (t.wt -> char.woundThreshold),
     roll(char, "dur-roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, t.dur.fullLabel, char.epRoll, char.durTarget), (t.dur -> char.durability)),

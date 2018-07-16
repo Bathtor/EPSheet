@@ -100,13 +100,15 @@ object EPWorkers extends SheetWorkerRoot {
     case (tr) => Seq(museTraumaMod <<= tr * 10)
   };
 
-  val willStatsCalc = op(wilTotal) update {
-    case (wil) => {
-      log(s"Updating will dependent stats with ${wil}");
-      val luc = wil * 2;
+  val willStatsCalc = bind(op(wilTotal, lucidityExtra)) update {
+    case (wil, lucExtra) => {
+      debug(s"Updating will dependent stats with ${wil}");
+      val baseLuc = wil * 2;
+      val luc = baseLuc + lucExtra;
       Seq(
         lucidity <<= luc,
-        insanityRating <<= luc * 2,
+        stressMax <<= luc,
+        insanityRating <<= baseLuc * 2, // the book isn't clear about this, but it's my interpretation
         psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt)
     }
   };

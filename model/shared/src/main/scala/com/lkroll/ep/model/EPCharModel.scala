@@ -125,6 +125,7 @@ object EPCharModel extends SheetModel {
   // base stats
   val traumaThreshold = "trauma_threshold".editable(false).default(0);
   val lucidity = "lucidity".editable(false).default(0);
+  val lucidityExtra = "lucidity_extra".default(0).validIn(-99, 99, 1);
   val lucidityTarget = roll("lucidity-target", modQuery + lucidity); // p. 272 I don't think any other mods apply
   val insanityRating = "insanity_rating".editable(false).default(0);
   val woundThreshold = "wound_threshold".editable(false).default(0);
@@ -140,6 +141,7 @@ object EPCharModel extends SheetModel {
   val mentalOnlyActionsExtra = "mental_only_actions_extra".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".editable(false).default(0);
   val stress = "stress".default(0).validIn(0, 999, 1);
+  val stressMax = "stress_max".editable(false).default(0);
   val trauma = "trauma".default(0).validIn(0, 99, 1);
   val traumasIgnored = "traumas_ignored".default(0).validIn(0, 99, 1);
   val traumasApplied = "traumas_applied".editable(false).default(0);
