@@ -1,4 +1,5 @@
 enablePlugins(ScalaJSPlugin)
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 name := "EP Model Root"
 
@@ -6,7 +7,7 @@ organization in ThisBuild := "com.lkroll.ep"
 
 version in ThisBuild := "1.9.1"
 
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.6"
 
 resolvers += "Apache" at "http://repo.maven.apache.org/maven2"
 resolvers += Resolver.bintrayRepo("lkrollcom", "maven")
@@ -19,7 +20,7 @@ lazy val root = project.in(file(".")).
     publishLocal := {}
   )
 
-lazy val epmodel = crossProject.in(file(".")).
+lazy val epmodel = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   enablePlugins(BuildInfoPlugin).
   settings(
     name := "EP Model",
