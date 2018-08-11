@@ -95,14 +95,24 @@ object MorphWorkers extends SheetWorker {
     case (active, name, tpe, gender, age, dur, mob, ae, ak, imp, traits, descr, aptB, aptMax, skillB, spd, moa, iniB, ignWounds) => if (active) {
       val rowId = Roll20.getActiveRepeatingField();
       log(s"Current row: ${rowId}");
+      val (mIgnWounds, extraImplants) = MorphType.withName(tpe) match {
+        case MorphType.Synthmorph => {
+          val extraWounds = ignWounds + 1;
+          val extraImp = imp +
+            (if (imp.isEmpty) "" else ", ") +
+            "Temperature Tolerance, Vacuum Sealing";
+          (extraWounds, extraImp); // see EP core p. 143
+        }
+        case _ => (ignWounds, imp);
+      };
       val updates = Seq(morphs.id <<= rowId, morphs.morphLocation <<= "ACTIVE",
         currentMorph <<= rowId, morphType <<= tpe,
         morphVisibleGender <<= gender, morphVisibleAge <<= age,
         morphName <<= name, morphDescription <<= descr, morphTraits <<= traits,
-        morphImplants <<= imp, morphMobilitySystem <<= mob, morphDurability <<= dur,
+        morphImplants <<= extraImplants, morphMobilitySystem <<= mob, morphDurability <<= dur,
         morphArmourEnergy <<= ae, morphArmourKinetic <<= ak, morphSkillBoni <<= skillB,
         morphSpeed <<= spd, morphMOA <<= moa, morphIniBonus <<= iniB,
-        morphIgnoredWounds <<= ignWounds) ++
+        morphIgnoredWounds <<= mIgnWounds) ++
         morphAptBoni(aptB) ++ morphAptMax(aptMax);
       (updates, ExecuteChain)
     } else {

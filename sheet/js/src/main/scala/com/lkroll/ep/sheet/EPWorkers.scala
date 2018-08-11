@@ -68,8 +68,15 @@ object EPWorkers extends SheetWorkerRoot {
     }
   };
 
-  val dbCalc = op(somTotal) update {
-    case (som) => Seq(damageBonus <<= som / 10) // this is round down, funnily
+  val dbCalc = op(somTotal, morphType) update {
+    case (som, mTypeS) => {
+      // this is rounded down, funnily
+      val db = MorphType.withName(mTypeS) match {
+        case MorphType.Synthmorph => (som / 10) + 2; // see EP core p. 143
+        case _                    => (som / 10);
+      };
+      Seq(damageBonus <<= db)
+    }
   };
 
   val spdCalc = bind(op(morphSpeed, speedExtra)) update {

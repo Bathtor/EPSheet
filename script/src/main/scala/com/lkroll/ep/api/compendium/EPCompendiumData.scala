@@ -105,6 +105,8 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         ctx.reply(s"Ignoring empty search.");
       } else {
         ctx.reply(s"Searching for multiple items in whole Compendium...");
+        //val cleanedS = s.split("""\R""").map(_.trim).filterNot(s => s.startsWith("=") || s.startsWith("#"));
+        // val needles = cleanedS.map(_.split(",")).flatten.map(_.trim);
         val needles = s.split(",").map(_.trim);
         val results = needles.map { needle =>
           val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>

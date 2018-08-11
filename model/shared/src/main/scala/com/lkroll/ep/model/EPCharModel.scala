@@ -136,7 +136,7 @@ object EPCharModel extends SheetModel {
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
   lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
   val speed = "speed".editable(false).default(1);
-  val speedExtra = "speed_extra".default(1).validIn(0, 99, 1);
+  val speedExtra = "speed_extra".default(0).validIn(0, 99, 1);
   val mentalOnlyActions = "mental_only_actions".editable(false).default(0);
   val mentalOnlyActionsExtra = "mental_only_actions_extra".default(0).validIn(0, 99, 1);
   val damageBonus = "damage_bonus".editable(false).default(0);
