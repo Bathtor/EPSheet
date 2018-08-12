@@ -333,6 +333,9 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val rollAutoFailure = keys.rollAutoFailure <~ "Roll is an automatic failure";
   val mos = keys.mos <~ ("MoS", "Margin of Success");
   val mof = keys.mof <~ ("MoF", "Margin of Failure");
+  val apiHead = keys.apiHead <~ "API";
+  val applyDamage = keys.applyDamage <~ "apply damage";
+  val applyCritDamage = keys.applyCritDamage <~ "apply critical damage";
 
   val traitTypeOptions = keys.traitTypeOptions <~ {
     case TraitType.Positive => "Positive"

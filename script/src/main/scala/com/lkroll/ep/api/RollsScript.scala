@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
+import com.lkroll.ep.model.{ EPCharModel => epmodel, EPTranslation => ept, DamageType }
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
@@ -147,6 +147,10 @@ class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
 }
 
 object EPRollsCommand extends APICommand[EPRollsConf] {
+  import APIImplicits._;
+  import TemplateImplicits._;
+
+  implicit val labelFields: LabelFields = ExplicitlyLabelFields;
 
   override def command = "eproll";
   override def options = (args) => new EPRollsConf(args);
@@ -157,47 +161,96 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
       Chat.Default
     };
     debug(s"Got roll ${ctx.raw.content}");
-    //log(JSON.stringify(ctx.raw), true);
+    log(JSON.stringify(ctx.raw), true);
     if (config.variables.isSupplied) {
       val vars = config.variables();
       ctx.rollTemplate match {
-        case Some("ep-default") => {
-          var testTarget, testRoll: Option[Int] = None;
-          val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, (ir, tvar) => {
-            Try(ir.results.total.toInt) match {
-              case Success(total) => {
-                tvar.key match {
-                  case "test-roll"   => { testRoll = Some(total); RollsScript.transformRoll(total) }
-                  case "test-target" => { testTarget = Some(total); RollsScript.transformTarget(ir.expression) }
-                  case _             => TemplateVal.InlineRoll(total)
-                }
-              }
-              case Failure(e) => error(e); TemplateVal.Empty
-            }
-          });
-          val mofO = for {
-            targetValue <- testTarget;
-            rollValue <- testRoll
-          } yield {
-            val roll = numToExpr(rollValue);
-            val target = numToExpr(targetValue);
-            TemplateVar("test-mof", TemplateVal.InlineRoll(RollsScript.fakeRoll(roll - target.paren).label("roll - target")))
-          };
-          val augmentedVars = mofO match {
-            case Some(mof) => mof :: replacedVars;
-            case None      => replacedVars
-          };
-          val msg = s"&{template:ep-default} ${augmentedVars.render}";
-          debug(s"About to send: $msg");
-          sendChat(ctx.player, target.message(msg));
-        }
-        case Some(t) => { invalidRoll(ctx); warn(s"template '${t}' is not supported") }
-        case None    => { invalidRoll(ctx); warn("roll must use a roll template") }
+        case Some("ep-default") => transformDefault(ctx, vars, target);
+        case Some("ep-damage")  => transformDamage(ctx, vars, target);
+        case Some(t)            => { invalidRoll(ctx); warn(s"template '${t}' is not supported") }
+        case None               => { invalidRoll(ctx); warn("roll must use a roll template") }
       }
     } else {
       warn("No variables supplied!");
     }
   }
+
+  private def transformDefault(ctx: ChatContext, vars: TemplateVars, target: ChatCommand): Unit = {
+    var testTarget, testRoll: Option[Int] = None;
+    val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, (ir, tvar) => {
+      Try(ir.results.total.toInt) match {
+        case Success(total) => {
+          tvar.key match {
+            case "test-roll"   => { testRoll = Some(total); RollsScript.transformRoll(total) }
+            case "test-target" => { testTarget = Some(total); RollsScript.transformTarget(ir.expression) }
+            case _             => TemplateVal.InlineRoll(total)
+          }
+        }
+        case Failure(e) => error(e); TemplateVal.Empty
+      }
+    });
+    val mofO = for {
+      targetValue <- testTarget;
+      rollValue <- testRoll
+    } yield {
+      val roll = numToExpr(rollValue);
+      val target = numToExpr(targetValue);
+      TemplateVar("test-mof", TemplateVal.InlineRoll(RollsScript.fakeRoll(roll - target.paren).label("roll - target")))
+    };
+    val augmentedVars = mofO match {
+      case Some(mof) => mof :: replacedVars;
+      case None      => replacedVars
+    };
+    val msg = templateApplication("ep-default", augmentedVars);
+    debug(s"About to send: $msg");
+    sendChat(ctx.player, target.message(msg));
+  }
+
+  private def transformDamage(ctx: ChatContext, vars: TemplateVars, target: ChatCommand): Unit = {
+    var damageTotal: Option[Int] = None;
+    val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, (ir, tvar) => {
+      Try(ir.results.total.toInt) match {
+        case Success(total) => tvar.key match {
+          case "damage-roll" => { damageTotal = Some(total); TemplateVal.InlineRoll(total) }
+          case _             => TemplateVal.InlineRoll(total)
+        }
+        case Failure(e) => { error(e); TemplateVal.Empty }
+      }
+    });
+    val msg = damageTotal match {
+      case Some(total) => {
+        val c = CharToolsCommand.minConf;
+        val armour = vars.lookup("damage-type").map {
+          case TemplateVar(_, TemplateVal.Raw(s)) => Some(DamageType.withName(s))
+          case tv                                 => { error(s"Invalid value for damage-type: $tv"); None }
+        }.flatten;
+        val ap: Int = vars.lookup("armour-penetration").map {
+          case TemplateVar(_, TemplateVal.Number(i: Int)) => Some(i)
+          case TemplateVar(_, TemplateVal.Raw(s))         => Try(s.toInt).toOption
+          case tv                                         => { error(s"Invalid value for armour-penetration: $tv"); None }
+        }.flatten.getOrElse(0);
+        val applyDamage = CharToolsCommand.invoke(ept.applyDamage.dynamic.render, List(
+          c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
+          c.damage <<= total,
+          c.armour <<? armour,
+          c.armourPenetration <<= ap));
+        val applyCritDamage = CharToolsCommand.invoke(ept.applyCritDamage.dynamic.render, List(
+          c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
+          c.damage <<= total,
+          c.armour <<? Option.empty[DamageType.DamageType],
+          c.armourPenetration <<= ap));
+        val augmentedVars = templateV("apply-damage" -> applyDamage) :: templateV("apply-crit-damage" -> applyCritDamage) :: replacedVars;
+        templateApplication("ep-damage", augmentedVars)
+      }
+      case None => {
+        error("Could not find damage total in damage roll!");
+        templateApplication("ep-damage", replacedVars)
+      }
+    };
+    debug(s"About to send: $msg");
+    sendChat(ctx.player, target.message(msg));
+  }
+
   //
   //  private def passthroughRoll(template: String, target: ChatCommand, vars: TemplateVars, ctx: ChatContext): Unit = {
   //    val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, ir => {

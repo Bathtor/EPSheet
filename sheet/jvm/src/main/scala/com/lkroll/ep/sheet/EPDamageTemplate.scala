@@ -49,6 +49,9 @@ object EPDamageTemplate extends RollTemplate {
   def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int]): TemplateApplication =
     apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf);
 
+  def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int], apiApply: CommandButton): TemplateApplication =
+    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, applyDamage <<= apiApply);
+
   def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int], xdbf: CommandButton, xdfa: CommandButton): TemplateApplication =
     apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, concentrateBF <<= xdbf, concentrateFA <<= xdfa);
 
@@ -62,6 +65,8 @@ object EPDamageTemplate extends RollTemplate {
   val armourPenetration = attribute[Int]("armour-penetration");
   val concentrateBF = button("concentrate-damage-bf");
   val concentrateFA = button("concentrate-damage-fa");
+  val applyDamage = button("apply-damage");
+  val applyCritDamage = button("apply-crit-damage");
 
   def damageResult(r: TemplateFields.RollableField[Int]) =
     p(span(t.damageInflicts), span(raw(" ")), span(fontWeight.bold, t.damageValue), span(": "), r);
@@ -92,5 +97,11 @@ object EPDamageTemplate extends RollTemplate {
           p(span(fontWeight.bold, t.burstFire), span(": "), concentrateBF),
           p(span(fontWeight.bold, t.fullAutomatic), span(": "), concentrateFA))
       }
+    },
+    exists(applyDamage) {
+      Seq(
+        h4(span(sty.`sub-header`, t.apiHead)),
+        p(applyDamage),
+        p(applyCritDamage))
     });
 }

@@ -341,6 +341,9 @@ object EPTranslation extends SheetI18N {
   val rollAutoFailure = text("roll-auto-failure");
   val mos = abbr("mos", "margin-of-success");
   val mof = abbr("mof", "margin-of-failure");
+  val apiHead = text("api-head");
+  val applyDamage = text("apply-damage");
+  val applyCritDamage = text("apply-crit-damage");
 
   val traitTypeOptions = {
     val opts = TraitType.values.map(v => (v -> v.toString)).toMap;

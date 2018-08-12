@@ -99,7 +99,7 @@ object GearTab extends FieldGroup {
   val meleeDamageRollExcellent60: Button = roll(
     char.meleeWeapons,
     "damage_roll_excellent60",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.meleeWeapons.weapon,
@@ -109,7 +109,7 @@ object GearTab extends FieldGroup {
   val meleeDamageRollExcellent30: Button = roll(
     char.meleeWeapons,
     "damage_roll_excellent30",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.meleeWeapons.weapon,
@@ -119,7 +119,7 @@ object GearTab extends FieldGroup {
   val meleeDamageRoll: Button = roll(
     char.meleeWeapons,
     "damage_roll",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.meleeWeapons.weapon,
@@ -129,7 +129,7 @@ object GearTab extends FieldGroup {
   val meleeDamageRollQuery: RollElement = roll(
     char.meleeWeapons,
     "damage_query_roll",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.meleeWeapons.weapon,
@@ -222,7 +222,7 @@ object GearTab extends FieldGroup {
   val rangedDamageRollExcellent60: Button = roll(
     char.rangedWeapons,
     "damage_roll_excellent60",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.rangedWeapons.weapon,
@@ -234,7 +234,7 @@ object GearTab extends FieldGroup {
   val rangedDamageRollExcellent30: Button = roll(
     char.rangedWeapons,
     "damage_roll_excellent30",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.rangedWeapons.weapon,
@@ -245,7 +245,7 @@ object GearTab extends FieldGroup {
       CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
   val rangedDamageRoll: Button = roll(
     char.rangedWeapons, "damage_roll",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.rangedWeapons.weapon,
@@ -256,7 +256,7 @@ object GearTab extends FieldGroup {
       CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
   val rangedDamageRollQuery: RollElement = roll(
     char.rangedWeapons, "damage_roll",
-    char.chatOutputOther,
+    char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
       char.rangedWeapons.weapon,
