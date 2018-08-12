@@ -411,6 +411,8 @@ object EPStyle extends SheetStyle {
   val identities = cls();
   val `api-only` = cls();
   val `using-api` = cls();
+  val `area-field` = cls();
+  val `uniform-radius-field` = cls();
 
   // ***  Templates ***
 

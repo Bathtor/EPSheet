@@ -35,3 +35,15 @@ object DamageType extends Enumeration {
   def dynamicLabel(v: Value): String = s"${labelPrefix}-${v.toString()}";
   def dynamicLabelShort(v: Value): String = s"${labelShortPrefix}-${v.toString()}";
 }
+
+object DamageArea extends Enumeration {
+  type DamageArea = Value;
+
+  val Point, Blast, UniformBlast, Cone = Value;
+
+  val labelPrefix = "damage-areaopt";
+  val labelShortPrefix = "damage-areaopt-short";
+
+  def dynamicLabel(v: Value): String = s"${labelPrefix}-${v.toString()}";
+  def dynamicLabelShort(v: Value): String = s"${labelShortPrefix}-${v.toString()}";
+}

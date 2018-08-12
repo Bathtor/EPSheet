@@ -78,4 +78,21 @@ object EPUpdates extends MinorVersionUpdateManager {
     val assignSMax = op(model.lucidity).update(luc => Seq(model.stressMax <<= luc));
     List(speedUpdate, moaUpdate, assignSMax)
   }
+  forVersion("1.9.0") {
+    val rangeUpdate = op(
+      RangedWeaponSection.shortRangeUpper,
+      RangedWeaponSection.mediumRangeUpper,
+      RangedWeaponSection.longRangeUpper,
+      RangedWeaponSection.extremeRangeUpper).update {
+        case (short, medium, long, extreme) => {
+          Seq(
+            RangedWeaponSection.shortRangeUpperInput <<= short.toDouble,
+            RangedWeaponSection.mediumRangeUpperInput <<= medium.toDouble,
+            RangedWeaponSection.longRangeUpperInput <<= long.toDouble,
+            RangedWeaponSection.extremeRangeUpperInput <<= extreme.toDouble)
+        }
+      };
+    val rangeUpdates = rangeUpdate.all(RangedWeaponSection);
+    List(rangeUpdates)
+  }
 }

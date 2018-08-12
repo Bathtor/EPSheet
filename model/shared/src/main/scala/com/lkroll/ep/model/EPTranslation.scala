@@ -240,6 +240,7 @@ object EPTranslation extends SheetI18N {
   val burstFireDescription = text("burst-fire-description");
   val fullAutomaticDescription = text("full-automatic-description");
   val weaponRanges = text("weapon-ranges");
+  val thrown = text("thrown");
   val shortRange = abbr("s-range", "short-range");
   val mediumRange = abbr("m-range", "medium-range");
   val longRange = abbr("l-range", "long-range");
@@ -247,6 +248,8 @@ object EPTranslation extends SheetI18N {
   val magazine = text("magazine");
   val size = text("size");
   val ammoType = text("ammo-type");
+  val damageArea = text("damage-area");
+  val uniformRadius = text("uniform-radius");
   val damageInflicts = text("damage-inflicts");
   val damageValue = abbr("dv", "damage-value");
   val concentrateFire = text("concentrate-fire");
@@ -380,6 +383,14 @@ object EPTranslation extends SheetI18N {
   val dmgTypeShort = {
     val opts = DamageType.values.map(v => (v -> v.toString)).toMap;
     enum[DamageType.type](DamageType.labelShortPrefix, opts)
+  }
+  val dmgArea = {
+    val opts = DamageArea.values.map(v => (v -> v.toString)).toMap;
+    enum[DamageArea.type](DamageArea.labelPrefix, opts)
+  }
+  val dmgAreaShort = {
+    val opts = DamageArea.values.map(v => (v -> v.toString)).toMap;
+    enum[DamageArea.type](DamageArea.labelShortPrefix, opts)
   }
   val psiType = {
     val opts = PsiType.values.map(v => (v -> v.toString)).toMap;

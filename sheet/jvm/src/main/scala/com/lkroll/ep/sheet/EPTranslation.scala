@@ -234,6 +234,7 @@ A burst may be shot against a single target (concentrated fire) or against two t
 Only one full-auto attack may be made with each Complex Action. This attack may be made on a single target or against up to three separate targets within one meter of another. Against a single individual, the attacker can choose either a +30 modifier to hit or increase the DV by +3d10. Firing in full automatic mode uses up 10 shots.
 """.trim;
   val weaponRanges = keys.weaponRanges <~ "Ranges";
+  val thrown = keys.thrown <~ "Thrown";
   val shortRange = keys.shortRange <~ ("S", "Short");
   val mediumRange = keys.mediumRange <~ ("M", "Medium");
   val longRange = keys.longRange <~ ("L", "Long");
@@ -241,6 +242,8 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val magazine = keys.magazine <~ "Magazine";
   val size = keys.size <~ "Size";
   val ammoType = keys.ammoType <~ "Ammo Type";
+  val damageArea = keys.damageArea <~ "Effect Area";
+  val uniformRadius = keys.uniformRadius <~ "Uniform Radius";
   val damageInflicts = keys.damageInflicts <~ "Inflicts";
   val damageValue = keys.damageValue <~ ("DV", "Damage Value");
   val concentrateFire = keys.concentrateFire <~ "Concentrate Fire";
@@ -386,6 +389,19 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
     case DamageType.Kinetic => "K"
     case DamageType.Energy  => "E"
     case DamageType.Untyped => ""
+  };
+
+  val dmgArea = keys.dmgArea <~ {
+    case DamageArea.Point        => "Point"
+    case DamageArea.Blast        => "Blast"
+    case DamageArea.UniformBlast => "Uniform Blast"
+    case DamageArea.Cone         => "Cone"
+  };
+  val dmgAreaShort = keys.dmgAreaShort <~ {
+    case DamageArea.Point        => "•"
+    case DamageArea.Blast        => "⦾"
+    case DamageArea.UniformBlast => "⦿"
+    case DamageArea.Cone         => "⋁"
   };
 
   val psiType = keys.psiType <~ {

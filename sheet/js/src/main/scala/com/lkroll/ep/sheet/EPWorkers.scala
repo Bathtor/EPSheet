@@ -171,13 +171,13 @@ object EPWorkers extends SheetWorkerRoot {
 
   val savTotalCalc = bind(op(savBase, savTemp, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), SkillWorkers.skillTotalCalc);
 
-  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(SkillWorkers.skillTotalCalc));
+  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(GearWorkers.weaponRangeLimits.all(RangedWeaponSection)).andThen(SkillWorkers.skillTotalCalc));
 
   val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(traumaThresholdCalc).andThen(SkillWorkers.skillTotalCalc));
 
   val aptTotals = cogTotalCalc ++ List(cooTotalCalc, intTotalCalc, refTotalCalc, savTotalCalc, somTotalCalc, wilTotalCalc);
 
-  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, SkillWorkers.skillTotalCalc);
+  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, GearWorkers.weaponRangeLimits.all(RangedWeaponSection), SkillWorkers.skillTotalCalc);
 
   val durStatsCalc = op(durabilityBonus, morphDurability, morphType) update {
     case (bonus, morphDur, mt) => {

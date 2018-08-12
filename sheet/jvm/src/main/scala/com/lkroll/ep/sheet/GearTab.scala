@@ -66,7 +66,30 @@ object GearTab extends FieldGroup {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
-  case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: String) extends FieldGroup {
+  //  val daRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
+  //    span(sty.`area-field`, name := f.name, SheetI18NAttrs.datai18nDynamic)
+  //  }
+  //
+  //  val ubaRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
+  //    span(sty.`uniform-radius-field`, raw("("), span(name := f.name), raw("m)"))
+  //  }
+
+  case class AreaGroup(area: FieldLike[_], areaShort: FieldLike[_], radius: FieldLike[_]) extends FieldGroup {
+    val fieldRenderer = CoreTabRenderer.fieldRenderers;
+
+    override def render(mode: RenderMode = RenderMode.Normal): Tag = {
+      span(
+        span(sty.`area-field`, name := areaShort.name, SheetI18NAttrs.datai18nDynamic),
+        input(sty.`area-field`, tpe := "hidden", name := area.name),
+        span(sty.`uniform-radius-field`, raw("("), span(name := radius.name), raw("m)")))
+    }
+    override def renderer(): GroupRenderer = null;
+    override def members(): Seq[SheetElement] = null;
+  }
+
+  def area(area: FieldLike[_], areaShort: FieldLike[_], radius: FieldLike[_]) = AreaGroup(area, areaShort, radius);
+
+  case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]) extends FieldGroup {
 
     val fieldRenderer = CoreTabRenderer.fieldRenderers;
 
@@ -77,13 +100,13 @@ object GearTab extends FieldGroup {
         fieldRenderer(rangeStart, mode),
         span(raw(" - ")),
         fieldRenderer(rangeEnd, mode),
-        span(raw(unit)))
+        span(name := unit.name))
     }
     override def renderer(): GroupRenderer = null;
     override def members(): Seq[SheetElement] = null;
   }
 
-  def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: String): RangeGroup = RangeGroup(rangeLabel, rangeStart, rangeEnd, unit);
+  def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]): RangeGroup = RangeGroup(rangeLabel, rangeStart, rangeEnd, unit);
 
   def checklabel(label: LabelsI18N, innerSep: Option[String] = None): GroupRenderer.FieldSingleRenderer = (f) => f match {
     case ff: FlagField => {
@@ -315,6 +338,8 @@ object GearTab extends FieldGroup {
             span(raw(" } ")),
             span(raw(" ~ ")),
             rangedDamageRollQuery,
+            span(raw(" ")),
+            area(char.rangedWeapons.damageArea, char.rangedWeapons.damageAreaShort, char.rangedWeapons.uniformBlastArea),
             rangedDamageRoll.hidden,
             rangedDamageRollExcellent30.hidden,
             rangedDamageRollExcellent60.hidden,
@@ -352,6 +377,8 @@ object GearTab extends FieldGroup {
             char.rangedWeapons.damageBonus,
             span(" / "),
             (t.ap -> char.rangedWeapons.armourPenetration),
+            (t.damageArea -> char.rangedWeapons.damageArea),
+            (t.uniformRadius -> char.rangedWeapons.uniformBlastArea),
             flexFill),
           tightfrow(
             span(EPStyle.lineLabel, t.firingModes),
@@ -362,11 +389,13 @@ object GearTab extends FieldGroup {
             flexFill),
           tightfrow(
             span(EPStyle.lineLabel, t.weaponRanges),
+            char.rangedWeapons.rangeUnitSymbol.hidden,
             span(raw(" ")),
-            range(t.shortRange, char.rangedWeapons.shortRangeLower, char.rangedWeapons.shortRangeUpper, "m"),
-            range(t.mediumRange, char.rangedWeapons.mediumRangeLower, char.rangedWeapons.mediumRangeUpper, "m"),
-            range(t.longRange, char.rangedWeapons.longRangeLower, char.rangedWeapons.longRangeUpper, "m"),
-            range(t.extremeRange, char.rangedWeapons.extremeRangeLower, char.rangedWeapons.extremeRangeUpper, "m"),
+            (t.thrown -> char.rangedWeapons.thrown),
+            range(t.shortRange, char.rangedWeapons.shortRangeLower, char.rangedWeapons.shortRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
+            range(t.mediumRange, char.rangedWeapons.mediumRangeLower, char.rangedWeapons.mediumRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
+            range(t.longRange, char.rangedWeapons.longRangeLower, char.rangedWeapons.longRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
+            range(t.extremeRange, char.rangedWeapons.extremeRangeLower, char.rangedWeapons.extremeRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
             flexFill),
           tightfrow(
             span(EPStyle.lineLabel, t.magazine),

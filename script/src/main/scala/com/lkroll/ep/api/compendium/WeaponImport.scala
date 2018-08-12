@@ -27,8 +27,9 @@ package com.lkroll.ep.api.compendium
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, MeleeWeaponSection, RangedWeaponSection, DamageType => ModelDamageType }
+import com.lkroll.ep.model.{ EPCharModel => epmodel, MeleeWeaponSection, RangedWeaponSection, DamageType => ModelDamageType, DamageArea => ModelDamageArea }
 import APIImplicits._;
+//import scala.util.{ Try, Success, Failure }
 
 object WeaponDamageTypeConverter {
   def convert(dt: DamageType): Either[ModelDamageType.DamageType, String] = {
@@ -37,6 +38,17 @@ object WeaponDamageTypeConverter {
       case DamageType.Kinetic => Left(ModelDamageType.Kinetic)
       case DamageType.Untyped => Left(ModelDamageType.Untyped)
       case DamageType.Psychic => Right("Weapons can not have Psychic damage type!")
+    }
+  }
+}
+
+object WeaponDamageAreaConverter {
+  def convert(da: DamageArea): Either[ModelDamageArea.DamageArea, String] = {
+    da match {
+      case DamageArea.Point           => Left(ModelDamageArea.Point)
+      case DamageArea.Blast           => Left(ModelDamageArea.Blast)
+      case DamageArea.Cone            => Left(ModelDamageArea.Cone)
+      case DamageArea.UniformBlast(_) => Left(ModelDamageArea.UniformBlast)
     }
   }
 }
@@ -50,6 +62,10 @@ case class WeaponImport(weapon: Weapon) extends Importable {
       case Left(dt)   => dt
       case Right(msg) => return Right(msg)
     };
+    val damageArea = WeaponDamageAreaConverter.convert(weapon.area) match {
+      case Left(da)   => da
+      case Right(msg) => return Right(msg)
+    }
     weapon.`type` match {
       case _: WeaponType.Melee => {
         char.createRepeating(MeleeWeaponSection.weapon, rowId) <<= weapon.name;
@@ -75,7 +91,7 @@ case class WeaponImport(weapon: Weapon) extends Importable {
           }
         }
       }
-      case _: WeaponType.Ranged => {
+      case _: WeaponType.Ranged | _: WeaponType.Thrown => {
         char.createRepeating(RangedWeaponSection.weapon, rowId) <<= weapon.name;
         char.createRepeating(RangedWeaponSection.skillSearch, rowId) <<= weapon.`type`.skill;
         char.createRepeating(RangedWeaponSection.miscMod, rowId) <<= weapon.attackBonus;
@@ -88,19 +104,33 @@ case class WeaponImport(weapon: Weapon) extends Importable {
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
         char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
+        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(damageArea);
+        weapon.area match {
+          case DamageArea.UniformBlast(r) => {
+            char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
+          }
+          case _ => () // leave default
+        }
 
+        val thrownField = char.createRepeating(RangedWeaponSection.thrown, rowId);
         weapon.range match {
-          case Range.Melee     => return Right("Ranged weapons should have range Ranged")
-          case _: Range.Thrown => return Right("Thrown weapons are currently not supported")
+          case Range.Melee => return Right("Ranged weapons should have range Ranged")
+          case r: Range.Thrown => {
+            char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= r.shortFactor;
+            char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= r.mediumFactor;
+            char.createRepeating(RangedWeaponSection.longRangeUpperInput, rowId) <<= r.longFactor;
+            char.createRepeating(RangedWeaponSection.extremeRangeUpperInput, rowId) <<= r.extremeFactor;
+
+            thrownField.setWithWorker(true); // this will cause dependent ranged to be calculated
+          }
           case Range.Ranged(s, m, l, x) => {
-            //char.createRepeating(RangedWeaponSection.shortRangeLower, rowId) <<= 2; // below this is point blank but don't write default value
-            char.createRepeating(RangedWeaponSection.shortRangeUpper, rowId) <<= s;
-            char.createRepeating(RangedWeaponSection.mediumRangeLower, rowId) <<= s + 1;
-            char.createRepeating(RangedWeaponSection.mediumRangeUpper, rowId) <<= m;
-            char.createRepeating(RangedWeaponSection.longRangeLower, rowId) <<= m + 1;
-            char.createRepeating(RangedWeaponSection.longRangeUpper, rowId) <<= l;
-            char.createRepeating(RangedWeaponSection.extremeRangeLower, rowId) <<= l + 1;
-            char.createRepeating(RangedWeaponSection.extremeRangeUpper, rowId) <<= x;
+            char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= s;
+            char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= m;
+            char.createRepeating(RangedWeaponSection.longRangeUpperInput, rowId) <<= l;
+            char.createRepeating(RangedWeaponSection.extremeRangeUpperInput, rowId) <<= x;
+
+            thrownField.setWithWorker(false); // this will cause dependent ranged to be calculated
           }
         }
 
@@ -115,7 +145,17 @@ case class WeaponImport(weapon: Weapon) extends Importable {
             magazine <<= magazineSize;
             magazine.max = magazineSize.toString(); // TODO make max handling nicer
           }
-          case None => APILogger.warn(s"Weapon ${weapon.name} does not seems to be gun, despite being of ranged type.")
+          case None => {
+            char.createRepeating(RangedWeaponSection.singleShot, rowId) <<= true;
+            char.createRepeating(RangedWeaponSection.semiAutomatic, rowId) <<= false;
+            char.createRepeating(RangedWeaponSection.burstFire, rowId) <<= false;
+            char.createRepeating(RangedWeaponSection.fullAutomatic, rowId) <<= false;
+
+            val magazine = char.createRepeating(RangedWeaponSection.magazineCurrent, rowId);
+            magazine <<= 1;
+            magazine.max = "1"; // TODO make max handling nicer
+            char.createRepeating(RangedWeaponSection.magazineType, rowId) <<= "NA";
+          }
         }
 
         char.createRepeating(RangedWeaponSection.description, rowId) <<= weapon.descr;
@@ -144,6 +184,10 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
       case Left(dt)   => dt
       case Right(msg) => return Right(msg)
     };
+    val damageArea = WeaponDamageAreaConverter.convert(weapon.area) match {
+      case Left(da)   => da
+      case Right(msg) => return Right(msg)
+    }
     weapon.weapon.`type` match {
       case _: WeaponType.Melee => {
         char.createRepeating(MeleeWeaponSection.weapon, rowId) <<= weapon.name;
@@ -182,19 +226,33 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
         char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
+        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(damageArea);
+        weapon.area match {
+          case DamageArea.UniformBlast(r) => {
+            char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
+          }
+          case _ => () // leave default
+        }
 
+        val thrownField = char.createRepeating(RangedWeaponSection.thrown, rowId);
         weapon.weapon.range match {
-          case Range.Melee     => return Right("Ranged weapons should have range Ranged")
-          case _: Range.Thrown => return Right("Thrown weapons are currently not supported")
+          case Range.Melee => return Right("Ranged weapons should have range Ranged")
+          case r: Range.Thrown => {
+            char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= r.shortFactor;
+            char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= r.mediumFactor;
+            char.createRepeating(RangedWeaponSection.longRangeUpperInput, rowId) <<= r.longFactor;
+            char.createRepeating(RangedWeaponSection.extremeRangeUpperInput, rowId) <<= r.extremeFactor;
+
+            thrownField.setWithWorker(true); // this will cause dependent ranged to be calculated
+          }
           case Range.Ranged(s, m, l, x) => {
-            //char.createRepeating(RangedWeaponSection.shortRangeLower, rowId) <<= 2; // below this is point blank but don't write default value
-            char.createRepeating(RangedWeaponSection.shortRangeUpper, rowId) <<= s;
-            char.createRepeating(RangedWeaponSection.mediumRangeLower, rowId) <<= s + 1;
-            char.createRepeating(RangedWeaponSection.mediumRangeUpper, rowId) <<= m;
-            char.createRepeating(RangedWeaponSection.longRangeLower, rowId) <<= m + 1;
-            char.createRepeating(RangedWeaponSection.longRangeUpper, rowId) <<= l;
-            char.createRepeating(RangedWeaponSection.extremeRangeLower, rowId) <<= l + 1;
-            char.createRepeating(RangedWeaponSection.extremeRangeUpper, rowId) <<= x;
+            char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= s;
+            char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= m;
+            char.createRepeating(RangedWeaponSection.longRangeUpperInput, rowId) <<= l;
+            char.createRepeating(RangedWeaponSection.extremeRangeUpperInput, rowId) <<= x;
+
+            thrownField.setWithWorker(false); // this will cause dependent ranged to be calculated
           }
         }
 
@@ -210,7 +268,17 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
             magazine.max = magazineSize.toString(); // TODO make max handling nicer
             char.createRepeating(RangedWeaponSection.magazineType, rowId) <<= weapon.ammo.name;
           }
-          case None => APILogger.warn(s"Weapon ${weapon.name} does not seems to be gun, despite being of ranged type.")
+          case None => {
+            char.createRepeating(RangedWeaponSection.singleShot, rowId) <<= true;
+            char.createRepeating(RangedWeaponSection.semiAutomatic, rowId) <<= false;
+            char.createRepeating(RangedWeaponSection.burstFire, rowId) <<= false;
+            char.createRepeating(RangedWeaponSection.fullAutomatic, rowId) <<= false;
+
+            val magazine = char.createRepeating(RangedWeaponSection.magazineCurrent, rowId);
+            magazine <<= 1;
+            magazine.max = "1"; // TODO make max handling nicer
+            char.createRepeating(RangedWeaponSection.magazineType, rowId) <<= weapon.ammo.name;
+          }
         }
 
         char.createRepeating(RangedWeaponSection.description, rowId) <<= weapon.descr;

@@ -80,15 +80,54 @@ object GearWorkers extends SheetWorker {
     }
   };
 
-  val weaponRangeLimits = bind(op(rangedWeapons.shortRangeUpper, rangedWeapons.mediumRangeUpper, rangedWeapons.longRangeUpper)) update {
-    case (sru, mru, lru) => {
+  val weaponRangeLimitsFields = op(somTotal, rangedWeapons.thrown, rangedWeapons.shortRangeUpperInput, rangedWeapons.mediumRangeUpperInput, rangedWeapons.longRangeUpperInput, rangedWeapons.extremeRangeUpperInput);
+  val weaponRangeLimits = weaponRangeLimitsFields update {
+    case (som, somFactor, srui, mrui, lrui, xrui) => {
+      val (sru, mru, lru, xru) = if (somFactor) {
+        val somD = som.toDouble;
+        val multSom: Double => Int = (in) => Math.ceil(in * somD).toInt
+        (multSom(srui), multSom(mrui), multSom(lrui), multSom(xrui))
+      } else {
+        (srui.toInt, mrui.toInt, lrui.toInt, xrui.toInt)
+      }
+      val srl = if (sru <= 2) Math.max(sru - 1, 0) else 2;
       val mrl = sru + 1;
       val lrl = mru + 1;
       val xrl = lru + 1;
+      val rus = if (somFactor) "×SOM" else "m";
       Seq(
+        rangedWeapons.rangeUnitSymbol <<= rus,
+        rangedWeapons.shortRangeUpper <<= sru,
+        rangedWeapons.mediumRangeUpper <<= mru,
+        rangedWeapons.longRangeUpper <<= lru,
+        rangedWeapons.extremeRangeUpper <<= xru,
+        rangedWeapons.shortRangeLower <<= srl,
         rangedWeapons.mediumRangeLower <<= mrl,
         rangedWeapons.longRangeLower <<= lrl,
         rangedWeapons.extremeRangeLower <<= xrl)
+    }
+  };
+  val weaponRangeLimitsBinding = on(weaponRangeLimitsFields.getFields.map(f => s"change:${f.selector}").mkString(" "), (ei: EventInfo) => {
+    val repIdS = Roll20.getActiveRepeatingField();
+    debug(s"Got repid = $repIdS");
+    val f = if (repIdS == "-1") {
+      val op = weaponRangeLimits.all(RangedWeaponSection);
+      op()
+    } else {
+      weaponRangeLimits()
+    };
+    f.onFailure {
+      case e: Throwable => sheet.error(e)
+    };
+  });
+
+  val damageAreaCalc = bind(op(rangedWeapons.damageArea)) update {
+    case (daName) => {
+      import DamageArea._
+
+      val da = withName(daName);
+      val daLabel = dynamicLabelShort(da);
+      Seq(rangedWeapons.damageAreaShort <<= daLabel)
     }
   }
 
