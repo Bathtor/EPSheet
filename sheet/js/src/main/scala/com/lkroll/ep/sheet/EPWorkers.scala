@@ -272,7 +272,8 @@ object EPWorkers extends SheetWorkerRoot {
       val nameToId = rowAttrs.flatMap {
         case (id, attrs) => attrs(activeSkills.skillName).map((_, id))
       }.toMap;
-      val attrs = nameToId.get("Fray") match {
+      val frayTermO = getTranslationByKey(EPTranslation.defaultSkills("Fray").key);
+      val attrs = frayTermO.flatMap(frayTerm => nameToId.get(frayTerm)) match {
         case Some(id) => {
           Map(frayField <<= frayField.valueFrom(activeSkills.total, id))
         }
