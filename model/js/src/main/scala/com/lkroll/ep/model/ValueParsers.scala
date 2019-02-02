@@ -59,13 +59,13 @@ object ValueParsers {
         //        val value: Any = PicklerRegistry.unpickle(res);
         //        EPWorkers.log(s"Got value: $res.");
 
-        val cog = dynamicToOption[Int](res.cog);
-        val coo = dynamicToOption[Int](res.coo);
-        val int = dynamicToOption[Int](res.int);
-        val ref = dynamicToOption[Int](res.ref);
-        val sav = dynamicToOption[Int](res.sav);
-        val som = dynamicToOption[Int](res.som);
-        val wil = dynamicToOption[Int](res.wil);
+        val cog = dynamicToOption[Int](res.cog).map(_.toInt);
+        val coo = dynamicToOption[Int](res.coo).map(_.toInt);
+        val int = dynamicToOption[Int](res.int).map(_.toInt);
+        val ref = dynamicToOption[Int](res.ref).map(_.toInt);
+        val sav = dynamicToOption[Int](res.sav).map(_.toInt);
+        val som = dynamicToOption[Int](res.som).map(_.toInt);
+        val wil = dynamicToOption[Int](res.wil).map(_.toInt);
         Success(AptitudeValues(cog, coo, int, ref, sav, som, wil))
       } else {
         //EPWorkers.log(s"Trying to parse $s as comma separated string.");

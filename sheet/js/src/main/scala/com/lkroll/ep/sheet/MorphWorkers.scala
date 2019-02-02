@@ -152,39 +152,38 @@ object MorphWorkers extends SheetWorker {
   }
 
   private[sheet] def morphAptBoni(s: String): Seq[(FieldLike[Any], Any)] = {
-    ValueParsers.aptitudesFrom(s) match {
-      case Success(ab) => {
-        val default = cogMorph.defaultValue.orElse(Some(0));
-        log(s"Got Aptitude Bonus: $ab");
-        val cog = ab.cog.orElse(default).map(v => cogMorph <<= v);
-        val coo = ab.coo.orElse(default).map(v => cooMorph <<= v);
-        val int = ab.int.orElse(default).map(v => intMorph <<= v);
-        val ref = ab.ref.orElse(default).map(v => refMorph <<= v);
-        val sav = ab.sav.orElse(default).map(v => savMorph <<= v);
-        val som = ab.som.orElse(default).map(v => somMorph <<= v);
-        val wil = ab.wil.orElse(default).map(v => wilMorph <<= v);
-        Seq(cog, coo, int, ref, sav, som, wil).flatten
-      }
-      case Failure(e) => error(e); Seq.empty
-    }
+    val ab: AptitudeValues = ValueParsers.aptitudesFrom(s) match {
+      case Success(ab) => ab
+      case Failure(e)  => error(s"Could not parse aptitude boni from string '$s'! Error was: ${e.toString()}"); Aptitude.defaultValues
+    };
+    log(s"Got Aptitude Bonus: $ab");
+
+    val default = cogMorph.defaultValue.orElse(Some(0));
+    val cog = ab.cog.orElse(default).map(v => cogMorph <<= v);
+    val coo = ab.coo.orElse(default).map(v => cooMorph <<= v);
+    val int = ab.int.orElse(default).map(v => intMorph <<= v);
+    val ref = ab.ref.orElse(default).map(v => refMorph <<= v);
+    val sav = ab.sav.orElse(default).map(v => savMorph <<= v);
+    val som = ab.som.orElse(default).map(v => somMorph <<= v);
+    val wil = ab.wil.orElse(default).map(v => wilMorph <<= v);
+    Seq(cog, coo, int, ref, sav, som, wil).flatten
 
   }
 
   private[sheet] def morphAptMax(s: String): Seq[(FieldLike[Any], Any)] = {
-    ValueParsers.aptitudesFrom(s) match {
-      case Success(ab) => {
-        val default = cogMorphMax.defaultValue.orElse(Some(0));
-        log(s"Got Aptitude Max: $ab");
-        val cog = ab.cog.orElse(default).map(v => cogMorphMax <<= v);
-        val coo = ab.coo.orElse(default).map(v => cooMorphMax <<= v);
-        val int = ab.int.orElse(default).map(v => intMorphMax <<= v);
-        val ref = ab.ref.orElse(default).map(v => refMorphMax <<= v);
-        val sav = ab.sav.orElse(default).map(v => savMorphMax <<= v);
-        val som = ab.som.orElse(default).map(v => somMorphMax <<= v);
-        val wil = ab.wil.orElse(default).map(v => wilMorphMax <<= v);
-        Seq(cog, coo, int, ref, sav, som, wil).flatten
-      }
-      case Failure(e) => error(e); Seq.empty
-    }
+    val ab: AptitudeValues = ValueParsers.aptitudesFrom(s) match {
+      case Success(ab) => ab
+      case Failure(e)  => error(s"Could not parse aptitude max from string '$s'! Error was: ${e.toString()}"); Aptitude.defaultValues
+    };
+    val default = cogMorphMax.defaultValue.orElse(Some(0));
+    log(s"Got Aptitude Max: $ab");
+    val cog = ab.cog.orElse(default).map(v => cogMorphMax <<= v);
+    val coo = ab.coo.orElse(default).map(v => cooMorphMax <<= v);
+    val int = ab.int.orElse(default).map(v => intMorphMax <<= v);
+    val ref = ab.ref.orElse(default).map(v => refMorphMax <<= v);
+    val sav = ab.sav.orElse(default).map(v => savMorphMax <<= v);
+    val som = ab.som.orElse(default).map(v => somMorphMax <<= v);
+    val wil = ab.wil.orElse(default).map(v => wilMorphMax <<= v);
+    Seq(cog, coo, int, ref, sav, som, wil).flatten
   }
 }

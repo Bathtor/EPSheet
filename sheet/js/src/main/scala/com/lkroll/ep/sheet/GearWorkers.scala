@@ -62,6 +62,8 @@ object GearWorkers extends SheetWorker {
 
   val armourBonus = bind(armourBonusFields).update(armourBonusCalc, armourBonusSum.andThen(armourTotalCalc));
 
+  onRemove(armourItems, (_: Roll20.EventInfo) => { armourBonusSum.andThen(armourTotalCalc)(); () });
+
   val skillSearchOpMelee = bind(op(meleeWeapons.skillSearch)) { (o: Option[String]) =>
     o match {
       case Some(needle) => {
