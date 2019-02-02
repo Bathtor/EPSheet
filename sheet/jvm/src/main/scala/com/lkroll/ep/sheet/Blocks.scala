@@ -66,6 +66,10 @@ object Blocks {
   def arrowList(elems: SheetElement*) = GroupWithRenderer(ArrowList, elems);
   def rwd(roll: RollElement, descriptions: LabelI18N*) = RollWithDescription(roll, descriptions);
 
+  def tooltipped(title: Tag, tooltip: Tag): Tag = {
+    div(EPStyle.`tooltip`, title, tooltip(EPStyle.`tooltiptext`))
+  }
+
   val flexFill = MarkupElement(span(EPStyle.`flex-grow`, EPStyle.min1rem));
   val flexFillNarrow = MarkupElement(span(EPStyle.`flex-grow`, EPStyle.min02rem));
   val flexBreak = MarkupElement(div(width := "100%"));

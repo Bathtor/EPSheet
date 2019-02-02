@@ -95,4 +95,32 @@ object EPUpdates extends MinorVersionUpdateManager {
     val rangeUpdates = rangeUpdate.all(RangedWeaponSection);
     List(rangeUpdates)
   }
+  forVersion("1.10.0") {
+    val identityUpdate = op(IdentitiesSection.identity).update {
+      case (id) => {
+        Seq(
+            IdentitiesSection.atNameShort,
+            IdentitiesSection.atNameLong,
+            IdentitiesSection.cNameShort,
+            IdentitiesSection.cNameLong,
+            IdentitiesSection.eNameShort,
+            IdentitiesSection.eNameLong,
+            IdentitiesSection.fNameShort,
+            IdentitiesSection.fNameLong,
+            IdentitiesSection.gNameShort,
+            IdentitiesSection.gNameLong,
+            IdentitiesSection.iNameShort,
+            IdentitiesSection.iNameLong,
+            IdentitiesSection.rNameShort,
+            IdentitiesSection.rNameLong,
+            IdentitiesSection.uNameShort,
+            IdentitiesSection.uNameLong,
+            IdentitiesSection.xNameShort,
+            IdentitiesSection.xNameLong,
+        ).map(e => e <<= e.defaultValue.get)
+      }
+    };
+    val identityUpdates = identityUpdate.all(IdentitiesSection);
+    List(identityUpdates, EPWorkers.setFrayHalved)
+  }
 }

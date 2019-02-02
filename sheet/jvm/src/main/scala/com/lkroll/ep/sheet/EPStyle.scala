@@ -331,6 +331,12 @@ object EPStyle extends SheetStyle {
     maxWidth := "3em",
     display.`inline-flex`);
 
+  val max5em = cls(
+    maxWidth := "5em");
+
+  val max8em = cls(
+    maxWidth := "8em");
+
   val max5rem = cls(
     maxWidth := "8rem"); // scaled due to roll20 changes
 
@@ -413,6 +419,9 @@ object EPStyle extends SheetStyle {
   val `using-api` = cls();
   val `area-field` = cls();
   val `uniform-radius-field` = cls();
+
+  val `tooltip` = cls();
+  val `tooltiptext` = cls();
 
   // ***  Templates ***
 

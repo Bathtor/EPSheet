@@ -40,7 +40,7 @@ object EPWorkers extends SheetWorkerRoot {
 
   override def children: Seq[SheetWorker] = Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
 
-  val tabbedWorker = TabbedWorker(EPCharModel, EPUpdates);
+  lazy val tabbedWorker = TabbedWorker(EPCharModel, EPUpdates);
 
   import EPCharModel._
 

@@ -42,15 +42,15 @@ object IdentitiesTab extends FieldGroup {
   val ci = char.identities;
 
   val repTable = RepTable(Seq(
-    RepRow(t.atRep, Seq(ci.atRepScore, td(raw(" ")), ci.atRepFavour1, ci.atRepFavour2, ci.atRepFavour3, ci.atRepFavour4, ci.atRepFavour5)),
-    RepRow(t.cRep, Seq(ci.cRepScore, td(raw(" ")), ci.cRepFavour1, ci.cRepFavour2, ci.cRepFavour3, ci.cRepFavour4, ci.cRepFavour5)),
-    RepRow(t.eRep, Seq(ci.eRepScore, td(raw(" ")), ci.eRepFavour1, ci.eRepFavour2, ci.eRepFavour3, ci.eRepFavour4, ci.eRepFavour5)),
-    RepRow(t.fRep, Seq(ci.fRepScore, td(raw(" ")), ci.fRepFavour1, ci.fRepFavour2, ci.fRepFavour3, ci.fRepFavour4, ci.fRepFavour5)),
-    RepRow(t.gRep, Seq(ci.gRepScore, td(raw(" ")), ci.gRepFavour1, ci.gRepFavour2, ci.gRepFavour3, ci.gRepFavour4, ci.gRepFavour5)),
-    RepRow(t.iRep, Seq(ci.iRepScore, td(raw(" ")), ci.iRepFavour1, ci.iRepFavour2, ci.iRepFavour3, ci.iRepFavour4, ci.iRepFavour5)),
-    RepRow(t.rRep, Seq(ci.rRepScore, td(raw(" ")), ci.rRepFavour1, ci.rRepFavour2, ci.rRepFavour3, ci.rRepFavour4, ci.rRepFavour5)),
-    RepRow(t.uRep, Seq(ci.uRepScore, td(raw(" ")), ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
-    RepRow(t.xRep, Seq(ci.xRepScore, td(raw(" ")), ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
+    RepRow(ci.atNameShort, ci.atNameLong, Seq(ci.atRepScore, td(raw(" ")), ci.atRepFavour1, ci.atRepFavour2, ci.atRepFavour3, ci.atRepFavour4, ci.atRepFavour5)),
+    RepRow(ci.cNameShort, ci.cNameLong, Seq(ci.cRepScore, td(raw(" ")), ci.cRepFavour1, ci.cRepFavour2, ci.cRepFavour3, ci.cRepFavour4, ci.cRepFavour5)),
+    RepRow(ci.eNameShort, ci.eNameLong, Seq(ci.eRepScore, td(raw(" ")), ci.eRepFavour1, ci.eRepFavour2, ci.eRepFavour3, ci.eRepFavour4, ci.eRepFavour5)),
+    RepRow(ci.fNameShort, ci.fNameLong, Seq(ci.fRepScore, td(raw(" ")), ci.fRepFavour1, ci.fRepFavour2, ci.fRepFavour3, ci.fRepFavour4, ci.fRepFavour5)),
+    RepRow(ci.gNameShort, ci.gNameLong, Seq(ci.gRepScore, td(raw(" ")), ci.gRepFavour1, ci.gRepFavour2, ci.gRepFavour3, ci.gRepFavour4, ci.gRepFavour5)),
+    RepRow(ci.iNameShort, ci.iNameLong, Seq(ci.iRepScore, td(raw(" ")), ci.iRepFavour1, ci.iRepFavour2, ci.iRepFavour3, ci.iRepFavour4, ci.iRepFavour5)),
+    RepRow(ci.rNameShort, ci.rNameLong, Seq(ci.rRepScore, td(raw(" ")), ci.rRepFavour1, ci.rRepFavour2, ci.rRepFavour3, ci.rRepFavour4, ci.rRepFavour5)),
+    RepRow(ci.uNameShort, ci.uNameLong, Seq(ci.uRepScore, td(raw(" ")), ci.uRepFavour1, ci.uRepFavour2, ci.uRepFavour3, ci.uRepFavour4, ci.uRepFavour5)),
+    RepRow(ci.xNameShort, ci.xNameLong, Seq(ci.xRepScore, td(raw(" ")), ci.xRepFavour1, ci.xRepFavour2, ci.xRepFavour3, ci.xRepFavour4, ci.xRepFavour5))));
 
   val identityInfo = fblock(t.identity, EPStyle.min5rem,
     editOnly((t.identity -> ci.identity)),
@@ -101,7 +101,7 @@ case class RepTable(rows: Seq[RepRow]) extends FieldGroup {
     override def fieldRenderers = CoreTabRenderer.fieldRenderers;
   };
 }
-case class RepRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends FieldGroup {
+case class RepRow(rowNameShort: TextField, rowNameLong: TextField, members: Seq[SheetElement]) extends FieldGroup {
   import RenderMode._
   import CoreTabRenderer.obool2Checked
 
@@ -117,7 +117,14 @@ case class RepRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends Field
     };
 
     override def fieldCombiner = { tags =>
-      tr(th(EPStyle.fieldLabelBold, textAlign.right, rowName), tags)
+      tr(th(EPStyle.fieldLabelBold, textAlign.right,
+        div(
+          TabbedStyle.presentation,
+          Blocks.tooltipped(span(SheetI18NAttrs.datai18nDynamic, name := rowNameShort.name), span(SheetI18NAttrs.datai18nDynamic, name := rowNameLong.name))),
+        div(
+          TabbedStyle.edit,
+          input(EPStyle.max5em, `type` := "text", name := rowNameShort.name, value := rowNameShort.initialValue),
+          raw("&nbsp;("), input(EPStyle.max8em, `type` := "text", name := rowNameLong.name, value := rowNameLong.initialValue), raw(")"))), tags)
     };
   }
 }

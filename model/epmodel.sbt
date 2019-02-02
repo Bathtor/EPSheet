@@ -5,7 +5,7 @@ name := "EP Model Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.11.0-SNAPSHOT"
+version in ThisBuild := "1.11.0"
 
 scalaVersion in ThisBuild := "2.12.6"
 
