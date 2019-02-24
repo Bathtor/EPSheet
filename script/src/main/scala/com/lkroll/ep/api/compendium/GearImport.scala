@@ -41,3 +41,15 @@ case class GearImport(g: Gear) extends Importable {
     Left("Ok")
   }
 }
+
+case class GearEntryImport(e: GearEntry) extends Importable {
+  override def updateLabel: String = e.item.name;
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+    val g = e.item;
+    val rowId = Some(idPool.generateRowId());
+    char.createRepeating(GearSection.itemName, rowId) <<= g.name;
+    char.createRepeating(GearSection.amount, rowId) <<= e.count;
+    char.createRepeating(GearSection.description, rowId) <<= g.descr;
+    Left("Ok")
+  }
+}

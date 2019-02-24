@@ -94,7 +94,10 @@ case class MorphModelImport(morph: MorphModel) extends Importable {
 case class MorphInstanceImport(morph: MorphInstance) extends Importable {
   override def updateLabel: String = morph.label;
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
-    val rowId = Some(idPool.generateRowId());
+    importInto(char, idPool.generateRowId(), cache)
+  }
+  def importInto(char: Character, id: String, cache: ImportCache): Either[String, String] = {
+    val rowId = Some(id);
     char.createRepeating(MorphSection.id, rowId) <<= rowId.get;
     char.createRepeating(MorphSection.morphLabel, rowId) <<= morph.label;
     char.createRepeating(MorphSection.morphType, rowId) <<= morph.morphType.label;

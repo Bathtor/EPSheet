@@ -30,7 +30,8 @@ import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
 import com.lkroll.ep.model.{ EPCharModel => epmodel }
-import util.{ Try, Success, Failure }
+import scala.util.{ Try, Success, Failure }
+import scala.concurrent.Future
 import org.rogach.scallop.singleArgConverter
 
 class EPCompendiumImportConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
@@ -54,6 +55,8 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
   val gear = opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val software = opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val substance = opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val psiSleight = opt[List[String]]("psi-sleight", descr = "Import a psi-sleight with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
+  val skill = opt[List[String]]("skill", descr = "Import a skill with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
   val fromSheet = opt[Boolean]("from-sheet", descr = "Import a JSON formatted item from the API Text Exchange field on the character sheet linked with a selected token");
 
   dependsOnAll(withAmmo, List(weapon));
@@ -274,50 +277,106 @@ object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
           }
         }
       }
-      val updatedCharacters = tokens.flatMap { token =>
-        debug(s"Working on token: ${token.name} (${token.id})");
-        token.represents match {
-          case Some(char) => {
-            var updates = List.empty[String];
-            debug(s"Token represents $char");
-
-            val idPool = RowIdPool();
-            val importCache = ImportCache(char);
-
-            toImport.foreach { i =>
-              i.importInto(char, idPool, importCache) match {
-                case Left(msg)  => updates ::= s"Imported ${i.updateLabel} ($msg)"
-                case Right(msg) => updates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
-              }
+      if (config.psiSleight.isSupplied) {
+        config.psiSleight().foreach { s =>
+          EPCompendium.getPsiSleight(s) match {
+            case Some(s) => {
+              toImport ::= s;
             }
+            case None => ctx.reply(s"No Psi Sleight found for name ${s}")
+          }
+        }
+      }
+      if (config.skill.isSupplied) {
+        config.skill().foreach { s =>
+          EPCompendium.getSkillDef(s) match {
+            case Some(s) => {
+              toImport ::= s;
+            }
+            case None => ctx.reply(s"No skill found for name ${s}")
+          }
+        }
+      }
+      val updatedCharactersF = tokens.foldLeft(Future.successful(List.empty[Tuple2[String, List[String]]])) { (f, token) =>
+        val resF = f.flatMap { charUpdates =>
+          debug(s"Working on token: ${token.name} (${token.id})");
+          token.represents match {
+            case Some(char) => {
+              debug(s"Token represents $char");
 
-            if (config.fromSheet()) {
-              val text = char.attribute(epmodel.apiText)();
-              EPCompendium.readData(text) match {
-                case Success(d) => {
-                  Importable.fromData(d) match {
-                    case Some(i) => i.importInto(char, idPool, importCache) match {
-                      case Left(msg)  => updates ::= s"Imported ${i.updateLabel} ($msg)"
-                      case Right(msg) => updates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+              val idPool = RowIdPool();
+              val importCache = ImportCache(char);
+
+              val updates: Future[List[String]] = if (config.fromSheet()) {
+                val apiText = char.attribute(epmodel.apiText);
+                val text = apiText();
+                EPCompendium.readData(text) match {
+                  case Success(d) => {
+                    Importable.fromData(d) match {
+                      case Some(i) => {
+                        i.importInto(char, idPool, importCache) match {
+                          case Left(msg) => {
+                            val f = i.triggerWorkers(char);
+                            f.map { _ =>
+                              apiText <<= ""; // clear field
+                              var childUpdates = List(s"Imported ${i.updateLabel} ($msg)");
+                              (i.children ++ toImport).foreach { i =>
+                                i.importInto(char, idPool, importCache) match {
+                                  case Left(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
+                                  case Right(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                                }
+                              }
+                              childUpdates
+                            }
+                          }
+                          case Right(msg) => {
+                            Future.successful(List(s"Failed to import ${i.updateLabel} (correctly): $msg"))
+                          }
+                        };
+                      }
+                      case None => Future.successful(List(s"Data from sheet (${d.getClass}) is not importable."))
                     }
-                    case None => updates ::= s"Data from sheet (${d.getClass}) is not importable."
+                  }
+                  case Failure(e) => Future.successful(List(s"Failed to parse data from sheet: ${e.getMessage}"))
+                }
+              } else {
+                var childUpdates = List.empty[String];
+                toImport.foreach { i =>
+                  i.importInto(char, idPool, importCache) match {
+                    case Left(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
+                    case Right(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
                   }
                 }
-                case Failure(e) => updates ::= s"Failed to parse data from sheet: ${e.getMessage}"
-              }
+                Future.successful(childUpdates.reverse)
+              };
+
+              val updateF = updates.map(u => char.name -> u).recover {
+                case ex: Throwable => char.name -> List(s"An error occurred: ${ex.getMessage}")
+              };
+              updateF.map(u => u :: charUpdates)
             }
-
-            Some(char.name -> updates)
+            case None => {
+              ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!");
+              Future.successful(charUpdates) // just pass on the accumulator
+            }
           }
-          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
-        }
-
+        };
+        resF
       };
-      val updates = updatedCharacters.map(_ match {
-        case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
-      debug(s"Updates: $updates")
-      ctx.reply(s"Updated Characters $updates");
+      updatedCharactersF.onComplete {
+        case Success(updatedCharacters) => {
+          val updates = updatedCharacters.reverse.map(_ match {
+            case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
+          }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+          debug(s"Updates: $updates")
+          ctx.reply(s"Updated Characters $updates");
+        }
+        case Failure(ex) => {
+          error(ex);
+          ctx.reply(s"Something went wrong during updates. Consult the logs for more information.");
+        }
+      }
+
     }
   }
 }

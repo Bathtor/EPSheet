@@ -25,6 +25,7 @@
 
 package com.lkroll.ep.api.compendium
 
+import scala.concurrent.Future
 import com.lkroll.ep.compendium._
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
@@ -34,6 +35,7 @@ trait Importable {
   def updateLabel: String;
   def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String];
   def children: List[Importable] = Nil;
+  def triggerWorkers(char: Character): Future[Unit] = Future.successful(());
 }
 
 object Importable {
@@ -46,8 +48,12 @@ object Importable {
   implicit def armour2Import(a: Armour): ArmourImport = ArmourImport(a);
   implicit def moddedarmour2Import(a: ModdedArmour): ModdedArmourImport = ModdedArmourImport(a);
   implicit def gear2Import(g: Gear): GearImport = GearImport(g);
+  implicit def gearEntry2Import(e: GearEntry): GearEntryImport = GearEntryImport(e);
   implicit def software2Import(s: Software): SoftwareImport = SoftwareImport(s);
   implicit def substance2Import(s: Substance): SubstanceImport = SubstanceImport(s);
+  implicit def skill2Import(s: CharacterSkill): SkillImport = SkillImport(s);
+  implicit def skillDef2Import(s: SkillDef): SkillDefImport = SkillDefImport(s);
+  implicit def psiSleight2Import(s: PsiSleight): SleightImport = SleightImport(s);
 
   def fromData(d: Data): Option[Importable] = d match {
     case a: Armour           => Some(a)
@@ -62,6 +68,10 @@ object Importable {
     case s: Substance        => Some(s)
     case mm: MorphModel      => Some(mm)
     case mi: MorphInstance   => Some(mi)
+    case ch: EPCharacter     => Some(new CharacterImport(ch))
+    case s: CharacterSkill   => Some(s)
+    case s: SkillDef         => Some(s)
+    case s: PsiSleight       => Some(s)
     case _                   => None
   };
 }
@@ -83,6 +93,9 @@ class ImportCache(val char: Character) {
       case None    => loadActiveSkillMap()
     };
     data.get(name)
+  }
+  def reset(): Unit = {
+    activeSkillNameToId = None;
   }
 }
 object ImportCache {

@@ -57,14 +57,17 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val augmentation = opt[String]("augmentation", descr = "Search for matches with &lt;param&gt; in augmentations.")(ScallopUtils.singleArgSpacedConverter(identity));
   val armourMod = opt[String]("armour-mod", descr = "Search for matches with &lt;param&gt; in armour mods.")(ScallopUtils.singleArgSpacedConverter(identity));
   val weaponAccessory = opt[String]("weapon-accessory", descr = "Search for matches with &lt;param&gt; in weapon accessories.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val psiSleight = opt[String]("psi-sleight", descr = "Search for matches with &lt;param&gt; in psi sleights.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val skill = opt[String]("skill", descr = "Search for matches with &lt;param&gt; in skills.")(ScallopUtils.singleArgSpacedConverter(identity));
+
   val trailing = trailArg[List[String]]("trailing", hidden = true, required = false);
 
-  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
-  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
-  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory));
+  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
+  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
+  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
   dependsOnAll(withAmmo, List(weapon));
   dependsOnAll(multiSearch, List(trailing));
-  requireOne(search, multiSearch, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory);
+  requireOne(search, multiSearch, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill);
   verify();
 
   def forDataType(dataType: String): Option[org.rogach.scallop.ScallopOption[String]] = {
@@ -79,6 +82,8 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
       case Gear.dataType            => Some(gear)
       case MorphModel.dataType      => Some(morphModel)
       case MorphInstance.dataType   => Some(morph)
+      case PsiSleight.dataType      => Some(psiSleight)
+      case SkillDef.dataType        => Some(skill)
       case Software.dataType        => Some(software)
       case Substance.dataType       => Some(substance)
       case Weapon.dataType          => Some(weapon)
@@ -207,6 +212,16 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       ctx.reply(s"Searching for '$needle' in weapon accessories...");
       val results = EPCompendium.findWeaponAccessories(needle);
       handleResults(results, config, ctx);
+    } else if (config.psiSleight.isSupplied) {
+      val needle = config.psiSleight();
+      ctx.reply(s"Searching for '$needle' in psi sleights...");
+      val results = EPCompendium.findPsiSleights(needle);
+      handleResults(results, config, ctx);
+    } else if (config.skill.isSupplied) {
+      val needle = config.skill();
+      ctx.reply(s"Searching for '$needle' in skills...");
+      val results = EPCompendium.findSkillDefs(needle);
+      handleResults(results, config, ctx);
     } else {
       error(s"Unsupported options supplied: ${config.args}");
     }
@@ -263,8 +278,10 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
         val aname = buttonSafeText(wwa.ammo.lookupName);
         List(config.weapon <<= wname, config.withAmmo <<= aname)
       }
-      case _: Substance => List(config.substance <<= name)
-      case _            => List.empty
+      case _: Substance  => List(config.substance <<= name)
+      case _: SkillDef   => List(config.skill <<= name)
+      case _: PsiSleight => List(config.psiSleight <<= name)
+      case _             => List.empty
     }
   }
 
@@ -281,6 +298,8 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
       case _: Gear            => List(config.gear <<= name)
       case _: MorphModel      => List(config.morphModel <<= name)
       case _: MorphInstance   => List(config.morph <<= name)
+      case _: PsiSleight      => List(config.psiSleight <<= name)
+      case _: SkillDef        => List(config.skill <<= name)
       case _: Software        => List(config.software <<= name)
       case _: Substance       => List(config.substance <<= name)
       case _: Weapon          => List(config.weapon <<= name)
@@ -343,6 +362,16 @@ object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
           c.label <<= buttonSafeText(w.templateTitle),
           c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
+      }
+      case s: SkillDef => {
+        val c = SpecialRollsCommand.minConf;
+        val skill = s.name;
+        val skillButton = SpecialRollsCommand.invoke("Success Roll", List(
+          c.success <<= true,
+          c.target.name <<= s"?{$skill}",
+          c.label <<= buttonSafeText(s.templateTitle),
+          c.sublabel <<= buttonSafeText(s.templateSubTitle)));
+        List("Commands" -> skillButton)
       }
       case _ => List.empty
     }
