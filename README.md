@@ -11,4 +11,4 @@ Version `1.10.0` is deployed on Roll20 as the default sheet for Eclipse Phase 1E
 Current release candidate for the sheet is version `1.11.0`, which can be found [here](https://github.com/Bathtor/roll20-character-sheets/tree/release-candidate/Eclipse%20Phase%20Alternate).
 <!--There is no current release candidate for the sheet.//-->
 
-Current pre-release for the script is version `0.8.0`, which can be found [here](https://github.com/Bathtor/EPSheet/releases/tag/script-v0.8.0).
+Current pre-release for the script is version `0.9.0`, which can be found [here](https://github.com/Bathtor/EPSheet/releases/tag/script-v0.9.0).
