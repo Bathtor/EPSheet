@@ -38,6 +38,8 @@ object EPCharModel extends SheetModel {
 
   override def version = BuildInfo.version;
 
+  override def outputTemplate: Option[APIOutputTemplate] = Some(APIOutputTemplateRef);
+
   implicit val ctx = this.renderingContext;
 
   val sheetName = "EPSheet";

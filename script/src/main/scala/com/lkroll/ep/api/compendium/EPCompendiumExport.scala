@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts }
 import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
@@ -46,7 +46,7 @@ All exports appear in the API Text Exchange field on the sheet represented by th
   verify();
 }
 
-object EPCompendiumExportCommand extends APICommand[EPCompendiumExportConf] {
+object EPCompendiumExportCommand extends EPCommand[EPCompendiumExportConf] {
   import APIImplicits._;
   import Importable._;
   override def command = "epcompendium-export";

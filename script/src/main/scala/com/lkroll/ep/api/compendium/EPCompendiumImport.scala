@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts }
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts }
 import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import scala.util.{ Try, Success, Failure }
 import scala.concurrent.Future
@@ -100,7 +100,7 @@ object FloatOrInline {
   }
 }
 
-object EPCompendiumImportCommand extends APICommand[EPCompendiumImportConf] {
+object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
   import APIImplicits._;
   import Importable._;
   override def command = "epcompendium-import";

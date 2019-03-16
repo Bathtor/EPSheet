@@ -595,6 +595,7 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
 *
 */
 
+.sheet-rolltemplate-ep-apioutput,
 .sheet-rolltemplate-ep-info,
 .sheet-rolltemplate-ep-ini,
 .sheet-rolltemplate-ep-default,
@@ -602,6 +603,7 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     margin-left: -4.2rem
 }
 
+.withoutavatars .sheet-rolltemplate-ep-apioutput,
 .withoutavatars .sheet-rolltemplate-ep-info,
 .withoutavatars .sheet-rolltemplate-ep-ini,
 .withoutavatars .sheet-rolltemplate-ep-default,
@@ -623,6 +625,32 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     position: relative;
 }
 
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper {
+    background-color: ${template-background};
+    color: ${template-text};
+    border: 0px;
+    box-sizing: border-box;
+    font-size: 1.2rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper-full {   
+    border-radius: 10px;
+    padding-bottom: 10px;
+}
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper-header {   
+    border-radius: 10px 10px 0px 0px;
+}
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper-body {
+    border-radius: 0px;
+}
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper-footer {
+    border-radius: 0px 0px 10px 10px;
+    padding-bottom: 10px;
+}
+
+.sheet-rolltemplate-ep-apioutput .inlinerollresult,
 .sheet-rolltemplate-ep-info .inlinerollresult,
 .sheet-rolltemplate-ep-ini .inlinerollresult,
 .sheet-rolltemplate-ep-default .inlinerollresult,
@@ -640,6 +668,7 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
         1px 1px 1px ${roll-highlight-shadow};
 }
 
+.sheet-rolltemplate-ep-apioutput .sheet-fieldvalue,
 .sheet-rolltemplate-ep-info .sheet-fieldvalue,
 .sheet-rolltemplate-ep-ini .sheet-fieldvalue,
 .sheet-rolltemplate-ep-default .sheet-fieldvalue,
@@ -660,7 +689,7 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
 }
 
 
-
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-info .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper h3,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper h3,
@@ -679,6 +708,39 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     padding: 5px;
 }
 
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper h3.sheet-api-warn {
+    background-image: linear-gradient(to right, ${template-header-warn} -30%, transparent 120%);
+    color: ${template-text};
+    font-variant: small-caps;
+    font-family: 'Aldrich', monospace;
+    text-align: center;
+    font-weight: 500;
+    text-shadow:
+        -1px -1px 1px ${text-highlight},
+        1px -1px 1px ${text-highlight},
+        -1px 1px 1px ${text-highlight},
+        1px 1px 1px ${text-highlight};
+    padding: 5px;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper h3.sheet-api-error {
+    background-image: linear-gradient(to right, ${template-header-error} -30%, transparent 120%);
+    color: ${template-text};
+    font-variant: small-caps;
+    font-family: 'Aldrich', monospace;
+    text-align: center;
+    font-weight: 500;
+    text-shadow:
+        -1px -1px 1px ${text-highlight},
+        1px -1px 1px ${text-highlight},
+        -1px 1px 1px ${text-highlight},
+        1px 1px 1px ${text-highlight};
+    padding: 5px;
+}
+
+
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper h4,
 .sheet-rolltemplate-ep-info .sheet-template-wrapper h4,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper h4,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper h4 {
@@ -724,6 +786,25 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     margin: 0px;
 }
 
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper p {
+    font-family: 'Abel', serif;
+    text-align: left;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin: 0px;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper .sheet-cmd-help p {
+    font-family: 'Abel', serif;
+    text-align: left;
+    text-indent: -1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    margin: 0px;
+}
+
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper p,
 .sheet-rolltemplate-ep-default .sheet-template-wrapper p,
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper p {
@@ -754,10 +835,12 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     background-image: linear-gradient(to right, ${template-failure} -30%, transparent 120%);
 }
 
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='~'],
 .sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~'],
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='!'],
 .sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='!'],

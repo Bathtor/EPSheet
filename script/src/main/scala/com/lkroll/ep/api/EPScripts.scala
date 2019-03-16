@@ -36,6 +36,9 @@ import fastparse.all._
 import util.{ Try, Success, Failure }
 
 object EPScripts extends APIScriptRoot {
+
+  override lazy val outputTemplate: Option[TemplateRef] = epmodel.outputTemplate.map(_.ref);
+
   override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, GMTools, CharTools, compendium.CompendiumScript, BattleManagerScript, CharCleanerScript);
 
   val version = BuildInfo.version;

@@ -35,7 +35,7 @@ import fastparse.all._
 import concurrent.Future
 import util.{ Try, Success, Failure }
 
-object GroupRollsScript extends APIScript {
+object GroupRollsScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPGroupRollsCommand);
 }
 
@@ -54,7 +54,7 @@ class EPGroupRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object EPGroupRollsCommand extends APICommand[EPGroupRollsConf] {
+object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
   import APIImplicits._;
   override def command = "epgroup-roll";
   override def options = (args) => new EPGroupRollsConf(args);

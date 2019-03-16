@@ -35,7 +35,7 @@ import fastparse.all._
 import util.{ Try, Success, Failure }
 import CoreImplicits._;
 
-object RollsScript extends APIScript {
+object RollsScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPRollsCommand, SpecialRollsCommand);
 
   def transformRoll(total: Int): TemplateVal.InlineRoll = {
@@ -93,7 +93,7 @@ class SpecialRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object SpecialRollsCommand extends APICommand[SpecialRollsConf] {
+object SpecialRollsCommand extends EPCommand[SpecialRollsConf] {
   import CoreImplicits._;
 
   override def command = "epspecialroll";
@@ -146,7 +146,7 @@ class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object EPRollsCommand extends APICommand[EPRollsConf] {
+object EPRollsCommand extends EPCommand[EPRollsConf] {
   import APIImplicits._;
   import TemplateImplicits._;
 
@@ -201,9 +201,9 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
       case Some(mof) => mof :: replacedVars;
       case None      => replacedVars
     };
-    val msg = templateApplication("ep-default", augmentedVars);
+    val msg = EPTemplates.default.fillWith(augmentedVars);
     debug(s"About to send: $msg");
-    sendChat(ctx.player, target.message(msg));
+    sendChat(ctx.player, target.templateMessage(msg));
   }
 
   private def transformDamage(ctx: ChatContext, vars: TemplateVars, target: ChatCommand): Unit = {
@@ -240,15 +240,15 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
           c.armour <<? Option.empty[DamageType.DamageType],
           c.armourPenetration <<= ap));
         val augmentedVars = templateV("apply-damage" -> applyDamage) :: templateV("apply-crit-damage" -> applyCritDamage) :: replacedVars;
-        templateApplication("ep-damage", augmentedVars)
+        EPTemplates.damage.fillWith(augmentedVars)
       }
       case None => {
         error("Could not find damage total in damage roll!");
-        templateApplication("ep-damage", replacedVars)
+        EPTemplates.damage.fillWith(replacedVars)
       }
     };
     debug(s"About to send: $msg");
-    sendChat(ctx.player, target.message(msg));
+    sendChat(ctx.player, target.templateMessage(msg));
   }
 
   //
@@ -263,7 +263,7 @@ object EPRollsCommand extends APICommand[EPRollsConf] {
   //  }
 
   private def invalidRoll(ctx: ChatContext): Unit = {
-    ctx.reply("Invalid roll!");
+    ctx.replyWarn("Invalid roll!");
   }
 
   //  private def extractIfIntLiteral(tvar: TemplateVar): Option[Int] = tvar.value match {

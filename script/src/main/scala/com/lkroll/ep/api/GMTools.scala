@@ -9,7 +9,7 @@ import scalajs.js.JSON
 import util.{ Try, Success, Failure }
 import com.lkroll.ep.model.{ EPCharModel => epmodel, ActiveSkillSection, KnowledgeSkillSection }
 
-object GMTools extends APIScript {
+object GMTools extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(GMToolsCommand);
 }
 
@@ -36,7 +36,7 @@ class GMToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object GMToolsCommand extends APICommand[GMToolsConf] {
+object GMToolsCommand extends EPCommand[GMToolsConf] {
   import CoreImplicits._;
   override def command = "epgmtools";
   override def options = (args) => new GMToolsConf(args);

@@ -34,6 +34,7 @@ object OldModels {
     implicit val ctx = this.renderingContext;
 
     override def version = "1.4.0";
+    override def outputTemplate: Option[APIOutputTemplate] = None;
 
     val async = "async".default(false);
   }
@@ -43,6 +44,7 @@ object OldModels {
     implicit val ctx = this.renderingContext;
 
     override def version = "1.5.0";
+    override def outputTemplate: Option[APIOutputTemplate] = None;
 
     object MorphSection extends RepeatingSection {
       import FieldImplicits._;
@@ -60,6 +62,7 @@ object OldModels {
     implicit val ctx = this.renderingContext;
 
     override def version = "1.8.0";
+    override def outputTemplate: Option[APIOutputTemplate] = None;
 
     val speed = "speed".default(1).validIn(0, 99, 1);
     val mentalOnlyActions = "mental_only_actions".default(0).validIn(0, 99, 1);

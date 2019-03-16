@@ -36,13 +36,14 @@ import concurrent.Future
 import scala.util.{ Try, Success, Failure }
 import scala.collection.mutable
 
-object BattleManagerScript extends APIScript {
+object BattleManagerScript extends EPScript {
+  import APIImplicits._;
   override def apiCommands: Seq[APICommand[_]] = Seq(EPBattlemanCommand);
 
   onChange("campaign:turnorder", { (_, _) => EPBattlemanCommand.state match {
       case EPBattlemanCommand.Active(_, _) => {
-        sendChat("Battleman (API)", 
-        Chat.GM.message("<b>WARN</b> It is not recommended to manually change the turn order, while a battle is active in Battleman. You might end up in an inconsistent state!"));
+        sendChatWarning("Battleman (API)", 
+        Chat.GM.message("It is not recommended to manually change the turn order, while a battle is active in Battleman. You might end up in an inconsistent state!"));
       }
       case _ => (), // that's ok
     }});
@@ -60,7 +61,7 @@ class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
+object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
   import APIImplicits._;
   import TurnOrder.{ Entry, CustomEntry, TokenEntry };
   override def command = "epbattleman";
@@ -110,20 +111,20 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
                     sorting ::= (ini -> e);
                   }
                   case None => {
-                    ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character. Unlinked tokens are currently not supported.");
+                    ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character. Unlinked tokens are currently not supported.");
                   }
                 }
               }
               case Some(_: Card) => {
-                ctx.reply(s"Entry with id=${id} was a card, but we require a token!");
+                ctx.replyWarn(s"Entry with id=${id} was a card, but we require a token!");
               }
               case None => {
-                ctx.reply(s"Could not find token for id=${id}!");
+                ctx.replyWarn(s"Could not find token for id=${id}!");
               }
             }
           }
           case e => {
-            ctx.reply(s"Got unexpected token $e! Ignoring.");
+            ctx.replyWarn(s"Got unexpected token $e! Ignoring.");
           }
         }
         if (!sorting.isEmpty) {
@@ -135,11 +136,11 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
           val replyString = s"<h3>Battle Participants</h3>$partString<h4>Battle Started!</h4>";
           ctx.reply(replyString);
         } else {
-          ctx.reply("There is no one to start a battle with :(");
+          ctx.replyWarn("There is no one to start a battle with :(");
         }
       }
       case _ => {
-        ctx.reply("Can't start new battle, as there is already an ongoing battle.");
+        ctx.replyWarn("Can't start new battle, as there is already an ongoing battle.");
       }
     }
   }
@@ -327,7 +328,7 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
   private def onAdd(ctx: ChatContext) {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
-      ctx.reply("No tokens selected. Nothing to do...");
+      ctx.replyWarn("No tokens selected. Nothing to do...");
     } else {
       val tokens = graphicTokens.flatMap {
         case t: Token => Some(t)
@@ -343,7 +344,7 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
               case Left(msg) => ctx.reply(msg + " Skipping token."); None
             }
           }
-          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
+          case None => ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
       };
       debug(s"Adding ${targets.size} tokens to battleman.");
@@ -387,7 +388,7 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
           val replyString = s"<h3>New Battle Participants</h3>$partString";
           ctx.reply(replyString);
         }
-        case Failure(f) => error(f); ctx.reply("Tokens could not be added to battleman. See log for error messages.")
+        case Failure(f) => error(f); ctx.replyError("Tokens could not be added to battleman. See log for error messages.")
       }
     }
   }
@@ -419,7 +420,7 @@ object EPBattlemanCommand extends APICommand[EPBattlemanConf] {
   private def onDrop(ctx: ChatContext) {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
-      ctx.reply("No tokens selected. Nothing to do...");
+      ctx.replyWarn("No tokens selected. Nothing to do...");
     } else {
       val tokens = graphicTokens.flatMap {
         case t: Token => Some(t)

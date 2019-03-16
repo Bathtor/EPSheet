@@ -36,7 +36,7 @@ import concurrent.Future
 import scala.util.{ Try, Success, Failure }
 import scala.collection.mutable
 
-object CharCleanerScript extends APIScript {
+object CharCleanerScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(CharCleanerCommand);
 }
 
@@ -51,7 +51,7 @@ class CharCleanerConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object CharCleanerCommand extends APICommand[CharCleanerConf] {
+object CharCleanerCommand extends EPCommand[CharCleanerConf] {
   import APIImplicits._;
   import TurnOrder.{ Entry, CustomEntry, TokenEntry };
   override def command = "epclean";

@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts, SpecialRollsCommand }
+import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts, SpecialRollsCommand }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
 
@@ -93,7 +93,7 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   }
 }
 
-object EPCompendiumDataCommand extends APICommand[EPCompendiumDataConf] {
+object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
   import APIImplicits._;
   val minConf = new EPCompendiumDataConf(Seq("--search", "nothing"));
   override def command = "epcompendium-data";

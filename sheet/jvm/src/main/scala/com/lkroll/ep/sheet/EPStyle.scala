@@ -426,12 +426,19 @@ object EPStyle extends SheetStyle {
   // ***  Templates ***
 
   val `template-wrapper` = cls();
+  val `template-wrapper-full` = cls();
+  val `template-wrapper-header` = cls();
+  val `template-wrapper-footer` = cls();
+  val `template-wrapper-body` = cls();
   val `roll-success` = cls();
   val `roll-failure` = cls();
   val `sub-header` = cls();
   val fieldvalue = cls();
   val tightkv = cls();
   val tightkey = cls();
+
+  val `api-warn` = cls();
+  val `api-error` = cls();
 
 }
 
@@ -464,6 +471,8 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val templateBackground = alias("template-background", darkGrey);
   val templateText = alias("template-text", lightText);
   val templateHeader = alias("template-header", primaryShade0);
+  val templateHeaderWarn = alias("template-header-warn", complementShade0);
+  val templateHeaderError = alias("template-header-error", secondaryShade0);
   val textHighlight = alias("text-highlight", primaryShade2);
   val rollHighlight = alias("roll-highlight", complementShade2);
   val rollHighlightShadow = alias("roll-highlight-shadow", complementShade3);

@@ -34,7 +34,7 @@ import scalajs.js.JSON
 import util.{ Try, Success, Failure }
 import com.lkroll.ep.model.ActiveSkillSection
 
-object TokensScript extends APIScript {
+object TokensScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPTokensCommand);
 }
 
@@ -79,7 +79,7 @@ class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object EPTokensCommand extends APICommand[EPTokensConf] {
+object EPTokensCommand extends EPCommand[EPTokensConf] {
   import CoreImplicits._;
   override def command = "eptoken";
   override def options = (args) => new EPTokensConf(args);

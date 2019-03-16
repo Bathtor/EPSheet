@@ -9,7 +9,7 @@ import scalajs.js.JSON
 import util.{ Try, Success, Failure }
 import com.lkroll.ep.model.{ EPCharModel => epmodel, DamageType, MorphType }
 
-object CharTools extends APIScript {
+object CharTools extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(CharToolsCommand);
 }
 
@@ -37,7 +37,7 @@ class CharToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   verify();
 }
 
-object CharToolsCommand extends APICommand[CharToolsConf] {
+object CharToolsCommand extends EPCommand[CharToolsConf] {
   import APIImplicits._;
   lazy val minConf = new CharToolsConf(Seq("--damage", "0"));
 
@@ -48,9 +48,9 @@ object CharToolsCommand extends APICommand[CharToolsConf] {
       val charName = config.characterName();
       val chars = Roll20Char.find(charName);
       if (chars.isEmpty) {
-        ctx.reply(s"No character found for name $charName");
+        ctx.replyWarn(s"No character found for name $charName");
       } else if (chars.size > 1) {
-        ctx.reply(s"Multiple characters found for name $charName. Picking first.");
+        ctx.replyWarn(s"Multiple characters found for name $charName. Picking first.");
         applyToChar(config, ctx, chars.head);
       } else {
         applyToChar(config, ctx, chars.head);
@@ -66,7 +66,7 @@ object CharToolsCommand extends APICommand[CharToolsConf] {
     } else {
       Chat.Default
     };
-    var msg = s"<h3>${char.name}</h3>";
+    var msg = "";
     if (config.stress.isSupplied) {
       msg += applyStress(config, ctx, char);
     }
@@ -74,7 +74,7 @@ object CharToolsCommand extends APICommand[CharToolsConf] {
       msg += applyDamage(config, ctx, char);
     }
 
-    sendChat(ctx.player, chatTarget.message(msg));
+    sendChat(ctx.player, title = Some(char.name), chatTarget.message(msg));
   }
 
   def applyStress(config: CharToolsConf, ctx: ChatContext, char: Roll20Char): String = {

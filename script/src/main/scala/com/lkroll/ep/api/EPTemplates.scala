@@ -22,16 +22,14 @@
  * SOFTWARE.
  *
  */
-package com.lkroll.ep.api.compendium
+package com.lkroll.ep.api
 
-import com.lkroll.roll20.core._
-import com.lkroll.roll20.api._
-import com.lkroll.roll20.api.conf._
-import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts, EPScript }
-import util.{ Try, Success, Failure }
-import org.rogach.scallop.singleArgConverter
+import com.lkroll.roll20.core.{ TemplateCoreImplicits, TemplateRef }
+import com.lkroll.ep.model.EPCharModel
 
-object CompendiumScript extends EPScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand, EPCompendiumExportCommand);
+object EPTemplates extends TemplateCoreImplicits {
+  val default: TemplateRef = "ep-default";
+  val damage: TemplateRef = "ep-damage";
+  val info: TemplateRef = "ep-info";
+  val ini: TemplateRef = "ep-ini";
 }

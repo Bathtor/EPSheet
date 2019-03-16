@@ -22,41 +22,55 @@
  * SOFTWARE.
  *
  */
-
 package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
-import com.lkroll.roll20.sheet.tabbed._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.roll20.core._
+import com.lkroll.ep.model.APIOutputTemplateRef
 import scalatags.Text.all._
-import scalatags.stylesheet._
+import SheetImplicits._
 
-object EPSheet extends TabbedSheet {
-  import SheetImplicits._;
-  import Roll20Predef._;
+object EPAPIOutputTemplate extends APIOutputRollTemplate {
+  override def name: String = APIOutputTemplateRef.name;
 
-  val char = EPCharModel;
   val t = EPTranslation;
   val sty = EPStyle;
 
-  override def hidden = Seq[SheetElement](char.characterSheet, char.morphType, char.woundMod, char.woundsApplied, char.traumaMod, char.frayField);
-  override def header = Header;
-  override def tabs = Seq(core, skills, morphs, gear, psi, identities, muse, options);
-  override def footer = Footer;
+  lazy val titleRender: Modifier = switchExists(isWarning, {
+    // WARN
+    h3(sty.`api-warn`, titleField)
+  }, switchExists(isError, {
+    // ERROR
+    h3(sty.`api-error`, titleField)
+  }, {
+    // NORMAL
+    h3(titleField)
+  }));
 
-  val core = tab(t.core, CoreTab);
-  val skills = tab(t.skills, SkillTab);
-  val morphs = tab(t.morph, MorphTab);
-  val gear = tab(t.gear, GearTab);
-  val options = tab(t.options, OptionsTab);
-  val identities = tab(t.identities, IdentitiesTab);
-  val psi = tab(t.psi, PsiTab);
-  val muse = tab(t.muse, MuseTab);
-
-  override def style(): StyleSheet = EPStyle;
-  override def externalStyles() = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));
-  override def translation(): SheetI18NDefaults = EPTranslation;
-  override def colourScheme = EPPalette;
-  override def templates = EPAPIOutputTemplate :: EPInfoTemplate :: EPIniTemplate :: EPDefaultTemplate :: EPDamageTemplate :: super.templates;
+  // **** Layout ****
+  override def content: Tag = div(
+    switchExists(showHeader, {
+      switchExists(showFooter, {
+        // FULL
+        div(sty.`template-wrapper`, sty.`template-wrapper-full`,
+          titleRender,
+          div(contentField))
+      }, {
+        // Header-only
+        div(sty.`template-wrapper`, sty.`template-wrapper-header`,
+          titleRender,
+          div(contentField))
+      })
+    }, {
+      switchExists(showFooter, {
+        // Footer-only
+        div(sty.`template-wrapper`, sty.`template-wrapper-footer`,
+          div(contentField))
+      }, {
+        // Body
+        div(sty.`template-wrapper`, sty.`template-wrapper-body`,
+          div(contentField))
+      })
+    }));
 }
