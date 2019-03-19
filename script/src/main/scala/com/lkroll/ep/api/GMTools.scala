@@ -38,6 +38,8 @@ class GMToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
 object GMToolsCommand extends EPCommand[GMToolsConf] {
   import CoreImplicits._;
+  import scalatags.Text.all._;
+
   override def command = "epgmtools";
   override def options = (args) => new GMToolsConf(args);
   override def apply(config: GMToolsConf, ctx: ChatContext): Unit = {
@@ -49,7 +51,7 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
         chars ++= charNames.flatMap { charName =>
           val r = Roll20Char.find(charName);
           if (r.isEmpty) {
-            ctx.reply(s"No character found for name $charName");
+            ctx.replyWarn(s"No character found for name $charName");
           }
           r
         }
@@ -59,7 +61,7 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
         chars ++= charIds.flatMap { charId =>
           val r = Roll20Char.get(charId);
           if (r.isEmpty) {
-            ctx.reply(s"No character found for ID $charId");
+            ctx.replyWarn(s"No character found for ID $charId");
           }
           r
         }
@@ -78,17 +80,14 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
         }
       };
       val organised = bySkillName.map(t => (t._1 -> t._2.sortBy(_._2)));
-      val results = organised.map(_ match {
-        case (skill, mods) => {
-          val title = s"<b>$skill</b>";
-          val modsS = mods.map{
-            case (char, total) => s"<em>$char</em> has [[$total]]"
-          }.mkString("<ul><li>", "</li><li>", "</li></ul>");
-          title + modsS
-        }
-      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+      val partials: Seq[Tag] = for ((skill, mods) <- organised.toSeq) yield div(
+        h4(skill),
+        p(ul(for ((char, total) <- mods) yield li(b(char), " has ", s"[[$total]]"))));
+      val results: Tag = div(
+        p("Best Modifiers (incl. wounds and traumas):"),
+        partials);
       debug(s"Results: $results");
-      ctx.reply(s"Best Modifiers (incl. wounds and traumas):$results");
+      ctx.reply("GM Tools", results);
     }
   }
 

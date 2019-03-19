@@ -35,6 +35,7 @@ import fastparse.all._
 import concurrent.Future
 import scala.util.{ Try, Success, Failure }
 import scala.collection.mutable
+import scalatags.Text.all._
 
 object BattleManagerScript extends EPScript {
   import APIImplicits._;
@@ -43,7 +44,9 @@ object BattleManagerScript extends EPScript {
   onChange("campaign:turnorder", { (_, _) => EPBattlemanCommand.state match {
       case EPBattlemanCommand.Active(_, _) => {
         sendChatWarning("Battleman (API)", 
-        Chat.GM.message("It is not recommended to manually change the turn order, while a battle is active in Battleman. You might end up in an inconsistent state!"));
+        Chat.GM.htmlMessage(p(
+            "It is not recommended to manually change the turn order, while a battle is active in the Battle Manager. You might end up in an inconsistent state!"
+            )));
       }
       case _ => (), // that's ok
     }});
@@ -132,9 +135,13 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           val maxEntry = sorted.head._1 + 1;
           val newOrder = marker(maxEntry) :: sorted.map(_._2);
           turnOrder.set(newOrder);
-          val partString = participants.values.map(c => s"<b>${c._2.name}</b>").mkString("<ul><li>", "</li><li>", "</li></ul>");
-          val replyString = s"<h3>Battle Participants</h3>$partString<h4>Battle Started!</h4>";
-          ctx.reply(replyString);
+          val part = ul(
+              for ((t, c) <- participants.values.toSeq) yield li(b(c.name))
+              );
+          val reply = div(
+              h4("Battle Participants"), 
+              p(part));
+          ctx.reply("Battle Started!", reply);
         } else {
           ctx.replyWarn("There is no one to start a battle with :(");
         }
@@ -309,10 +316,10 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
         participants.clear();
         iniCache.clear();
         val time = round * 3;
-        ctx.reply(s"Battle ended in ${round} rounds (${time}s) and ${phase} phases.");
+        ctx.reply("Battle Ended!",s"The battle concluded in ${round} rounds (${time}s) and ${phase} phases.");
       }
       case _ => {
-        ctx.reply("There is no currently active battle to end.");
+        ctx.replyWarn("There is no currently active battle to end.");
       }
     }
   }
@@ -341,7 +348,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
             debug(s"Token represents $char");
             EPScripts.checkVersion(char) match {
               case Right(()) => Some((token, char))
-              case Left(msg) => ctx.reply(msg + " Skipping token."); None
+              case Left(msg) => ctx.replyWarn(msg + " Skipping token."); None
             }
           }
           case None => ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!"); None
@@ -384,9 +391,13 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           }
           val newOrder = assembleWithMarker(sortingPre, sortingPost);
           turnOrder.set(newOrder);
-          val partString = res.map(c => s"<b>${c._2.name}</b>").mkString("<ul><li>", "</li><li>", "</li></ul>");
-          val replyString = s"<h3>New Battle Participants</h3>$partString";
-          ctx.reply(replyString);
+          val part = ul(
+              for ((t, c, i) <- res) yield li(b(c.name))
+              );
+          val reply = div(
+              h4("New Battle Participants"), 
+              p(part));
+          ctx.reply("Battle Updated!", reply);
         }
         case Failure(f) => error(f); ctx.replyError("Tokens could not be added to battleman. See log for error messages.")
       }
@@ -437,7 +448,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           case _ => false
         }
       );
-      ctx.reply(s"Removed ${ids.size} tokens from battleman");
+      ctx.reply("Battle Updated!",s"Removed ${ids.size} tokens from battleman");
     }
   }
   

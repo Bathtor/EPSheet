@@ -39,6 +39,8 @@ class CharToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
 object CharToolsCommand extends EPCommand[CharToolsConf] {
   import APIImplicits._;
+  import scalatags.Text.all._;
+
   lazy val minConf = new CharToolsConf(Seq("--damage", "0"));
 
   override def command = "epchar";
@@ -66,19 +68,19 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
     } else {
       Chat.Default
     };
-    var msg = "";
-    if (config.stress.isSupplied) {
-      msg += applyStress(config, ctx, char);
-    }
-    if (config.damage.isSupplied) {
-      msg += applyDamage(config, ctx, char);
-    }
+    val msg: Tag = if (config.stress.isSupplied) {
+      div(applyStress(config, ctx, char).reverse)
+    } else if (config.damage.isSupplied) {
+      div(applyDamage(config, ctx, char).reverse)
+    } else {
+      p(cls := "sheet-inline-error", "Invalid invocation type!")
+    };
 
-    sendChat(ctx.player, title = Some(char.name), chatTarget.message(msg));
+    sendChat(ctx.player, title = Some(char.name), chatTarget.htmlMessage(msg));
   }
 
-  def applyStress(config: CharToolsConf, ctx: ChatContext, char: Roll20Char): String = {
-    var msg = "";
+  def applyStress(config: CharToolsConf, ctx: ChatContext, char: Roll20Char): Seq[Tag] = {
+    var msg: List[Tag] = Nil;
     try {
       val stressField = char.attribute(epmodel.stress);
       val stress = config.stress();
@@ -88,7 +90,7 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
       val tt = char.attribute(epmodel.traumaThreshold).getOrDefault;
       val stressTotal = stress + curStress;
       stressField <<= stressTotal;
-      msg += s"<p>Took <em>$stress</em>SV.<p/>";
+      msg ::= p("Took ", em(stress), "SV.");
 
       val (traumas, newTraumas) = if (stress >= tt) {
         val newTraumas = stress / tt;
@@ -96,32 +98,35 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
         val curTraumas = traumaField.getOrDefault;
         val newCurTraumas = curTraumas + newTraumas;
         traumaField.setWithWorker(newCurTraumas);
-        msg += s"<p>Took <em>$newTraumas</em> traumas.</p>";
+        msg ::= p("Took ", em(newTraumas), " traumas.");
         (newCurTraumas, newTraumas)
       } else (0, 0);
 
       if (stressTotal >= ir) {
-        msg += s"<p>Is now permanently insane.</p>";
+        msg ::= p("Is now permanently insane.");
       } else if (stressTotal >= luc) {
-        msg += s"<p>Is now catatonic until stress is reduced below <em>${luc}</em>.</p>";
+        msg ::= p("Is now catatonic until stress is reduced below ", em(luc), ".");
       } else {
         if (newTraumas >= 1) {
-          msg += s"<p>Must ${char.rollButton("Resist Disorientation", "willx3-roll")} or be forced to expend a Complex Action to regain their wits.</p>";
+          msg ::= p("Must ", char.rollButton("Resist Disorientation", "willx3-roll"), " or be forced to expend a Complex Action to regain their wits.");
           if (traumas >= 4) {
-            msg += s"<p>Acquires <em>${newTraumas}</em> new minor derangements or upgrades an equivalent number of existing derangements, potentially to a disorder.</p>";
+            msg ::= p("Acquires ", em(newTraumas), " new minor derangements or upgrades an equivalent number of existing derangements, potentially to a disorder.");
           } else {
-            msg += s"<p>Acquires <em>${newTraumas}</em> new minor derangements or upgrades an equivalent number of existing derangements.</p>";
+            msg ::= p("Acquires ", em(newTraumas), " new minor derangements or upgrades an equivalent number of existing derangements.");
           }
         }
       }
     } catch {
-      case e: java.util.NoSuchElementException => { error(e); msg += "An error occurred accessing a field." }
+      case e: java.util.NoSuchElementException => {
+        error(e);
+        msg ::= p(cls := "sheet-inline-error", "An error occurred accessing a field!")
+      }
     }
     msg
   }
 
-  def applyDamage(config: CharToolsConf, ctx: ChatContext, char: Roll20Char): String = {
-    var msg = "";
+  def applyDamage(config: CharToolsConf, ctx: ChatContext, char: Roll20Char): Seq[Tag] = {
+    var msg: List[Tag] = Nil;
     try {
       val damageField = char.attribute(epmodel.damage);
       val incomingDamage = config.damage();
@@ -150,14 +155,14 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
       };
       val damageTotal = curDamage + damageApplied;
       damageField <<= damageTotal;
-      msg += s"<p>Took <em>$damageApplied</em>DV.<p/>";
+      msg ::= p("Took ", em(damageApplied), "DV.");
       val (wounds, newWounds) = if (damageApplied >= wt) {
         val newWounds = damageApplied / wt;
         val woundsField = char.attribute(epmodel.wounds);
         val curWounds = woundsField();
         val newCurWounds = curWounds + newWounds;
         woundsField.setWithWorker(newCurWounds);
-        msg += s"<p>Took <em>$newWounds</em> wounds.</p>";
+        msg ::= p("Took ", em(newWounds), " wounds.");
         (newCurWounds, newWounds)
       } else (0, 0);
       val isBiomorph = MorphType.withName(char.attribute(epmodel.morphType)()) match {
@@ -166,27 +171,30 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
       };
       if (damageTotal >= dr) {
         if (isBiomorph) {
-          msg += s"<p>Morph is now beyond healing.</p>";
+          msg ::= p("Morph is now beyond healing.");
         } else {
-          msg += s"<p>Morph is now beyond repair.</p>";
+          msg ::= p("Morph is now beyond repair.");
         }
       } else if (damageTotal >= dur && wounds > 0 && isBiomorph) {
-        msg += s"<p>Is now unconscious and bleeding out (1DV per Action Turn).</p>";
+        msg ::= p("Is now unconscious and bleeding out (1DV per Action Turn).");
       } else if (damageTotal >= dur) {
         if (isBiomorph) {
-          msg += s"<p>Is now unconscious.</p>";
+          msg ::= p("Is now unconscious.");
         } else {
-          msg += s"<p>Is now incapacitated.</p>";
+          msg ::= p("Is now incapacitated.");
         }
       } else {
         if (newWounds == 1) {
-          msg += s"<p>Must ${char.rollButton("Resist Knockdown", "somx3-roll")} or fall prone.</p>";
+          msg ::= p("Must ", char.rollButton("Resist Knockdown", "somx3-roll"), " or fall prone.");
         } else if (newWounds >= 2) {
-          msg += s"<p>Must ${char.rollButton("Resist Unconsciousness", "somx3-roll")} or pass out until awoken or healed.</p>";
+          msg ::= p("Must ", char.rollButton("Resist Unconsciousness", "somx3-roll"), " or pass out until awoken or healed.");
         }
       }
     } catch {
-      case e: java.util.NoSuchElementException => { error(e); msg += "An error occurred accessing a field." }
+      case e: java.util.NoSuchElementException => {
+        error(e);
+        msg ::= p(cls := "sheet-inline-error", "An error occurred accessing a field!")
+      }
     }
     msg
   }

@@ -53,7 +53,8 @@ class CharCleanerConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
 object CharCleanerCommand extends EPCommand[CharCleanerConf] {
   import APIImplicits._;
-  import TurnOrder.{ Entry, CustomEntry, TokenEntry };
+  import scalatags.Text.all._;
+
   override def command = "epclean";
   override def options = (args) => new CharCleanerConf(args);
   override def apply(config: CharCleanerConf, ctx: ChatContext): Unit = {
@@ -65,27 +66,23 @@ object CharCleanerCommand extends EPCommand[CharCleanerConf] {
         case t: Token => Some(t)
         case c        => debug(s"Ignoring non-Token $c"); None
       };
-      val updatedCharacters: List[(Character, List[String])] = tokens.flatMap { token =>
+      val updatedCharacters: List[(Character, Future[List[String]])] = tokens.flatMap { token =>
         debug(s"Working on token: ${token.name} (${token.id})");
         token.represents match {
           case Some(char) => {
             if (config.egocast()) {
-              cleanForUpload(char) match {
-                case Left(l)  => Some(char -> l)
-                case Right(l) => Some(char -> l)
-              }
+              Some(char -> cleanForUpload(char))
             } else if (config.backup()) {
-              cleanForUpload(char) match {
-                case Left(l) => {
-                  val cname = char.name;
-                  val cNameNoPre = if (cname.startsWith("(COPY) ")) {
-                    cname.substring(7)
-                  } else cname;
-                  char.name = s"[${config.prefix()}] $cNameNoPre";
-                  Some(char -> l)
-                }
-                case Right(l) => Some(char -> l)
-              }
+              val f = cleanForUpload(char);
+              val renamedF = f.map { msgs =>
+                val cname = char.name;
+                val cNameNoPre = if (cname.startsWith("(COPY) ")) {
+                  cname.substring(7)
+                } else cname;
+                char.name = s"[${config.prefix()}] $cNameNoPre";
+                s"Renamed sheet to ${char.name}" :: msgs
+              };
+              Some(char -> renamedF)
             } else {
               None
             }
@@ -93,46 +90,62 @@ object CharCleanerCommand extends EPCommand[CharCleanerConf] {
           case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
       };
-      val updates = updatedCharacters.map(_ match {
-        case (char, ups) => char.name + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
-      debug(s"Updates: $updates");
-      ctx.reply(s"Updated Characters $updates");
+      val updates = ul(for ((char, _) <- updatedCharacters) yield li(
+        b(char.name)));
+      debug(s"Updates: ${updates.render}");
+      val msg = div(
+        h4("Updating Characters"),
+        p(updates));
+      val cleanType = if (config.egocast()) { "Egocast" } else if (config.backup()) { "Backup" } else { "???" };
+      ctx.replyHeader(s"Character Cleaner - ${cleanType}", msg);
+      val partials: List[Future[Unit]] = for ((char, upsF) <- updatedCharacters) yield upsF.map { msgs =>
+        val resp = div(
+          h4(s"Finished ${char.name}"),
+          p(ul(for (up <- msgs.reverse) yield li(up))));
+        ctx.replyBody(resp);
+      };
+      val partialF = Future.sequence(partials);
+      partialF.onComplete {
+        case Success(_) => ctx.replyFooter(h4("All done!"))
+        case Failure(e) => error(e); ctx.replyError("An error occurred during execution of a task. Please consult the log for details.")
+      }
     }
   }
 
-  private def cleanForUpload(char: Character): Either[List[String], List[String]] = {
+  private def cleanForUpload(char: Character): Future[List[String]] = {
     val curIdS = char.attribute(epmodel.currentMorph)();
-    var messages = List.empty[String];
-    if (curIdS != epmodel.currentMorph.defaultValue.get) {
+    val morphF: Future[List[String]] = if (curIdS != epmodel.currentMorph.defaultValue.get) {
       val curId = extractSimpleRowId(curIdS);
       char.repeatingAt(curId)(MorphSection.active) match {
         case Some(curActive) => {
-          messages ::= s"Deactivated active morph."
-          curActive.setWithWorker(false);
+          curActive.setWithWorker(false).map(_ => List("Deactivated active morph."))
         }
-        case None => messages ::= "Current morph was not marked active";
+        case None => Future.successful(List("Current morph was not marked active."))
       }
-    }
-    // delete armour
-    char.repeatingSection(ArmourItemSection.name).map(_.remove());
-    // what the sheetworker would do
-    char.attribute(epmodel.armourEnergyBonus) <<= 0;
-    char.attribute(epmodel.armourKineticBonus) <<= 0;
-    char.attribute(epmodel.layeringPenalty) <<= 0;
-    char.attribute(epmodel.armourEnergyTotal) <<= 0;
-    char.attribute(epmodel.armourKineticTotal) <<= 0;
-    // delete other stuff
-    char.repeatingSection(GearSection.name).map(_.remove());
-    char.repeatingSection(MeleeWeaponSection.name).map(_.remove());
-    char.repeatingSection(RangedWeaponSection.name).map(_.remove());
-    // leave software!
-    // remove damage and wounds
-    char.attribute(epmodel.damage) <<= 0;
-    char.attribute(epmodel.wounds).setWithWorker(0); // to update applied wounds and stuff
+    } else {
+      Future.successful(List("No morph was active."))
+    };
+    morphF.flatMap { morphMessages =>
+      // delete armour
+      char.repeatingSection(ArmourItemSection.name).map(_.remove());
+      // what the sheetworker would do
+      char.attribute(epmodel.armourEnergyBonus) <<= 0;
+      char.attribute(epmodel.armourKineticBonus) <<= 0;
+      char.attribute(epmodel.layeringPenalty) <<= 0;
+      char.attribute(epmodel.armourEnergyTotal) <<= 0;
+      char.attribute(epmodel.armourKineticTotal) <<= 0;
+      // delete other stuff
+      char.repeatingSection(GearSection.name).map(_.remove());
+      char.repeatingSection(MeleeWeaponSection.name).map(_.remove());
+      char.repeatingSection(RangedWeaponSection.name).map(_.remove());
+      // leave software!
+      // remove damage and wounds
+      char.attribute(epmodel.damage) <<= 0;
+      val f = char.attribute(epmodel.wounds).setWithWorker(0); // to update applied wounds and stuff
 
-    messages ::= "Ok";
-    Left(messages.reverse)
+      val messages = "Ok" :: morphMessages;
+      f.map(_ => messages)
+    }
   }
 
 }
