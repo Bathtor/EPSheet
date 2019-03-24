@@ -29,6 +29,19 @@ import com.lkroll.ep.model.{ AptitudeValues => ModelAptitudes, SkillMod => Model
 import com.lkroll.ep.compendium.{ AptitudeValues => CompendiumAptitudes, MorphType => CompendiumMorphType, Effect }
 
 package object compendium {
+  
+  /*
+   * Re-exports
+   */
+  type Result[T] = com.lkroll.common.result.Result[T, String];
+  val Result = com.lkroll.common.result.Result;
+  val Ok = com.lkroll.common.result.Ok;
+  val Err = com.lkroll.common.result.Err;
+  
+  /*
+   * Implicits
+   */
+  
   implicit class OptionOps[A](opt: Option[A]) {
 
     def toTry(msg: String): Try[A] = {

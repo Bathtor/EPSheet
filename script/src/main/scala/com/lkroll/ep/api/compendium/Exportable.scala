@@ -32,20 +32,20 @@ import com.lkroll.ep.model.{ EPCharModel => epmodel }
 
 trait Exportable {
   def updateLabel: String;
-  def exportFrom(char: AttributeCache): Either[Data, String];
+  def exportFrom(char: AttributeCache): Result[Data];
 }
 
 object Export {
   import APIImplicits._;
 
-  def export(char: AttributeCache, exp: Exportable): Either[String, String] = {
+  def export(char: AttributeCache, exp: Exportable): Result[String] = {
     exp.exportFrom(char) match {
-      case Left(d) => {
+      case Ok(d) => {
         val json = write(d.described);
         char.attribute(epmodel.apiText) <<= json;
-        Left("Ok")
+        Ok("Ok")
       }
-      case Right(e) => Right(e)
+      case Err(e) => Err(e)
     }
   }
 }

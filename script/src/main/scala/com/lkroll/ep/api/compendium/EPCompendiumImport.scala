@@ -315,21 +315,21 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
                     Importable.fromData(d) match {
                       case Some(i) => {
                         i.importInto(char, idPool, importCache) match {
-                          case Left(msg) => {
+                          case Ok(msg) => {
                             val f = i.triggerWorkers(char);
                             f.map { _ =>
                               apiText <<= ""; // clear field
                               var childUpdates = List(s"Imported ${i.updateLabel} ($msg)");
                               (i.children ++ toImport).foreach { i =>
                                 i.importInto(char, idPool, importCache) match {
-                                  case Left(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
-                                  case Right(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                                  case Ok(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
+                                  case Err(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
                                 }
                               }
                               childUpdates
                             }
                           }
-                          case Right(msg) => {
+                          case Err(msg) => {
                             Future.successful(List(s"Failed to import ${i.updateLabel} (correctly): $msg"))
                           }
                         };
@@ -343,8 +343,8 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
                 var childUpdates = List.empty[String];
                 toImport.foreach { i =>
                   i.importInto(char, idPool, importCache) match {
-                    case Left(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
-                    case Right(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                    case Ok(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
+                    case Err(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
                   }
                 }
                 Future.successful(childUpdates.reverse)

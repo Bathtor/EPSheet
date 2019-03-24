@@ -77,7 +77,7 @@ object SkillConversions {
 
 case class SkillImport(s: CharacterSkill) extends Importable {
   def updateLabel: String = s.name;
-  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
 
     s.cls match {
@@ -109,7 +109,7 @@ case class SkillImport(s: CharacterSkill) extends Importable {
           char.createRepeating(ActiveSkillSection.total, rowId) <<= s.ranks + aptValue;
         }
 
-        Left("Ok")
+        Ok("Ok")
       }
       case SkillClass.Knowledge => {
         char.createRepeating(KnowledgeSkillSection.rowId, rowId) <<= rowId.value;
@@ -131,7 +131,7 @@ case class SkillImport(s: CharacterSkill) extends Importable {
           char.createRepeating(KnowledgeSkillSection.total, rowId) <<= s.ranks + aptValue;
         }
 
-        Left("Ok")
+        Ok("Ok")
       }
     }
   }
@@ -139,7 +139,7 @@ case class SkillImport(s: CharacterSkill) extends Importable {
 
 case class SkillDefImport(s: SkillDef) extends Importable {
   def updateLabel: String = s.name;
-  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
 
     s.cls match {
@@ -171,7 +171,7 @@ case class SkillDefImport(s: SkillDef) extends Importable {
           char.createRepeating(ActiveSkillSection.total, rowId) <<= aptValue;
         }
 
-        Left("Ok")
+        Ok("Ok")
       }
       case SkillClass.Knowledge => {
         char.createRepeating(KnowledgeSkillSection.rowId, rowId) <<= rowId.value;
@@ -193,7 +193,7 @@ case class SkillDefImport(s: SkillDef) extends Importable {
           char.createRepeating(KnowledgeSkillSection.total, rowId) <<= aptValue;
         }
 
-        Left("Ok")
+        Ok("Ok")
       }
     }
   }

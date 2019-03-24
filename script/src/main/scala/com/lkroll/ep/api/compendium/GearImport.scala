@@ -33,23 +33,23 @@ import APIImplicits._;
 
 case class GearImport(g: Gear) extends Importable {
   override def updateLabel: String = g.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(GearSection.itemName, rowId) <<= g.name;
     char.createRepeating(GearSection.amount, rowId) <<= 1;
     char.createRepeating(GearSection.description, rowId) <<= g.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }
 
 case class GearEntryImport(e: GearEntry) extends Importable {
   override def updateLabel: String = e.item.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val g = e.item;
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(GearSection.itemName, rowId) <<= g.name;
     char.createRepeating(GearSection.amount, rowId) <<= e.count;
     char.createRepeating(GearSection.description, rowId) <<= g.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }

@@ -399,3 +399,182 @@ You can also specify character ids instead of names as trailing arguments, but i
 
 #### Recommended Macros
 **CharSkill**: `!epgmtools --best-mod --skill-name ?{Skill Name|Perception|Kinesics}` and append one instance of `--char-name <CharName>` for each player character in your group with name `<CharName>`
+
+### Group Rolls
+**Command**: `!epgroup-roll`
+
+The Group Rolls scripts enables rolling basic EP rolls like *Fray/2* or *Initiative*, as well as arbitrary *Active Skills*, for a group of selected token. For all rolls, a modifier to the roll must also be specified.
+
+#### Usage
+
+##### Fray/2
+1. Select all relevant tokens.
+2. Run `!epgmtools --fray-halved --mod <Mod>`, with `<Mod>` the GM's modifier on the roll.
+
+##### Skill
+1. Select all relevant tokens.
+2. Run `!epgmtools --skill <SkillName> --mod <Mod>`, with `<SkillName>` the name of the skill to roll, `<Mod>` the GM's modifier on the roll.
+
+##### Initiative
+1. Select all relevant tokens.
+2. Run `!epgmtools --ini`.
+
+Rolled results go to the tracker automatically.
+
+
+#### Recommended Macros
+**GroupIni**: `!epgroup-roll --ini`
+**GroupFray/2**: `!epgroup-roll --fray-halved --mod ?{Mod|0}`
+**GroupSkill**: `!epgroup-roll --skill ?{Skill|Fray} --mod ?{Mod|0}`
+
+*In [Roll20 ES](https://github.com/SSStormy/roll20-enhancement-suite) Format*:
+```json
+{
+    "schema_version": 2,
+    "macros": [
+        {
+            "attributes": {
+                "action": "!epgroup-roll --ini",
+                "istokenaction": false,
+                "name": "GroupIni",
+                "visibleto": ""
+            },
+            "macrobar": {
+                "color": null,
+                "name": null
+            }
+        },
+        {
+            "attributes": {
+                "action": "!epgroup-roll --fray-halved --mod ?{Mod|0}",
+                "istokenaction": false,
+                "name": "GroupFray/2",
+                "visibleto": ""
+            },
+            "macrobar": {
+                "color": null,
+                "name": null
+            }
+        },
+        {
+            "attributes": {
+                "action": "!epgroup-roll --skill ?{Skill|Fray} --mod ?{Mod|0}",
+                "istokenaction": false,
+                "name": "GroupSkill",
+                "visibleto": ""
+            },
+            "macrobar": {
+                "color": null,
+                "name": null
+            }
+        }
+    ]
+}
+```
+
+### Special Rolls
+**Command**: `!epspecialroll`
+
+The Special Rolls script allows EP *Success* or *Damage* rolls, without involving a character sheet. While this is mostly meant for being used via buttons generated from *EPCompendium* output, one could also create macros for custom weapons or custom rolls, for example.
+
+#### Usage
+
+##### Success
+The Success template has the form
+```text
+<Character>
+-----------
+<Label>
+    <SubLabel>
+1d100 vs <Target>
+[Result]
+```
+
+To generate a Success template from the Special Rolls script, run `!epspecialrolls --success --target <Target>`, picking `<Target>` to be the target number including any modifiers.
+
+While `<Character>` is always "API" when generated from this script, you may specify both `--label <Label>` and `--sublabel <SubLabel>` arbitrarily when invoking it. If no values are given, the subtitle will read "Success Roll".
+
+
+##### Damage
+The Damage template has the form
+```text
+<Character>
+-----------
+<Label>
+    <SubLabel>
+Inflicts: [DmgFormula] DV <DamageType>
+<AP> AP or ignore if critical success
+```
+where `[DamageFormula]` is `<DamageDice>d10/<DamageDiv> + DamageConst`.
+
+To generate a Damage template from the Special Rolls script, run `!epspecialrolls --damage --damage-dice <DamageDice> --damage-div <DamageDiv> --damage-const <DamageConst> --damage-type <DamageType> --ap <AP>`. The allowed values for `<DamageType>` are "Kinetic" and "Energy", and it will default to "Unspecified". `<AP>` simply takes the *Armour Penetration* value as expected.
+
+Similar to above, while `<Character>` is always "API" when generated from this script, you may specify `--label <Label>` arbitrarily when invoking it. If no values are given, the subtitle will read "Damage Roll". Values for `--sublabel` are ignored in the Damage variant.
+
+#### Recommended Macros
+None, just use the *EPCompendium* buttons.
+
+
+### Token Setup
+**Command**: `!eptoken`
+
+The Token Setup script manages EP-related token abilities. It can generate these abilities for *Initiative*, *Fray/2*, and any skill.
+It can also be used to clear the existing token abilities.
+
+#### Usage
+
+#### Setup
+1. Select all relevant tokens.
+2. Run `!eptoken --ini`, to add an *Initiative* token ability.
+Or run `!eptoken --fray`, to add an *Fray* token ability.
+Or run `!eptoken --fray-halved`, to add an *Fray/2* token ability.
+Or run `!eptoken --skill <SkillName>`, to add an `<SkillName>` token ability.
+Or run a combination of the above, for example `!eptoken --ini --fray`.
+
+Normally, the script does not override existing token abilities. This behaviour can be changed by specifiying `--force`.
+
+#### Cleanup
+1. Select all relevant tokens.
+2. Run `!eptoken --clear`, to delete all token abilities.
+
+#### Recommended Macros
+**TokenActions**: `!eptoken --fray --fray-halved --ini`
+**TokenSkill**: `!eptoken --skill ?{Skill|Perception}`
+
+If you are using *The Aaron*'s [TokenMod](https://github.com/shdwjk/Roll20API/blob/master/TokenMod/TokenMod.js) script (as you should ;), I also recommend
+**TokenSetup**: `!token-mod --on showname --set bar1_link|death_rating bar2_link|wounds bar3_link|damage`
+
+*Note, that in EP you should always link tokens to sheets, as otherwise you can't keep track of wounds and traumas, which affect subsequent rolls.*
+
+*In [Roll20 ES](https://github.com/SSStormy/roll20-enhancement-suite) Format*:
+```json
+{
+    "schema_version": 2,
+    "macros": [
+        {
+            "attributes": {
+                "action": "!eptoken --fray --fray-halved --ini",
+                "istokenaction": false,
+                "name": "TokenActions",
+                "visibleto": ""
+            }
+        },
+        {
+            "attributes": {
+                "action": "!token-mod --on showname --set bar1_link|death_rating bar2_link|wounds bar3_link|damage",
+                "istokenaction": false,
+                "name": "TokenSetup",
+                "visibleto": ""
+            }
+        },
+        {
+            "attributes": {
+                "action": "!eptoken --skill ?{Skill|Perception}",
+                "istokenaction": false,
+                "name": "TokenSkill",
+                "visibleto": "all"
+            }
+        }
+    ]
+}
+```

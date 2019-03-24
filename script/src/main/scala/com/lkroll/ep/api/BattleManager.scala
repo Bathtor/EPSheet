@@ -53,7 +53,9 @@ object BattleManagerScript extends EPScript {
 }
 
 class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
-
+  version(s"${EPBattlemanCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Manage EP battles efficiently.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val start = opt[Boolean]("start", descr = "Start a battle with all the characters currently in the turn order.");
   val next = opt[Boolean]("next", descr = "Move to the next character, accounting for phases and turns.");
   val end = opt[Boolean]("end", descr = "Ends a battle by clearing the turn order and internal state.");
@@ -347,8 +349,8 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           case Some(char) => {
             debug(s"Token represents $char");
             EPScripts.checkVersion(char) match {
-              case Right(()) => Some((token, char))
-              case Left(msg) => ctx.replyWarn(msg + " Skipping token."); None
+              case Ok(_) => Some((token, char))
+              case Err(msg) => ctx.replyWarn(msg + " Skipping token."); None
             }
           }
           case None => ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!"); None

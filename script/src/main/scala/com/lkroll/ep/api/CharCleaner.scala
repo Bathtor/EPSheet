@@ -41,7 +41,9 @@ object CharCleanerScript extends EPScript {
 }
 
 class CharCleanerConf(args: Seq[String]) extends ScallopAPIConf(args) {
-
+  version(s"${CharCleanerCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Remove invalid EP sheet fields after Egocast/Backup.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val egocast = opt[Boolean]("egocast", descr = "Remove everything not taken along on an Ego Cast from the sheet.");
   val backup = opt[Boolean]("backup", descr = "Remove everything not taken along during an Ego Backup from the sheet.");
   val prefix = opt[String]("prefix", descr = "&lt;param&gt; will be prefixed to the sheet name (default: BACKUP)", default = Some("BACKUP"))(ScallopUtils.singleArgSpacedConverter(identity));

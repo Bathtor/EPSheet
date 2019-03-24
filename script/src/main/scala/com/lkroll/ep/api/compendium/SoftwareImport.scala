@@ -33,12 +33,12 @@ import APIImplicits._;
 
 case class SoftwareImport(s: Software) extends Importable {
   override def updateLabel: String = s"${s.quality.label} ${s.name}";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(SoftwareSection.itemName, rowId) <<= s.name;
     char.createRepeating(SoftwareSection.quality, rowId) <<= s.quality.label;
     char.createRepeating(SoftwareSection.qualityMod, rowId) <<= s.quality.modifier;
     char.createRepeating(SoftwareSection.description, rowId) <<= s.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }

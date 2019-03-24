@@ -37,7 +37,7 @@ class CharacterImport(val c: EPCharacter) extends Importable {
   private var morphId: Option[String] = None;
 
   override def updateLabel: String = s"Character <c.name>";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     char.name = c.name;
     char.attribute(epmodel.genderId) <<= c.gender.entryName;
     char.attribute(epmodel.actualAge) <<= c.age;
@@ -60,19 +60,19 @@ class CharacterImport(val c: EPCharacter) extends Importable {
     char.attribute(epmodel.wilBase) <<= c.aptitudes.base.wil.getOrElse(0);
 
     //  Skills
-    val skillRes = c.skills.foldLeft(Left("Ok").asInstanceOf[Either[String, String]]) { (acc, skill) =>
+    val skillRes = c.skills.foldLeft(Ok("Ok").asInstanceOf[Result[String]]) { (acc, skill) =>
       val res = SkillImport(skill).importInto(char, idPool, cache);
       res match {
-        case Left(_) => acc // ignore lefts
-        case Right(err) => acc match {
-          case Left(_)       => res // replace lefts with rights
-          case Right(errAcc) => Right(s"${errAcc}, ${err}")
+        case Ok(_) => acc // ignore ok
+        case Err(err) => acc match {
+          case Ok(_)       => res // replace oks with errors
+          case Err(errAcc) => Err(s"${errAcc}, ${err}")
         }
       }
     };
     var res = skillRes match {
-      case Left(_)    => Left("Ok")
-      case Right(err) => Right(s"Some skills failed to import correctly:\n$err")
+      case Ok(_)    => Ok("Ok")
+      case Err(err) => Err(s"Some skills failed to import correctly:\n$err")
     };
     cache.reset(); // we changed all the skills here
 
@@ -114,8 +114,8 @@ class CharacterImport(val c: EPCharacter) extends Importable {
           }
           case n => {
             res = res match {
-              case Left(_)    => Right(s"Unkown rep network $n!")
-              case Right(err) => Right(s"${err}\nUnkown rep network ${n}!")
+              case Ok(_)    => Err(s"Unkown rep network $n!")
+              case Err(err) => Err(s"${err}\nUnkown rep network ${n}!")
             }
           }
         }
@@ -123,17 +123,17 @@ class CharacterImport(val c: EPCharacter) extends Importable {
     val morphRowId = idPool.generateRowId();
     val morphRes = MorphInstanceImport(c.activeMorph).importInto(char, morphRowId, cache);
     res = (res, morphRes) match {
-      case (Left(_), Left(_)) => {
+      case (Ok(_), Ok(_)) => {
         this.morphId = Some(morphRowId);
-        Left("Ok")
+        Ok("Ok")
       }
-      case (Left(_), x) => x
-      case (x, Left(_)) => {
+      case (Ok(_), x) => x
+      case (x, Ok(_)) => {
         this.morphId = Some(morphRowId);
         x
       }
-      case (Right(err), Right(errMorph)) => {
-        Right(s"${err}\nError during morph import: ${errMorph}")
+      case (Err(err), Err(errMorph)) => {
+        Err(s"${err}\nError during morph import: ${errMorph}")
       }
     };
     res

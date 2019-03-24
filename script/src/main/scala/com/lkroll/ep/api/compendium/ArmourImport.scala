@@ -33,26 +33,26 @@ import APIImplicits._;
 
 case class ArmourImport(a: Armour) extends Importable {
   override def updateLabel: String = a.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowIdArmour = Some(idPool.generateRowId());
     char.createRepeating(ArmourItemSection.itemName, rowIdArmour) <<= a.name;
     char.createRepeating(ArmourItemSection.accessory, rowIdArmour) <<= a.accessory;
     char.createRepeating(ArmourItemSection.energyBonus, rowIdArmour) <<= a.armour._1;
     char.createRepeating(ArmourItemSection.kineticBonus, rowIdArmour) <<= a.armour._2;
     char.createRepeating(ArmourItemSection.description, rowIdArmour) <<= a.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }
 
 case class ModdedArmourImport(a: ModdedArmour) extends Importable {
   override def updateLabel: String = a.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowIdArmour = Some(idPool.generateRowId());
     char.createRepeating(ArmourItemSection.itemName, rowIdArmour) <<= a.name;
     char.createRepeating(ArmourItemSection.accessory, rowIdArmour) <<= a.accessory;
     char.createRepeating(ArmourItemSection.energyBonus, rowIdArmour) <<= a.armour._1;
     char.createRepeating(ArmourItemSection.kineticBonus, rowIdArmour) <<= a.armour._2;
     char.createRepeating(ArmourItemSection.description, rowIdArmour) <<= a.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }

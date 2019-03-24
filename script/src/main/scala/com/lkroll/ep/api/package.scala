@@ -31,6 +31,19 @@ import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.templates._
 
 package object api {
+
+  /*
+   * Re-exports
+   */
+  type Result[T] = com.lkroll.common.result.Result[T, String];
+  val Result = com.lkroll.common.result.Result;
+  val Ok = com.lkroll.common.result.Ok;
+  val Err = com.lkroll.common.result.Err;
+
+  /*
+   * Implicits
+   */
+
   implicit class EnhancedContext(ctx: ChatContext) {
     import com.lkroll.roll20.core._
     def withChars(f: List[Character] => Unit): Unit = {
@@ -119,7 +132,7 @@ package object api {
     val roll = templateV("test-roll" -> testRoll);
     val target = templateV("test-target" -> testTarget);
     val mof = templateV("test-mof" -> testMoF);
-    EPTemplates.damage.fillWith(char, field, subField, roll, target, mof)
+    EPTemplates.default.fillWith(char, field, subField, roll, target, mof)
   }
 
   def asDamageTemplate(character: String, attributeField: String,

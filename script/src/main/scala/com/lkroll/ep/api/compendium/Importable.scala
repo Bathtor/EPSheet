@@ -33,7 +33,7 @@ import com.lkroll.ep.model.ActiveSkillSection
 
 trait Importable {
   def updateLabel: String;
-  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String];
+  def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String];
   def children: List[Importable] = Nil;
   def triggerWorkers(char: Character): Future[Unit] = Future.successful(());
 }

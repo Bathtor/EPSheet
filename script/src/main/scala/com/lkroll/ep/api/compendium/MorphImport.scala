@@ -35,7 +35,7 @@ import scala.util.{ Try, Success, Failure }
 
 case class MorphModelImport(morph: MorphModel) extends Importable {
   override def updateLabel: String = morph.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(MorphSection.id, rowId) <<= rowId.get;
     char.createRepeating(MorphSection.morphLabel, rowId) <<= s"Imported ${morph.name}";
@@ -84,8 +84,8 @@ case class MorphModelImport(morph: MorphModel) extends Importable {
     val notesS = if (notes.isEmpty) "" else notes.mkString(" [", ", ", "]");
 
     morph.playerDecisions match {
-      case Some(s) => Left(s"TODO: $s $notesS")
-      case None    => Left("Ok" ++ notesS)
+      case Some(s) => Ok(s"TODO: $s $notesS")
+      case None    => Ok("Ok" ++ notesS)
     }
   }
   override def children: List[Importable] = morph.attacks.map(a => WeaponImport(a)).toList;
@@ -93,10 +93,10 @@ case class MorphModelImport(morph: MorphModel) extends Importable {
 
 case class MorphInstanceImport(morph: MorphInstance) extends Importable {
   override def updateLabel: String = morph.label;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     importInto(char, idPool.generateRowId(), cache)
   }
-  def importInto(char: Character, id: String, cache: ImportCache): Either[String, String] = {
+  def importInto(char: Character, id: String, cache: ImportCache): Result[String] = {
     val rowId = Some(id);
     char.createRepeating(MorphSection.id, rowId) <<= rowId.get;
     char.createRepeating(MorphSection.morphLabel, rowId) <<= morph.label;
@@ -154,17 +154,17 @@ case class MorphInstanceImport(morph: MorphInstance) extends Importable {
     char.createRepeating(MorphSection.ignoredWounds, rowId) <<= ignoredWounds;
 
     val notesS = if (notes.isEmpty) "" else notes.mkString(" [", ", ", "]");
-    Left("Ok" ++ notesS)
+    Ok("Ok" ++ notesS)
   }
   override def children: List[Importable] = morph.attacks.map(a => WeaponImport(a)).toList;
 }
 
 object MorphInstanceExport extends Exportable {
   override def updateLabel: String = "Morph Instance";
-  override def exportFrom(char: AttributeCache): Either[Data, String] = {
+  override def exportFrom(char: AttributeCache): Result[Data] = {
     val rowIdS = char.attribute(epmodel.currentMorph)();
     if (rowIdS.equalsIgnoreCase("none")) {
-      Right("No morph active.")
+      Err("No morph active.")
     } else {
       val rowId = APIUtils.extractSimpleRowId(rowIdS);
       APILogger.debug(s"Exporting morph at ${rowId}");
@@ -232,10 +232,7 @@ object MorphInstanceExport extends Exportable {
           Seq.empty, mDur, mArmour)
       };
 
-      r match {
-        case Success(d) => Left(d)
-        case Failure(e) => Right(e.getMessage)
-      }
+      Result.fromTry(r).mapErr(e => e.getMessage)
     }
   }
 }

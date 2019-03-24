@@ -475,12 +475,15 @@ object EPPalette extends XMLColorPalette(EPColourData.data) {
   val templateHeaderError = alias("template-header-error", secondaryShade0);
   val textHighlight = alias("text-highlight", primaryShade2);
   val rollHighlight = alias("roll-highlight", complementShade2);
+  val rollHighlightOver = alias("roll-highlight-over", complementShade1);
   val rollHighlightShadow = alias("roll-highlight-shadow", complementShade3);
   val remplateSuccess = alias("template-success", tertiaryShade0);
   val remplateFailure = alias("template-failure", secondaryShade0);
   val classTag = alias("class-tag-colour", primaryShade3);
   val catTag = alias("cat-tag-colour", secondaryShade3);
   val overlayText = alias("overlay-text", lightText);
+  val hyperefHighlight = alias("hyperref-highlight", primaryShade2);
+  val hyperefHighlightOver = alias("hyperref-highlight-over", primaryShade1);
 }
 
 object EPColourData {

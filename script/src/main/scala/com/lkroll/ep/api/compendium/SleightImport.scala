@@ -42,7 +42,7 @@ object SleightConversions {
 
 case class SleightImport(s: PsiSleight) extends Importable {
   override def updateLabel: String = s.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
 
     s.sleightType match {
@@ -56,7 +56,7 @@ case class SleightImport(s: PsiSleight) extends Importable {
         char.createRepeating(PsiChiSection.duration, rowId) <<= s.psiType.duration.label;
         char.createRepeating(PsiChiSection.strainMod, rowId) <<= s.psiType.strainMod.getOrElse(0);
         char.createRepeating(PsiChiSection.description, rowId) <<= s.descr;
-        Left("Ok")
+        Ok("Ok")
       }
       case SleightType.Epsilon | SleightType.Gamma => {
         char.createRepeating(PsiGammaSection.sleight, rowId) <<= s.name;
@@ -75,14 +75,14 @@ case class SleightImport(s: PsiSleight) extends Importable {
                 char.createRepeating(PsiGammaSection.skillSearch, rowId) <<= skill;
                 char.createRepeating(PsiGammaSection.skillName, rowId) <<= skill;
                 char.createRepeating(PsiGammaSection.skillTotal, rowId) <<= PsiGammaSection.skillTotal.valueAt(skillId);
-                Left("Ok");
+                Ok("Ok");
               }
               case None => {
-                Left(s"Could not find skill id for ${skill}.")
+                Ok(s"Could not find skill id for ${skill}.")
               }
             }
           }
-          case None => Left("Ok") // leave skill fields at default
+          case None => Ok("Ok") // leave skill fields at default
         }
       }
     }

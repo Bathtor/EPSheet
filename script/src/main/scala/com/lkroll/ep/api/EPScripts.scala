@@ -52,14 +52,14 @@ object EPScripts extends APIScriptRoot {
     info(s"EPScripts v${version} loaded!");
   }
 
-  def checkVersion(char: Character): Either[String, Unit] = {
+  def checkVersion(char: Character): Result[Unit] = {
     char.attributeValue(epmodel.versionField) match {
       case Some(version) => if (version == epmodel.version()) {
-        Right(())
+        Ok(())
       } else {
-        Left(s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!")
+        Err(s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!")
       }
-      case None => Left(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
+      case None => Err(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
     }
   }
 }

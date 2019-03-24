@@ -40,7 +40,7 @@ case class EgoTraitImport(t: EPTrait) extends Importable {
   };
 
   override def updateLabel: String = t.name;
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     t.applicability match {
       case TraitApplicability.Ego | TraitApplicability.Both => {
         val rowId = Some(idPool.generateRowId());
@@ -48,9 +48,9 @@ case class EgoTraitImport(t: EPTrait) extends Importable {
         char.createRepeating(CharacterTraitSection.traitType, rowId) <<= ctt2mtt(t.traitType).toString();
         char.createRepeating(CharacterTraitSection.traitTypeShort, rowId) <<= ModelTraitType.dynamicLabelShort(t.traitType);
         char.createRepeating(CharacterTraitSection.description, rowId) <<= t.descr;
-        Left("Ok")
+        Ok("Ok")
       }
-      case TraitApplicability.Morph => Right("Can't import morph traits!")
+      case TraitApplicability.Morph => Err("Can't import morph traits!")
     }
   }
 }

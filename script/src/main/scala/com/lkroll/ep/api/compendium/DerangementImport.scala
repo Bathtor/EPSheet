@@ -40,12 +40,12 @@ case class DerangementImport(d: Derangement, duration: Float) extends Importable
   };
 
   override def updateLabel: String = s"${d.name} derangement";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(DerangementSection.conditionName, rowId) <<= d.name;
     char.createRepeating(DerangementSection.severity, rowId) <<= s2mds(d.severity).toString();
     char.createRepeating(DerangementSection.description, rowId) <<= d.descr;
     char.createRepeating(DerangementSection.duration, rowId) <<= duration;
-    Left("Ok")
+    Ok("Ok")
   }
 }

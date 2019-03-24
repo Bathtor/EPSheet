@@ -14,7 +14,9 @@ object GMTools extends EPScript {
 }
 
 class GMToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
-
+  version(s"${GMToolsCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Get an overview of the party's skills quickly.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val bestMod = opt[Boolean]("best-mod", descr = "List selected characters sorted by best modifier.");
 
   val skillName = opt[String](

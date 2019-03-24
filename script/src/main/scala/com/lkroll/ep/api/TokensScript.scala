@@ -33,6 +33,7 @@ import scalajs.js.JSON
 //import fastparse.all._
 import util.{ Try, Success, Failure }
 import com.lkroll.ep.model.ActiveSkillSection
+import scalatags.Text.all._;
 
 object TokensScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPTokensCommand);
@@ -66,6 +67,10 @@ object SupportedAbilities {
 
 class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
 
+  version(s"${EPTokensCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Set up token abilities.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
+
   val clear = opt[Boolean]("clear", descr = "Remove ALL character abilities.");
   val force = opt[Boolean]("force", descr = "Override existing abilities.");
   val ini = opt[Boolean]("ini", descr = "Add Initiative as a token action");
@@ -85,27 +90,27 @@ object EPTokensCommand extends EPCommand[EPTokensConf] {
   override def options = (args) => new EPTokensConf(args);
   override def apply(config: EPTokensConf, ctx: ChatContext): Unit = {
     val updatedCharacters = ctx.forChar { char =>
-      var updates = List.empty[String];
+      var updates = List.empty[Tag];
       debug(s"Token represents $char");
       if (config.clear()) {
         val existing = char.abilities;
         debug(s"Found existing abilities to be removed for char=${char.name}:\n${existing.mkString("\n");}", true);
         existing.foreach(_.remove());
-        updates ::= config.clear.name;
+        updates ::= em(config.clear.name);
       }
       if (config.ini()) {
         if (createAbility(SupportedAbilities.ini, char, config.force())) {
-          updates ::= config.ini.name;
+          updates ::= em(config.ini.name);
         }
       }
       if (config.fray()) {
         if (createAbility(SupportedAbilities.fray, char, config.force())) {
-          updates ::= config.fray.name;
+          updates ::= em(config.fray.name);
         }
       }
       if (config.frayHalved()) {
         if (createAbility(SupportedAbilities.frayHalved, char, config.force())) {
-          updates ::= config.frayHalved.name;
+          updates ::= em(config.frayHalved.name);
         }
       }
       if (config.skill.isSupplied) {
@@ -114,17 +119,19 @@ object EPTokensCommand extends EPCommand[EPTokensConf] {
         //              }
         config.skill().foreach { skillName =>
           if (createAbility(SupportedAbilities.fromSkill(skillName), char, config.force())) {
-            updates ::= config.skill.name + s"($skillName)";
+            updates ::= em(config.skill.name + s"($skillName)");
           }
         }
       }
       (char.name -> updates)
     };
-    val updates = updatedCharacters.map(_ match {
-      case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-    }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+    val updates = div(
+      h4("Updated Characters"),
+      ul(for ((char, ups) <- updatedCharacters) yield li(
+        b(char),
+        ul(for (u <- ups) yield li(u)))));
     debug(s"Updates: $updates")
-    ctx.reply(s"Updated Characters $updates");
+    ctx.reply("Token Setup", updates);
   }
 
   private def createAbility(ability: AbilityTemplate, char: Character, force: Boolean): Boolean = {

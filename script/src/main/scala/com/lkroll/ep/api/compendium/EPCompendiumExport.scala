@@ -68,8 +68,8 @@ object EPCompendiumExportCommand extends EPCommand[EPCompendiumExportConf] {
             if (config.morph()) {
               val ex = MorphInstanceExport;
               Export.export(cached, ex) match {
-                case Left(msg)  => Some(char -> List(s"Exported ${ex.updateLabel} to Sheet ($msg)"))
-                case Right(msg) => Some(char -> List(s"Failed to export ${ex.updateLabel} to Sheet ($msg)"))
+                case Ok(msg)  => Some(char -> List(s"Exported ${ex.updateLabel} to Sheet ($msg)"))
+                case Err(msg) => Some(char -> List(s"Failed to export ${ex.updateLabel} to Sheet ($msg)"))
               }
             } else {
               None

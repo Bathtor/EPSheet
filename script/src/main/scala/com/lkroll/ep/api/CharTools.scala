@@ -14,6 +14,9 @@ object CharTools extends EPScript {
 }
 
 class CharToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
+  version(s"${CharToolsCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Apply DV and SV easily.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val damage = opt[Int]("damage", descr = "Add damage to characters, calculating wounds as well.");
   val stress = opt[Int]("stress", descr = "Add stress to characters, calculating traumas as well.");

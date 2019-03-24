@@ -33,7 +33,7 @@ import APIImplicits._;
 
 case class SubstanceImport(s: Substance) extends Importable {
   override def updateLabel: String = s"${s.name} (${s.category})";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val adcStr = s.addiction.map(a => s"${a.`type`.entryName} with modifier ${a.modStr}").getOrElse("–");
     val effects = s.effects.map(_.text).mkString(",");
     val extraDescr = s"""in category ${s.category} ${s.application.map(_.shortLabel).mkString("(", ",", ")")} of type ${s.classification.label}
@@ -50,6 +50,6 @@ Onset Time: ${s.onset.renderShort}, Duration: ${s.duration.renderShort}
     char.createRepeating(EffectsSection.gameEffect, effectsRowId) <<= effects;
     char.createRepeating(EffectsSection.description, effectsRowId) <<= extraDescr;
 
-    Left("Ok")
+    Ok("Ok")
   }
 }

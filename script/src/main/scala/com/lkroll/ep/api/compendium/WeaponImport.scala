@@ -32,23 +32,23 @@ import APIImplicits._;
 //import scala.util.{ Try, Success, Failure }
 
 object WeaponDamageTypeConverter {
-  def convert(dt: DamageType): Either[ModelDamageType.DamageType, String] = {
+  def convert(dt: DamageType): Result[ModelDamageType.DamageType] = {
     dt match {
-      case DamageType.Energy  => Left(ModelDamageType.Energy)
-      case DamageType.Kinetic => Left(ModelDamageType.Kinetic)
-      case DamageType.Untyped => Left(ModelDamageType.Untyped)
-      case DamageType.Psychic => Right("Weapons can not have Psychic damage type!")
+      case DamageType.Energy  => Ok(ModelDamageType.Energy)
+      case DamageType.Kinetic => Ok(ModelDamageType.Kinetic)
+      case DamageType.Untyped => Ok(ModelDamageType.Untyped)
+      case DamageType.Psychic => Err("Weapons can not have Psychic damage type!")
     }
   }
 }
 
 object WeaponDamageAreaConverter {
-  def convert(da: DamageArea): Either[ModelDamageArea.DamageArea, String] = {
+  def convert(da: DamageArea): Result[ModelDamageArea.DamageArea] = {
     da match {
-      case DamageArea.Point           => Left(ModelDamageArea.Point)
-      case DamageArea.Blast           => Left(ModelDamageArea.Blast)
-      case DamageArea.Cone            => Left(ModelDamageArea.Cone)
-      case DamageArea.UniformBlast(_) => Left(ModelDamageArea.UniformBlast)
+      case DamageArea.Point           => Ok(ModelDamageArea.Point)
+      case DamageArea.Blast           => Ok(ModelDamageArea.Blast)
+      case DamageArea.Cone            => Ok(ModelDamageArea.Cone)
+      case DamageArea.UniformBlast(_) => Ok(ModelDamageArea.UniformBlast)
     }
   }
 }
@@ -56,15 +56,15 @@ object WeaponDamageAreaConverter {
 case class WeaponImport(weapon: Weapon) extends Importable {
 
   override def updateLabel: String = s"weapon ${weapon.name}";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     val damageType = WeaponDamageTypeConverter.convert(weapon.damage.dmgType) match {
-      case Left(dt)   => dt
-      case Right(msg) => return Right(msg)
+      case Ok(dt)   => dt
+      case Err(msg) => return Err(msg)
     };
     val damageArea = WeaponDamageAreaConverter.convert(weapon.area) match {
-      case Left(da)   => da
-      case Right(msg) => return Right(msg)
+      case Ok(da)   => da
+      case Err(msg) => return Err(msg)
     }
     weapon.`type` match {
       case _: WeaponType.Melee => {
@@ -84,10 +84,10 @@ case class WeaponImport(weapon: Weapon) extends Importable {
           case Some(skillId) => {
             char.createRepeating(MeleeWeaponSection.skillName, rowId) <<= weapon.`type`.skill;
             char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(skillId);
-            Left("Ok");
+            Ok("Ok");
           }
           case None => {
-            Left(s"Could not find skill id for ${weapon.`type`.skill}.")
+            Ok(s"Could not find skill id for ${weapon.`type`.skill}.")
           }
         }
       }
@@ -115,7 +115,7 @@ case class WeaponImport(weapon: Weapon) extends Importable {
 
         val thrownField = char.createRepeating(RangedWeaponSection.thrown, rowId);
         weapon.range match {
-          case Range.Melee => return Right("Ranged weapons should have range Ranged")
+          case Range.Melee => return Err("Ranged weapons should have range Ranged")
           case r: Range.Thrown => {
             char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= r.shortFactor;
             char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= r.mediumFactor;
@@ -163,14 +163,14 @@ case class WeaponImport(weapon: Weapon) extends Importable {
           case Some(skillId) => {
             char.createRepeating(RangedWeaponSection.skillName, rowId) <<= weapon.`type`.skill;
             char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(skillId);
-            Left("Ok");
+            Ok("Ok");
           }
           case None => {
-            Left(s"Could not find skill id for ${weapon.`type`.skill}.")
+            Ok(s"Could not find skill id for ${weapon.`type`.skill}.")
           }
         }
       }
-      case _ => Right("Not implemented")
+      case _ => Err("Not implemented")
     }
   }
 }
@@ -178,15 +178,15 @@ case class WeaponImport(weapon: Weapon) extends Importable {
 case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
 
   override def updateLabel: String = s"weapon ${weapon.name}";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     val damageType = WeaponDamageTypeConverter.convert(weapon.damage.dmgType) match {
-      case Left(dt)   => dt
-      case Right(msg) => return Right(msg)
+      case Ok(dt)   => dt
+      case Err(msg) => return Err(msg)
     };
     val damageArea = WeaponDamageAreaConverter.convert(weapon.area) match {
-      case Left(da)   => da
-      case Right(msg) => return Right(msg)
+      case Ok(da)   => da
+      case Err(msg) => return Err(msg)
     }
     weapon.weapon.`type` match {
       case _: WeaponType.Melee => {
@@ -206,10 +206,10 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
           case Some(skillId) => {
             char.createRepeating(MeleeWeaponSection.skillName, rowId) <<= weapon.weapon.`type`.skill;
             char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(skillId);
-            Left("Ok");
+            Ok("Ok");
           }
           case None => {
-            Left(s"Could not find skill id for ${weapon.weapon.`type`.skill}.")
+            Ok(s"Could not find skill id for ${weapon.weapon.`type`.skill}.")
           }
         }
       }
@@ -237,7 +237,7 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
 
         val thrownField = char.createRepeating(RangedWeaponSection.thrown, rowId);
         weapon.weapon.range match {
-          case Range.Melee => return Right("Ranged weapons should have range Ranged")
+          case Range.Melee => return Err("Ranged weapons should have range Ranged")
           case r: Range.Thrown => {
             char.createRepeating(RangedWeaponSection.shortRangeUpperInput, rowId) <<= r.shortFactor;
             char.createRepeating(RangedWeaponSection.mediumRangeUpperInput, rowId) <<= r.mediumFactor;
@@ -286,14 +286,14 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
           case Some(skillId) => {
             char.createRepeating(RangedWeaponSection.skillName, rowId) <<= weapon.weapon.`type`.skill;
             char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(skillId);
-            Left("Ok");
+            Ok("Ok");
           }
           case None => {
-            Left(s"Could not find skill id for ${weapon.weapon.`type`.skill}.")
+            Ok(s"Could not find skill id for ${weapon.weapon.`type`.skill}.")
           }
         }
       }
-      case _ => Right("Not implemented")
+      case _ => Err("Not implemented")
     }
   }
 }

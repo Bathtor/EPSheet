@@ -72,6 +72,10 @@ object RollsScript extends EPScript {
 class SpecialRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   import org.rogach.scallop.singleArgConverter;
 
+  version(s"${SpecialRollsCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Roll damage or success via API.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
+
   val success = opt[Boolean]("success", descr = "roll a simple success roll");
   val target = opt[Int]("target", default = Some(99), descr = "target for a success roll");
 
@@ -140,6 +144,10 @@ object SpecialRollsCommand extends EPCommand[SpecialRollsConf] {
 
 class EPRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   import org.rogach.scallop.singleArgConverter;
+
+  version(s"${EPRollsCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
+  banner("Parse and transform templated rolls.")
+  footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
   val output = opt[String]("output", descr = "who should receive the final output");
   val variables = trailArg[TemplateVars]("variables")(TemplateVars);

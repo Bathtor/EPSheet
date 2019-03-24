@@ -33,10 +33,10 @@ import APIImplicits._;
 
 case class DisorderImport(d: Disorder) extends Importable {
   override def updateLabel: String = s"${d.name} disorder";
-  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Either[String, String] = {
+  override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
     char.createRepeating(DisorderSection.conditionName, rowId) <<= d.name;
     char.createRepeating(DisorderSection.description, rowId) <<= d.descr;
-    Left("Ok")
+    Ok("Ok")
   }
 }

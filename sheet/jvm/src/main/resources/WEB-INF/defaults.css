@@ -827,12 +827,18 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     padding-right: 1em;
 }
 
-.sheet-rolltemplate-ep-default .sheet-roll-success {
+.sheet-rolltemplate-ep-default .sheet-roll-success,
+.sheet-rolltemplate-ep-apioutput .sheet-roll-success{
     background-image: linear-gradient(to right, ${template-success} -30%, transparent 120%);
 }
 
-.sheet-rolltemplate-ep-default .sheet-roll-failure {
+.sheet-rolltemplate-ep-default .sheet-roll-failure,
+.sheet-rolltemplate-ep-apioutput .sheet-roll-failure {
     background-image: linear-gradient(to right, ${template-failure} -30%, transparent 120%);
+}
+
+.sheet-rolltemplate-ep-apioutput p.sheet-result-indent {
+    text-indent: 1em;
 }
 
 .sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a[href^='~'],
@@ -849,5 +855,40 @@ input.sheet-using-api[value="0"]+.sheet-api-only {
     border: 0;
     color: ${roll-highlight}; /* #ce0f69; */
     display: inline;
-    padding: 0
+    padding: 0;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a[href^='~']:hover,
+.sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='~']:hover,
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='~']:hover,
+.sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='~']:hover,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='~']:hover,
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a[href^='!']:hover,
+.sheet-rolltemplate-ep-info .sheet-template-wrapper a[href^='!']:hover,
+.sheet-rolltemplate-ep-ini .sheet-template-wrapper a[href^='!']:hover,
+.sheet-rolltemplate-ep-default .sheet-template-wrapper a[href^='!']:hover,
+.sheet-rolltemplate-ep-damage .sheet-template-wrapper a[href^='!']:hover {
+    background-color: transparent;
+    border: 0;
+    color: ${roll-highlight-over}; /* #ce0f69; */
+    display: inline;
+    padding: 0;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a {
+    background-color: transparent;
+    border: 0;
+    color: ${hyperref-highlight};
+    display: inline;
+    padding: 0;
+}
+
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a:hover,
+.sheet-rolltemplate-ep-apioutput .sheet-template-wrapper a:focus {
+    background-color: transparent;
+    border: 0;
+    color: ${hyperref-highlight-over};
+    display: inline;
+    padding: 0;
+    text-decoration: none;
 }
