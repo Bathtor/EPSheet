@@ -6,13 +6,13 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.12.0-SNAPSHOT"
+version in ThisBuild := "1.12.1"
 
 scalaVersion in ThisBuild := "2.12.8"
 
-resolvers += "Apache" at "http://repo.maven.apache.org/maven2"
-resolvers += Resolver.bintrayRepo("lkrollcom", "maven")
-resolvers += Resolver.mavenLocal
+resolvers in ThisBuild += "Apache" at "http://repo.maven.apache.org/maven2"
+resolvers in ThisBuild += Resolver.bintrayRepo("lkrollcom", "maven")
+resolvers in ThisBuild += Resolver.mavenLocal
 
 lazy val submitSheet = taskKey[Unit]("Submit the script that assembled and uploads the sheet");
 lazy val submit = taskKey[Unit]("Assemble and fastOpt, and then upload the sheet");
@@ -49,7 +49,7 @@ lazy val epsheet = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   settings(
     name := "EP Sheet",
     libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.+",
-    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.11.+", 
+    libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.11.1", 
     libraryDependencies += "com.lkroll.ep" %%% "ep-model" % version.value,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
     EclipseKeys.useProjectId := true,
