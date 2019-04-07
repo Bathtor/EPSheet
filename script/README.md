@@ -104,6 +104,8 @@ The EP Battle Manager deals with EP's hierarchical combat timing structure based
 
 If you need to **add** or **remove** charaters during an ongoing battle, you *must* use the the commands `!epbattleman --add` or `!epbattleman --drop` respectively. Using any other mechanism will pollute the Battle Managers internal state and you will see some strange behaviour.
 
+If you accidentally use the normal `Next` button or manually add or remove tokens from an ongoing battle, the script will output a warning message to the chat. This warning message also contains a `reset` button, which you can use to invoke `!epbattleman --reset`, thereby undoing your inconsistency-introducing change.
+
 #### Recommended Macros
 **BStart**: `!epbattleman --start`
 **BNext**: `!epbattleman --next`
