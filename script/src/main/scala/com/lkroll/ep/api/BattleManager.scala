@@ -41,15 +41,23 @@ object BattleManagerScript extends EPScript {
   import APIImplicits._;
   override def apiCommands: Seq[APICommand[_]] = Seq(EPBattlemanCommand);
 
+  val minConf = new EPBattlemanConf(Seq("--start"));
+  
   onChange("campaign:turnorder", { (_, _) => EPBattlemanCommand.state match {
-      case EPBattlemanCommand.Active(_, _) => {
+      case EPBattlemanCommand.Active(_, _, _) => {
+        val conf = minConf
+        val resetButton = EPBattlemanCommand.invoke("reset", List(conf.reset <<= true)).render;
         sendChatWarning("Battleman (API)", 
-        Chat.GM.htmlMessage(p(
-            "It is not recommended to manually change the turn order, while a battle is active in the Battle Manager. You might end up in an inconsistent state!"
-            )));
+        Chat.GM.htmlMessage(div(p(
+            "It is not recommended to manually change the turn order, while a battle is active in the Battle Manager.",
+            "You might end up in an inconsistent state!",
+            ),
+           p("Do you wish to ", raw(resetButton), " the state?")    
+        )));
       }
       case _ => (), // that's ok
     }});
+  
 }
 
 class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
@@ -61,8 +69,9 @@ class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
   val end = opt[Boolean]("end", descr = "Ends a battle by clearing the turn order and internal state.");
   val add = opt[Boolean]("add", descr = "Adds the currently selected tokens to the turn order and battleman. Use this while a battle is active, instead of manually adding tokens to the turn order.");
   val drop = opt[Boolean]("drop", descr = "Removes the currently selected tokens from the turn order and battleman. Use this while a battle is active, instead of manually removing tokens from the turn order.");
+  val reset = opt[Boolean]("reset", descr = "Reset turn order to last valid state.");
   
-  requireOne(start, next, end, add, drop);
+  requireOne(start, next, end, add, drop, reset);
   verify();
 }
 
@@ -82,12 +91,16 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
       onAdd(ctx)
     } else if (config.drop()) {
       onDrop(ctx)
+    } else if (config.reset()) {
+      onReset(ctx)
+    } else {
+      error(s"Unsupported options supplied: ${config.args}");
     }
   }
 
   sealed trait State;
   object Inactive extends State;
-  case class Active(round: Int, phase: Int) extends State;
+  case class Active(round: Int, phase: Int, lastState: List[TurnOrder.Entry]) extends State;
 
   lazy val campaign = Campaign();
   lazy val turnOrder = campaign.turnOrder;
@@ -99,9 +112,9 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
   private def onStart(ctx: ChatContext) {
     state match {
       case Inactive => {
-        state = Active(1, 0);
         var sorting = List.empty[(Int, Entry)];
         val order = turnOrder.get();
+        state = Active(1, 0, order);
         order.foreach {
           case e @ CustomEntry(_, Left(ini)) => {
             sorting ::= (ini -> e);
@@ -137,6 +150,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           val maxEntry = sorted.head._1 + 1;
           val newOrder = marker(maxEntry) :: sorted.map(_._2);
           turnOrder.set(newOrder);
+          updateLastState(Some(newOrder));
           val part = ul(
               for ((t, c) <- participants.values.toSeq) yield li(b(c.name))
               );
@@ -169,7 +183,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
 
   private def onNext(ctx: ChatContext) {
     state match {
-      case Active(round, phase) => {
+      case Active(round, phase, _) => {
         val order = turnOrder.get();
         order match {
           case head :: rest => {
@@ -179,13 +193,14 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
                   if (rest.isEmpty) { // next turn
                     startNewTurn();
                   } else { // next phase
-                    state = Active(round, phase + 1);
                     val newOrder = rest ++ List(marker(ini));
                     turnOrder.set(newOrder);
+                    state = Active(round, phase + 1, newOrder);
                   }
                 } else { // something else, just drop it
                   debug(s"Dropping custom entry $e");
                   turnOrder.set(rest);
+                  updateLastState(Some(rest));
                 }
               }
               case e @ TokenEntry(id, Left(ini)) => {
@@ -197,16 +212,19 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
                       validateAllInis(rest)
                     };
                     turnOrder.set(newOrder);
+                    updateLastState(Some(newOrder));
                   }
                   case None => {
                     debug(s"Token is not a participant: $id. Dropping.");
                     turnOrder.set(rest);
+                    updateLastState(Some(rest));
                   }
                 }
               }
               case e => {
                 debug(s"Dropping unsupported entry $e");
                 turnOrder.set(rest);
+                updateLastState(Some(rest));
               }
             }
           }
@@ -226,7 +244,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
     EPGroupRollsCommand.rollInitiative(participants.values.toList) {
       case Success(res) => {
         state = state match {
-          case Active(round, phase) => Active(round + 1, 0)
+          case Active(round, phase, s) => Active(round + 1, 0, s)
           case s                    => error("Battleman is in an invalid state!"); s
         };
         var sorting = List.empty[(Int, Entry)];
@@ -241,6 +259,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           val maxEntry = sorted.head._1 + 1;
           val newOrder = marker(maxEntry) :: sorted.map(_._2);
           turnOrder.set(newOrder);
+          updateLastState(Some(newOrder));
           info("New turn is beginning.");
         } else {
           error("There is no one to continue the battle with :(");
@@ -312,7 +331,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
 
   private def onEnd(ctx: ChatContext) {
     state match {
-      case Active(round, phase) => {
+      case Active(round, phase, _) => {
         state = Inactive;
         turnOrder.clear();
         participants.clear();
@@ -328,7 +347,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
 
   private def marker(ini: Int): TurnOrder.CustomEntry = {
     val s = state match {
-      case Active(round, phase) => s"|Round ${round}|Phase ${phase + 1}|"
+      case Active(round, phase, _) => s"|Round ${round}|Phase ${phase + 1}|"
       case Inactive             => "|Inactive|"
     };
     TurnOrder.CustomEntry(s, Left(ini))
@@ -393,6 +412,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           }
           val newOrder = assembleWithMarker(sortingPre, sortingPost);
           turnOrder.set(newOrder);
+          updateLastState(Some(newOrder));
           val part = ul(
               for ((t, c, i) <- res) yield li(b(c.name))
               );
@@ -450,8 +470,29 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           case _ => false
         }
       );
-      ctx.reply("Battle Updated!",s"Removed ${ids.size} tokens from battleman");
+      updateLastState();
+      ctx.reply("Battle Updated!",s"Removed ${ids.size} tokens from battleman.");
     }
   }
   
+  private def onReset(ctx: ChatContext) {
+    state match {
+      case Active(_, _, lastState) => {
+        turnOrder.set(lastState);
+        ctx.reply("Battle Reset!", "Reset battle to last valid state.");
+      }
+      case Inactive => {
+        ctx.replyWarn("No active battle to reset!");
+      }
+    }
+  }
+  
+  private def updateLastState(newOrder: Option[List[TurnOrder.Entry]] = None): Unit = {
+    state match {
+        case a: Active => {
+          state = a.copy(lastState = newOrder.getOrElse(turnOrder.get()))
+        }
+          case Inactive => ()
+      }
+  }
 }
