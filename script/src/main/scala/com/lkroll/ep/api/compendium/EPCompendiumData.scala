@@ -31,6 +31,7 @@ import com.lkroll.ep.compendium._
 import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts, SpecialRollsCommand }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
+import scalatags.Text.all._;
 
 class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   version(s"${EPCompendiumDataCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
@@ -41,6 +42,7 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
   val rankMax = opt[Int]("rank-max", descr = "Rank the top &lt;param&gt; significant results, instead of showing highest one only.");
+  val silent = opt[Boolean]("silent", descr = "Dont emit search progress output, but just the results.");
   // items
   val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.")(ScallopUtils.singleArgSpacedConverter(identity));
   val ammo = opt[String]("ammo", descr = "Search for matches with &lt;param&gt; in ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
@@ -99,127 +101,178 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
   override def command = "epcompendium-data";
   override def options = (args) => new EPCompendiumDataConf(args);
   override def apply(config: EPCompendiumDataConf, ctx: ChatContext): Unit = {
+
+    def verbose(block: => Unit, altBlock: => Unit = {}): Unit = {
+      if (!config.silent()) {
+        block
+      } else {
+        altBlock
+      }
+    };
+
     if (config.search.isSupplied) {
       val needle = config.search();
-      ctx.reply(s"Searching for '$needle' in whole Compendium...");
+      verbose {
+        ctx.replyHeader("Compendium Search", p(s"Searching for '$needle' in whole Compendium..."));
+      }
       val results = EPCompendium.findAnything(needle);
       handleResults(results, config, ctx);
     } else if (config.multiSearch()) {
       val s = config.trailing().mkString(" ");
       if (s.isEmpty()) {
-        ctx.reply(s"Ignoring empty search.");
+        ctx.replyWarn(p("Ignoring empty search."));
       } else {
-        ctx.reply(s"Searching for multiple items in whole Compendium...");
+        verbose {
+          ctx.replyHeader("Compendium Search", p("Searching for multiple items in whole Compendium..."));
+        }
         //val cleanedS = s.split("""\R""").map(_.trim).filterNot(s => s.startsWith("=") || s.startsWith("#"));
         // val needles = cleanedS.map(_.split(",")).flatten.map(_.trim);
         val needles = s.split(",").map(_.trim);
         val results = needles.map { needle =>
           val r = EPCompendium.findAnything(needle.trim).headOption.map { bestResult =>
             val infoButton = this.invoke("?", argumentFrom(bestResult, config)).render;
-            s"${bestResult.templateTitle} ${infoButton}"
+            span(bestResult.templateTitle, raw("&nbsp;"), raw(infoButton))
           };
           (needle, r)
         };
-        val pretty = results.map {
-          case (needle, Some(r)) => s"<b>${needle}</b> &rarr; $r"
-          case (needle, None)    => s"<b>${needle}</b> &rarr; 404 Not Found"
-        }.mkString("<ul><li>", "</li><li>", "</li><ul>");
-        debug(s"About to send '$pretty'");
-        ctx.reply(pretty);
+        val pretties = results.map {
+          case (needle, Some(r)) => span(b(needle), raw(" &rarr; "), r)
+          case (needle, None)    => span(b(needle), raw(" &rarr; "), "404 Not Found")
+        };
+        val pretty = div(
+          h4("Results"),
+          ul(
+            for (r <- pretties) yield li(r)));
+        //debug(s"About to send '$pretty'");
+        verbose(ctx.replyFooter(pretty), ctx.reply("Compendium Search", pretty));
       }
     } else if (config.weapon.isSupplied && !config.withAmmo.isSupplied) {
       val needle = config.weapon();
-      ctx.reply(s"Searching for '$needle' in weapons...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in weapons...");
+      }
       val results = EPCompendium.findWeapons(needle);
       handleResults(results, config, ctx);
     } else if (config.ammo.isSupplied) {
       val needle = config.ammo();
-      ctx.reply(s"Searching for '$needle' in ammunitions...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in ammunitions...");
+      }
       val results = EPCompendium.findAmmos(needle);
       handleResults(results, config, ctx);
     } else if (config.weapon.isSupplied && config.withAmmo.isSupplied) {
       val needle = config.weapon();
-      ctx.reply(s"Searching for '$needle' in weapons with ammo ${config.withAmmo()}...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in weapons with ammo ${config.withAmmo()}...");
+      }
       val ammoO = EPCompendium.getAmmo(config.withAmmo());
       ammoO match {
         case Some(ammo) => {
           val weapons = EPCompendium.findWeapon(needle).toList;
           val results = weapons.flatMap(w => w.load(ammo) match {
             case Success(wwa) => Some(wwa)
-            case Failure(e)   => ctx.reply(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
+            case Failure(e)   => ctx.replyWarn(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
           });
           handleResults(results, config, ctx);
         }
-        case None => ctx.reply(s"No ammo found for name ${config.withAmmo()}")
+        case None => ctx.replyWarn(s"No ammo found for name ${config.withAmmo()}")
       }
     } else if (config.morph.isSupplied) {
       val needle = config.morph();
-      ctx.reply(s"Searching for '$needle' in morphs...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in morphs...");
+      }
       val results = EPCompendium.findMorphInstances(needle);
       handleResults(results, config, ctx);
     } else if (config.morphModel.isSupplied) {
       val needle = config.morphModel();
-      ctx.reply(s"Searching for '$needle' in morph models...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in morph models...");
+      }
       val results = EPCompendium.findMorphModels(needle);
       handleResults(results, config, ctx);
     } else if (config.epTrait.isSupplied) {
       val needle = config.epTrait();
-      ctx.reply(s"Searching for '$needle' in traits...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in traits...");
+      }
       val results = EPCompendium.findTraits(needle);
       handleResults(results, config, ctx);
     } else if (config.derangement.isSupplied) {
       val needle = config.derangement();
-      ctx.reply(s"Searching for '$needle' in derangements...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in derangements...");
+      }
       val results = EPCompendium.findDerangements(needle);
       handleResults(results, config, ctx);
     } else if (config.disorder.isSupplied) {
       val needle = config.disorder();
-      ctx.reply(s"Searching for '$needle' in disorders...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in disorders...");
+      }
       val results = EPCompendium.findDisorders(needle);
       handleResults(results, config, ctx);
     } else if (config.armour.isSupplied) {
       val needle = config.armour();
-      ctx.reply(s"Searching for '$needle' in armour...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in armour...");
+      }
       val results = EPCompendium.findArmourItems(needle);
       handleResults(results, config, ctx);
     } else if (config.gear.isSupplied) {
       val needle = config.gear();
-      ctx.reply(s"Searching for '$needle' in gear...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in gear...");
+      }
       val results = EPCompendium.findGearItems(needle);
       handleResults(results, config, ctx);
     } else if (config.software.isSupplied) {
       val needle = config.software();
-      ctx.reply(s"Searching for '$needle' in software...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in software...");
+      }
       val results = EPCompendium.findSoftwarePrograms(needle);
       handleResults(results, config, ctx);
     } else if (config.substance.isSupplied) {
       val needle = config.substance();
-      ctx.reply(s"Searching for '$needle' in substances...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in substances...");
+      }
       val results = EPCompendium.findSubstances(needle);
       handleResults(results, config, ctx);
     } else if (config.augmentation.isSupplied) {
       val needle = config.augmentation();
-      ctx.reply(s"Searching for '$needle' in augmentations...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in augmentations...");
+      }
       val results = EPCompendium.findAugmentations(needle);
       handleResults(results, config, ctx);
     } else if (config.armourMod.isSupplied) {
       val needle = config.armourMod();
-      ctx.reply(s"Searching for '$needle' in armour mods...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in armour mods...");
+      }
       val results = EPCompendium.findArmourMods(needle);
       handleResults(results, config, ctx);
     } else if (config.weaponAccessory.isSupplied) {
       val needle = config.weaponAccessory();
-      ctx.reply(s"Searching for '$needle' in weapon accessories...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in weapon accessories...");
+      }
       val results = EPCompendium.findWeaponAccessories(needle);
       handleResults(results, config, ctx);
     } else if (config.psiSleight.isSupplied) {
       val needle = config.psiSleight();
-      ctx.reply(s"Searching for '$needle' in psi sleights...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in psi sleights...");
+      }
       val results = EPCompendium.findPsiSleights(needle);
       handleResults(results, config, ctx);
     } else if (config.skill.isSupplied) {
       val needle = config.skill();
-      ctx.reply(s"Searching for '$needle' in skills...");
+      verbose {
+        ctx.replyHeader("Compendium Search", s"Searching for '$needle' in skills...");
+      }
       val results = EPCompendium.findSkillDefs(needle);
       handleResults(results, config, ctx);
     } else {
@@ -228,8 +281,16 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
   }
 
   private def handleResults(results: List[ChatRenderable], config: EPCompendiumDataConf, ctx: ChatContext): Unit = {
+    def verbose(block: => Unit, altBlock: => Unit = {}): Unit = {
+      if (!config.silent()) {
+        block
+      } else {
+        altBlock
+      }
+    };
+
     if (results.isEmpty) {
-      ctx.reply("No results found");
+      verbose(ctx.replyFooter(p("No results found.")), ctx.reply("Compendium Search", p("No results found.")));
     } else {
       val displayResults = if (config.rank()) {
         results
@@ -240,20 +301,28 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
         List(results.head)
       };
       if (config.nameOnly()) {
-        val pretty = displayResults.map(r => {
+        val pretties = displayResults.map(r => {
           val infoButton = this.invoke("?", argumentFrom(r, config)).render;
           val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r)).render;
-          s"${r.templateTitle} ${infoButton}&nbsp;${importButton}"
-        }).
-          mkString("<ul><li>", "</li><li>", "</li><ul>");
-        debug(s"About to send '$pretty'");
-        ctx.reply(pretty);
+          span(r.templateTitle, raw("&nbsp;"), raw(infoButton), raw("&nbsp;"), raw(importButton))
+        });
+        val pretty = div(
+          h4("Results"),
+          ul(
+            for (r <- pretties) yield li(r)));
+        verbose(ctx.replyFooter(pretty), ctx.reply("Compendium Search", pretty));
       } else {
+        val resultNum = displayResults.size;
+        verbose {
+          ctx.replyFooter(div(
+            h4("Search Complete"),
+            p(s"Displaying ${resultNum} ${if (resultNum > 1) { "results" } else { "result" }}.")))
+        };
         displayResults.foreach { r =>
           val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r));
           val extras = extraButtons(r);
           val pretty = asInfoTemplate(r, importButton, extras);
-          debug(s"About to send '$pretty'");
+          //debug(s"About to send '$pretty'");
           ctx.reply(pretty);
         }
       }
@@ -287,7 +356,7 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
 
   private def argumentFrom(r: ChatRenderable, config: EPCompendiumDataConf): List[OptionApplication] = {
     val name = buttonSafeText(r.lookupName);
-    r match {
+    val opts = r match {
       case _: Augmentation    => List(config.augmentation <<= name)
       case _: Ammo            => List(config.ammo <<= name)
       case _: Armour          => List(config.armour <<= name)
@@ -305,7 +374,8 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
       case _: Weapon          => List(config.weapon <<= name)
       case _: WeaponAccessory => List(config.weaponAccessory <<= name)
       case _                  => List.empty
-    }
+    };
+    (config.silent <<= true) :: opts
   }
 
   private def buttonSafeText(s: String): String = s.replaceAll("\\)", "&#41;");

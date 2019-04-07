@@ -33,6 +33,7 @@ import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import scala.util.{ Try, Success, Failure }
 import scala.concurrent.Future
 import org.rogach.scallop.singleArgConverter
+import scalatags.Text.all._;
 
 class EPCompendiumImportConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   version(s"${EPCompendiumImportCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
@@ -108,7 +109,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
   override def apply(config: EPCompendiumImportConf, ctx: ChatContext): Unit = {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
-      ctx.reply("No tokens selected. Nothing to do...");
+      ctx.replyWarn("No tokens selected. Nothing to do...");
     } else {
       val tokens = graphicTokens.flatMap {
         case t: Token => Some(t)
@@ -120,7 +121,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
           EPCompendium.getWeapon(s) match {
             case Some(w) => Some(w)
             case None => {
-              ctx.reply(s"No weapon found for name ${s}");
+              ctx.replyWarn(s"No weapon found for name ${s}");
               None
             }
           }
@@ -133,7 +134,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             EPCompendium.getWeaponAccessory(s) match {
               case Some(accessory) => Some(weapons.map(w => accessory.mod(w)))
               case None => {
-                ctx.reply(s"No Weapon Accessory found for name ${s}");
+                ctx.replyWarn(s"No Weapon Accessory found for name ${s}");
                 None
               }
             }
@@ -152,11 +153,11 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
                   moddedWeapons.foreach { w =>
                     w.load(ammo) match {
                       case Success(w) => toImport ::= w
-                      case Failure(e) => ctx.reply(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}")
+                      case Failure(e) => ctx.replyWarn(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}")
                     }
                   }
                 }
-                case None => ctx.reply(s"No ammo found for name ${s}}")
+                case None => ctx.replyWarn(s"No ammo found for name ${s}}")
               }
             }
           }
@@ -174,7 +175,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
               toImport ::= mi;
               toImport ++= mi.children;
             }
-            case None => ctx.reply(s"No morph found for name ${s}")
+            case None => ctx.replyWarn(s"No morph found for name ${s}")
           }
         }
       }
@@ -186,7 +187,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
               toImport ::= mi;
               toImport ++= mi.children;
             }
-            case None => ctx.reply(s"No morph found for name ${s}")
+            case None => ctx.replyWarn(s"No morph found for name ${s}")
           }
         }
       }
@@ -196,7 +197,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(t) => {
               toImport ::= t;
             }
-            case None => ctx.reply(s"No trait found for name ${s}")
+            case None => ctx.replyWarn(s"No trait found for name ${s}")
           }
         }
       }
@@ -208,11 +209,11 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
                 case Some(d) => {
                   toImport ::= DerangementImport(d, dur);
                 }
-                case None => ctx.reply(s"No derangement found for name ${s}")
+                case None => ctx.replyWarn(s"No derangement found for name ${s}")
               }
             }
           }
-          case Failure(e) => ctx.reply(e.getMessage)
+          case Failure(e) => ctx.replyWarn(e.getMessage)
         }
 
       }
@@ -222,7 +223,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(d) => {
               toImport ::= d;
             }
-            case None => ctx.reply(s"No disorder found for name ${s}")
+            case None => ctx.replyWarn(s"No disorder found for name ${s}")
           }
         }
       }
@@ -230,7 +231,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
         val armours = config.armour().flatMap { s =>
           EPCompendium.getArmour(s) match {
             case Some(a) => Some(a)
-            case None    => ctx.reply(s"No armour found for name ${s}"); None
+            case None    => ctx.replyWarn(s"No armour found for name ${s}"); None
           }
         };
         if (config.withMod.isSupplied) {
@@ -240,7 +241,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
           } else {
             EPCompendium.getArmourMod(s) match {
               case Some(mod) => armours.foreach(a => toImport ::= a.withMod(mod))
-              case None      => ctx.reply(s"No armour mod found for name ${s}")
+              case None      => ctx.replyWarn(s"No armour mod found for name ${s}")
             }
           }
         } else {
@@ -253,7 +254,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(g) => {
               toImport ::= g;
             }
-            case None => ctx.reply(s"No gear found for name ${s}")
+            case None => ctx.replyWarn(s"No gear found for name ${s}")
           }
         }
       }
@@ -263,7 +264,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(s) => {
               toImport ::= s;
             }
-            case None => ctx.reply(s"No software found for name ${s}")
+            case None => ctx.replyWarn(s"No software found for name ${s}")
           }
         }
       }
@@ -273,7 +274,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(s) => {
               toImport ::= s;
             }
-            case None => ctx.reply(s"No substance found for name ${s}")
+            case None => ctx.replyWarn(s"No substance found for name ${s}")
           }
         }
       }
@@ -283,7 +284,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(s) => {
               toImport ::= s;
             }
-            case None => ctx.reply(s"No Psi Sleight found for name ${s}")
+            case None => ctx.replyWarn(s"No Psi Sleight found for name ${s}")
           }
         }
       }
@@ -293,10 +294,12 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
             case Some(s) => {
               toImport ::= s;
             }
-            case None => ctx.reply(s"No skill found for name ${s}")
+            case None => ctx.replyWarn(s"No skill found for name ${s}")
           }
         }
       }
+      val numImports = toImport.size;
+      ctx.replyHeader("Compendium Import", p(s"Importing ${numImports} ${if (numImports > 1) { "items" } else { "item" }}..."));
       val updatedCharactersF = tokens.foldLeft(Future.successful(List.empty[Tuple2[String, List[String]]])) { (f, token) =>
         val resF = f.flatMap { charUpdates =>
           debug(s"Working on token: ${token.name} (${token.id})");
@@ -356,7 +359,7 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
               updateF.map(u => u :: charUpdates)
             }
             case None => {
-              ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!");
+              ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!");
               Future.successful(charUpdates) // just pass on the accumulator
             }
           }
@@ -365,15 +368,17 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
       };
       updatedCharactersF.onComplete {
         case Success(updatedCharacters) => {
-          val updates = updatedCharacters.reverse.map(_ match {
-            case (char, ups) => char + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-          }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+          val updates = div(
+            h3("Updated Characters"),
+            for ((char, ups) <- updatedCharacters.reverse) yield Seq(
+              h4(char),
+              ul(for (up <- ups) yield li(up))));
           debug(s"Updates: $updates")
-          ctx.reply(s"Updated Characters $updates");
+          ctx.replyFooter(updates);
         }
         case Failure(ex) => {
           error(ex);
-          ctx.reply(s"Something went wrong during updates. Consult the logs for more information.");
+          ctx.replyError(s"Something went wrong during updates. Consult the logs for more information.");
         }
       }
 

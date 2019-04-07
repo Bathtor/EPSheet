@@ -32,6 +32,7 @@ import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts }
 import com.lkroll.ep.model.{ EPCharModel => epmodel }
 import util.{ Try, Success, Failure }
 import org.rogach.scallop.singleArgConverter
+import scalatags.Text.all._;
 
 class EPCompendiumExportConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   version(s"${EPCompendiumImportCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
@@ -54,7 +55,7 @@ object EPCompendiumExportCommand extends EPCommand[EPCompendiumExportConf] {
   override def apply(config: EPCompendiumExportConf, ctx: ChatContext): Unit = {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
-      ctx.reply("No tokens selected. Nothing to do...");
+      ctx.replyWarn("No tokens selected. Nothing to do...");
     } else {
       val tokens = graphicTokens.flatMap {
         case t: Token => Some(t)
@@ -75,14 +76,15 @@ object EPCompendiumExportCommand extends EPCommand[EPCompendiumExportConf] {
               None
             }
           }
-          case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
+          case None => ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
       };
-      val updates = updatedCharacters.map(_ match {
-        case (char, ups) => char.name + ups.mkString("<ul><li>", "</li><li>", "</li></ul>")
-      }).mkString("<ul><li>", "</li><li>", "</li></ul>");
+      val updates = div(
+        for ((char, ups) <- updatedCharacters) yield Seq(
+          h4(char.name),
+          ul(for (up <- ups) yield li(up))));
       debug(s"Updates: $updates");
-      ctx.reply(s"Updated Characters $updates");
+      ctx.reply("Compendium Export", updates);
     }
   }
 }

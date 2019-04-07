@@ -92,7 +92,7 @@ case class MorphModelImport(morph: MorphModel) extends Importable {
 }
 
 case class MorphInstanceImport(morph: MorphInstance) extends Importable {
-  override def updateLabel: String = morph.label;
+  override def updateLabel: String = s"${morph.label} (${morph.model})";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     importInto(char, idPool.generateRowId(), cache)
   }

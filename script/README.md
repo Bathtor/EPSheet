@@ -25,6 +25,24 @@ Contents
   - [Character Cleaner](#character-cleaner)
     - [Usage](#usage-1)
     - [Recommended Macros](#recommended-macros-1)
+  - [Character Tools](#character-tools)
+    - [Usage](#usage-2)
+    - [Recommended Macros](#recommended-macros-2)
+  - [GM Tools](#gm-tools)
+    - [Usage](#usage-3)
+    - [Recommended Macros](#recommended-macros-3)
+  - [Group Rolls](#group-rolls)
+    - [Usage](#usage-4)
+    - [Recommended Macros](#recommended-macros-4)
+  - [Special Rolls](#special-rolls)
+    - [Usage](#usage-5)
+    - [Recommended Macros](#recommended-macros-5)
+  - [Token Setup](#token-setup)
+    - [Usage](#usage-6)
+    - [Recommended Macros](#recommended-macros-6)
+  - [Compendium](#compendium)
+    - [Usage](#usage-7)
+    - [Recommended Macros](#recommended-macros-7)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -45,7 +63,7 @@ In this section we give a quick overview over all available commands. They descr
 - **Compendium** manages data from the [Eclipse Phase Compendium](https://github.com/Bathtor/EPCompendium):
 	- *Data* (`!epcompendium-data`) manages search, lookups, and display of compendium data to the chat.
 	- *Export* (`!epcompendium-export`) can export custom morphs in a Compendium-compatible format, so they can be imported into other character sheets.
-	- *Import* (!epcompendium-import) manages character, trait, morph, and item imports.
+	- *Import* (`!epcompendium-import`) manages character, trait, morph, and item imports.
 
 Installation
 ------------
@@ -65,7 +83,7 @@ Installation
 - Leave the Roll20 API Script page open, and open up your campaign view in a different tab/window. That should cause your sandbox to spin up. If no errors are reported, you should be good to go.
 
 #### EPCompendium
-If you would like access to the EPCompendium-related features, you must also install the data script for the compendium. Follow the same procedure as above for the latest release of the EPCompendium, [v4.0.0](https://github.com/Bathtor/EPCompendium/releases/tag/v4.0.0) at the time of writing. Each Compendium release also contains a number of macros prepared to use with the script that you can just c&p into your campaign.
+If you would like access to the EPCompendium-related features, you must also install the data script for the compendium. Follow the same procedure as above for the latest release of the EPCompendium, [v5.0.0](https://github.com/Bathtor/EPCompendium/releases/tag/v5.0.0) at the time of writing. Each Compendium release also contains a number of macros prepared to use with the script that you can just c&p into your campaign.
 
 #### Updating
 If you need to update one of the script installed above, simply follow the same instructions as for a normal installation. Do make sure, that you always override old script versions, and never have two versions running in parallel!
@@ -523,7 +541,7 @@ It can also be used to clear the existing token abilities.
 
 #### Usage
 
-#### Setup
+##### Setup
 1. Select all relevant tokens.
 2. Run `!eptoken --ini`, to add an *Initiative* token ability.
 Or run `!eptoken --fray`, to add an *Fray* token ability.
@@ -533,7 +551,7 @@ Or run a combination of the above, for example `!eptoken --ini --fray`.
 
 Normally, the script does not override existing token abilities. This behaviour can be changed by specifiying `--force`.
 
-#### Cleanup
+##### Cleanup
 1. Select all relevant tokens.
 2. Run `!eptoken --clear`, to delete all token abilities.
 
@@ -544,7 +562,7 @@ Normally, the script does not override existing token abilities. This behaviour 
 If you are using *The Aaron*'s [TokenMod](https://github.com/shdwjk/Roll20API/blob/master/TokenMod/TokenMod.js) script (as you should ;), I also recommend
 **TokenSetup**: `!token-mod --on showname --set bar1_link|death_rating bar2_link|wounds bar3_link|damage`
 
-*Note, that in EP you should always link tokens to sheets, as otherwise you can't keep track of wounds and traumas, which affect subsequent rolls.*
+*Note that in EP you should always link tokens to sheets, as otherwise you can't keep track of wounds and traumas, which affect subsequent rolls.*
 
 *In [Roll20 ES](https://github.com/SSStormy/roll20-enhancement-suite) Format*:
 ```json
@@ -573,6 +591,106 @@ If you are using *The Aaron*'s [TokenMod](https://github.com/shdwjk/Roll20API/bl
                 "istokenaction": false,
                 "name": "TokenSkill",
                 "visibleto": "all"
+            }
+        }
+    ]
+}
+```
+
+### Compendium
+**Commands**: `!epcompendium-data`, `!epcompendium-export`, `!epcompendium-import`
+
+The three Compendium scripts handle the [Eclipse Phase Compendium](https://github.com/Bathtor/EPCompendium) data (formats). For them to be of any use you must have some compendium data installed. Follow the instructions in the [Installation](#installation) section for the official data and/or feel free to add your own, for example by forking the compendium and generating your own data files.
+
+The Data and Import script are typically used together, to first find some item in the compendium and then either simply display information about it, or import it into a character sheet.
+
+The Export script doesn't interact with the compendium itself much, but uses the same data format. It can be used to export an item (currently only morphs) from a character sheet into a textual representation. The text always gets put into the **API Text Exchange** field on the **Options** tab in the Character sheet. *Note* that this field is only visible if the *Use API Script?* option under **Sheet Settings** is checked. There are two primary uses for this export feature. One is to simply move a custom item from one character to another. The other is use it to enrich the compendium with custom items for a campaign without having to go through the [Eclipse Phase Compendium](https://github.com/Bathtor/EPCompendium) code itself.
+
+#### Usage
+
+##### Search
+Say you are looking for an item where you vaguely know the name contains `<NAME>`, for example every pistol contains the term `Pistol`. To get a listing in the chat of all these items, ranked by "match quality", run:
+```text
+!epcompendium-data --search <NAME> --name-only --rank
+```
+
+If you want to search only a single category, for example *weapons*, replace `--search` with the name of the category, e.g. `--weapons Pistol`. Within a category you can also ask for a random entry via `*`, e.g. `--weapons *` will return a random weapon.
+
+Whenever you use the `--name-only` option, the output will be a list of item names followed by two symbols: Clicking on the `?` will pull up detailed info about the item (the same info you would get without the `--name-only` option). Clicking on the `⤺` will import the item into the character sheets of all currently selected tokens. The import option is also available on the detailed view.
+
+##### Multi-Search
+You can also search for more than one item at a time, and produce a list of best matches. To so for search terms `<TERM1>`, `<TERM2>`, `<TERM3>` run:
+```text
+!epcompendium-data --multi-search -- <TERM1>,<TERM2>,<TERM3>`
+```
+The output will have the format `<TERM> -> <BEST RESULT>`, if at least one result was found.
+This feature is used by the EP Sheet to create a quick list of morph *Enhancements*, for example.
+
+##### Import
+There are multiple ways to import data into character sheets associated with selected tokens. The basic command is something like:
+```text
+!epcompendium-import --<CATEGORY> <EXACT NAME>
+```
+Since typing this out for every item would be pretty error prone and tedious, the following alternative methods are recommended instead:
+
+1. Use the import (`⤺`) buttons on search output as described above.
+2. Use the macros generated with every [EP Compendium Release](https://github.com/Bathtor/EPCompendium/releases).
+3. To import a custom item from the **API Text Exchange** field use `!epcompendium-import --from-sheet` instead. You don't have to specify the item category in this case, as the format used for this is self-describing. This, however, also means that you can't simply c&p things between the Compendium Script and the **API Text Exchange** field. However, the export and import formats match.
+
+##### Export
+Currently, the script only supports exporting the currently active morph instance.
+
+1. Select all relevant tokens. (They must have an active morph!)
+2. Run `!epcompendium-export --morph`.
+3. Go to the **API Text Exchange** field on the **Options** tab in the Character sheet and c&p the text there to where you need it, e.g. another sheet where you want to import this morph model.
+
+#### Recommended Macros
+**Search**: `!epcompendium-data --search ?{Search for} --name-only --rank`
+**SheetImport**: `!epcompendium-import --from-sheet`
+**SheetExport**: `!epcompendium-export --morph`
+**RandomDerangement**: `!epcompendium-import --derangement * --duration [[floor(1d10/2)]]`
+
+Plus all the macros generated for each [EP Compendium Release](https://github.com/Bathtor/EPCompendium/releases).
+
+*In [Roll20 ES](https://github.com/SSStormy/roll20-enhancement-suite) Format*:
+```json
+{
+    "schema_version": 2,
+    "macros": [
+        {
+            "attributes": {
+                "action": "!epcompendium-data --search ?{Search for} --name-only --rank",
+                "istokenaction": false,
+                "name": "Search",
+                "visibleto": "all"
+            },
+            "macrobar": {
+                "color": null,
+                "name": null
+            }
+        },
+        {
+            "attributes": {
+                "action": "!epcompendium-import --from-sheet",
+                "istokenaction": true,
+                "name": "SheetImport",
+                "visibleto": "all"
+            }
+        },
+        {
+            "attributes": {
+                "action": "!epcompendium-import --derangement * --duration [[floor(1d10/2)]]",
+                "istokenaction": false,
+                "name": "RandomDerangement",
+                "visibleto": ""
+            }
+        },
+        {
+            "attributes": {
+                "action": "!epcompendium-export --morph",
+                "istokenaction": false,
+                "name": "SheetExport",
+                "visibleto": ""
             }
         }
     ]
