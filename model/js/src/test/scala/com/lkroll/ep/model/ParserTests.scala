@@ -5,6 +5,54 @@ import org.scalactic.source.Position.apply
 
 class ParserTests extends FunSuite with Matchers {
 
+  test("Should parse simple aptitudes") {
+    val singleNumber = "30";
+    val resSingleNumberT = ValueParsers.aptitudesFrom(singleNumber);
+    val resSingleNumber = resSingleNumberT.get;
+    resSingleNumber.cog shouldBe Some(30);
+    resSingleNumber.coo shouldBe Some(30);
+    resSingleNumber.int shouldBe Some(30);
+    resSingleNumber.ref shouldBe Some(30);
+    resSingleNumber.sav shouldBe Some(30);
+    resSingleNumber.som shouldBe Some(30);
+    resSingleNumber.wil shouldBe Some(30);
+  }
+
+  test("Should parse named aptitudes") {
+    val commaApts = "+10 COG, -5 SAV";
+    val resCommaT = ValueParsers.aptitudesFrom(commaApts);
+    val resComma = resCommaT.get;
+    resComma.cog shouldBe Some(10);
+    resComma.coo shouldBe None;
+    resComma.int shouldBe None;
+    resComma.ref shouldBe None;
+    resComma.sav shouldBe Some(-5);
+    resComma.som shouldBe None;
+    resComma.wil shouldBe None;
+  }
+
+  test("Should parse json aptitudes") {
+    val jsonApts = """
+{
+  "cog": 30,
+  "coo": 25,
+  "int": 25,
+  "ref": 25,
+  "sav": 15,
+  "som": 25
+}
+""";
+    val resJsonT = ValueParsers.aptitudesFrom(jsonApts);
+    val resJson = resJsonT.get;
+    resJson.cog shouldBe Some(30);
+    resJson.coo shouldBe Some(25);
+    resJson.int shouldBe Some(25);
+    resJson.ref shouldBe Some(25);
+    resJson.sav shouldBe Some(15);
+    resJson.som shouldBe Some(25);
+    resJson.wil shouldBe None;
+  }
+
   test("Should parse json formatted skills") {
     // #1
     val singleJsonData = """

@@ -53,9 +53,9 @@ object ValueParsers {
       if (s.isEmpty()) {
         Success(Aptitude.defaultValues)
       } else if (s.startsWith("{")) {
-        //EPWorkers.log(s"Trying to parse $s as json.");
+        //println(s"Trying to parse $s as json.");
         val res = js.JSON.parse(s);
-        //EPWorkers.log(s"Got dynamic: $res.");
+        //println(s"Got dynamic: $res.");
         //        val value: Any = PicklerRegistry.unpickle(res);
         //        EPWorkers.log(s"Got value: $res.");
 
@@ -68,39 +68,40 @@ object ValueParsers {
         val wil = dynamicToOption[Int](res.wil).map(_.toInt);
         Success(AptitudeValues(cog, coo, int, ref, sav, som, wil))
       } else {
-        //EPWorkers.log(s"Trying to parse $s as comma separated string.");
+        //println(s"Trying to parse $s as comma separated string.");
         val commaSplit = s.split(',').map(_.trim());
         if (commaSplit.length == 1) {
-          //EPWorkers.log(s"Split is of length 1: ${commaSplit(0)}");
+          //println(s"Split is of length 1: ${commaSplit(0)}");
           val iT = Try(commaSplit(0).toInt);
           val aT = iT.map { i =>
-            //EPWorkers.log(s"Single parsing successful: $i");
+            //println(s"Single parsing successful: $i");
             val aptsMap = Aptitude.values.map(a => (a -> i)).toMap;
             val apts = Aptitude.valuesFrom(aptsMap);
-            //EPWorkers.log(s"Aptitudes: ${aptsMap.mkString(",")} -> $apts");
+            //println(s"Aptitudes: ${aptsMap.mkString(",")} -> $apts");
             apts;
           };
           aT
+        } else {
+          val parsed = commaSplit.zipWithIndex.map {
+            case (in, index) =>
+              //println(s"Mapping $index -> ${in}");
+              val oT = Try((Aptitude(index) -> in.toInt)).recoverWith {
+                case _ =>
+                  val spaceSplit = in.split(" ");
+                  //println(s"Wasn't just a number: ${spaceSplit.mkString(",")}");
+                  if (spaceSplit.length == 2) {
+                    for {
+                      i <- Try(spaceSplit(0).toInt);
+                      a <- Try(aptFrom(spaceSplit(1).toUpperCase()))
+                    } yield (a -> i)
+                  } else {
+                    Failure(new IllegalArgumentException(in))
+                  }
+              }
+              oT
+          };
+          parsed.sequence.map(p => Aptitude.valuesFrom(p.toMap))
         }
-        val parsed = commaSplit.zipWithIndex.map {
-          case (in, index) =>
-            //EPWorkers.log(s"Mapping $index -> ${in}");
-            val oT = Try((Aptitude(index) -> in.toInt)).recoverWith {
-              case _ =>
-                val spaceSplit = in.split(" ");
-                //EPWorkers.log(s"Wasn't just a number: ${spaceSplit.mkString(",")}");
-                if (spaceSplit.length == 2) {
-                  for {
-                    i <- Try(spaceSplit(0).toInt);
-                    a <- Try(aptFrom(spaceSplit(1).toUpperCase()))
-                  } yield (a -> i)
-                } else {
-                  Failure(new IllegalArgumentException(in))
-                }
-            }
-            oT
-        };
-        parsed.sequence.map(p => Aptitude.valuesFrom(p.toMap))
       }
     };
     r.flatten
