@@ -25,6 +25,7 @@
 package com.lkroll.ep.api.compendium
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
@@ -35,8 +36,9 @@ import APIImplicits._;
 
 class CharacterImport(val c: EPCharacter) extends Importable {
   private var morphId: Option[String] = None;
+  private var skillSet: Option[SkillImport] = None;
 
-  override def updateLabel: String = s"Character <c.name>";
+  override def updateLabel: String = s"Character ${c.name}";
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     char.name = c.name;
     char.attribute(epmodel.genderId) <<= c.gender.entryName;
@@ -61,9 +63,13 @@ class CharacterImport(val c: EPCharacter) extends Importable {
 
     //  Skills
     val skillRes = c.skills.foldLeft(Ok("Ok").asInstanceOf[Result[String]]) { (acc, skill) =>
-      val res = SkillImport(skill).importInto(char, idPool, cache);
+      val skilli = SkillImport(skill);
+      val res = skilli.importInto(char, idPool, cache);
       res match {
-        case Ok(_) => acc // ignore ok
+        case Ok(_) => {
+          this.skillSet = Some(skilli); // latest successful skill
+          acc // ignore ok
+        }
         case Err(err) => acc match {
           case Ok(_)       => res // replace oks with errors
           case Err(errAcc) => Err(s"${errAcc}, ${err}")
@@ -158,8 +164,8 @@ class CharacterImport(val c: EPCharacter) extends Importable {
     l
   }
 
-  override def triggerWorkers(char: Character): Future[Unit] = {
-    this.morphId match {
+  override def triggerWorkers(char: Character)(implicit ec: ExecutionContext): Future[Unit] = {
+    val morphF = this.morphId match {
       case rowId @ Some(_) => {
         // just setting a morph active, should cause almost all dynamic values on the sheet to be recalculated
         val f = char.createRepeating(MorphSection.active, rowId).setWithWorker(true);
@@ -167,6 +173,10 @@ class CharacterImport(val c: EPCharacter) extends Importable {
         f
       }
       case None => Future.failed(new RuntimeException("You must import a character, before triggering workers!"))
+    };
+    this.skillSet match {
+      case Some(skilli) => morphF.flatMap(_ => skilli.triggerWorkers(char))
+      case None         => morphF
     }
   }
 }

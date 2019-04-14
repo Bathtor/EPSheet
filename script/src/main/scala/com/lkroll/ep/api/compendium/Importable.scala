@@ -30,12 +30,13 @@ import com.lkroll.ep.compendium._
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.model.ActiveSkillSection
+import scala.concurrent.ExecutionContext
 
 trait Importable {
   def updateLabel: String;
   def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String];
   def children: List[Importable] = Nil;
-  def triggerWorkers(char: Character): Future[Unit] = Future.successful(());
+  def triggerWorkers(char: Character)(implicit ec: ExecutionContext): Future[Unit] = Future.successful(());
 }
 
 object Importable {

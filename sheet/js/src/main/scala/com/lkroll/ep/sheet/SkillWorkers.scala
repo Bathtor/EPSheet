@@ -104,6 +104,7 @@ object SkillWorkers extends SheetWorker {
 
   val museSkillTotalCalc = museSkillTotalCalcOp.all(museSkills);
 
+  val nop1: Option[String] => ChainingDecision = (f) => ExecuteChain;
   val nop7: Option[Tuple7[Int, Int, Int, Int, Int, Int, Int]] => ChainingDecision = (f) => ExecuteChain;
   val museAptSkillCalc = bind(op(museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) apply (nop7, museSkillTotalCalc);
 
@@ -136,6 +137,11 @@ object SkillWorkers extends SheetWorker {
   }
 
   onRemove(activeSkills, (_: Roll20.EventInfo) => { EPWorkers.searchFrayAndSetHalved(); () });
+
+  val setFrayHalved = nop { _: Option[Unit] =>
+    EPWorkers.searchFrayAndSetHalved()
+  };
+  val activeSkillNameChange = bind(op(activeSkills.skillName)) apply (nop1, setFrayHalved);
 
   private def getActiveSkills(): Future[List[Skills.ActiveSkillTuple]] = {
     import Skills.ActiveSkillTuple;

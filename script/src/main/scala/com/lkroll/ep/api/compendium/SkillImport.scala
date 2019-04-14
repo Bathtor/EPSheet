@@ -30,6 +30,9 @@ import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
 import com.lkroll.ep.model.{ EPCharModel => epmodel, ActiveSkillSection, KnowledgeSkillSection, Skills, Aptitude => ModelAptitude }
 import APIImplicits._;
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 object SkillConversions {
   def compendiumCat2modelCat(c: SkillCategory): Skills.SkillCategory.SkillCategory = {
@@ -76,9 +79,13 @@ object SkillConversions {
 }
 
 case class SkillImport(s: CharacterSkill) extends Importable {
+
+  private var assignedRowId: Option[String] = None;
+
   def updateLabel: String = s.name;
   def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
+    this.assignedRowId = rowId;
 
     s.cls match {
       case SkillClass.Active => {
@@ -135,12 +142,28 @@ case class SkillImport(s: CharacterSkill) extends Importable {
       }
     }
   }
+
+  override def triggerWorkers(char: Character)(implicit ec: ExecutionContext): Future[Unit] = {
+    val r = Try(this.assignedRowId.get).map(rowId => {
+      s.cls match {
+        case SkillClass.Active => {
+          char.createRepeating(ActiveSkillSection.skillName, Some(rowId)).setWithWorker(s.name); // force trigger of Fray/2 worker
+        }
+        case _ => Future.successful(())
+      }
+    });
+    Future.fromTry(r).flatten
+  }
 }
 
 case class SkillDefImport(s: SkillDef) extends Importable {
+
+  private var assignedRowId: Option[String] = None;
+
   def updateLabel: String = s.name;
   def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val rowId = Some(idPool.generateRowId());
+    this.assignedRowId = rowId;
 
     s.cls match {
       case SkillClass.Active => {
@@ -196,5 +219,17 @@ case class SkillDefImport(s: SkillDef) extends Importable {
         Ok("Ok")
       }
     }
+  }
+
+  override def triggerWorkers(char: Character)(implicit ec: ExecutionContext): Future[Unit] = {
+    val r = Try(this.assignedRowId.get).map(rowId => {
+      s.cls match {
+        case SkillClass.Active => {
+          char.createRepeating(ActiveSkillSection.skillName, Some(rowId)).setWithWorker(s.name); // force trigger of Fray/2 worker
+        }
+        case _ => Future.successful(())
+      }
+    });
+    Future.fromTry(r).flatten
   }
 }

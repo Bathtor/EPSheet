@@ -6,7 +6,7 @@ name := "EP API Script"
 
 organization := "com.lkroll.ep"
 
-version := "1.0.0"
+version := "1.0.1"
 
 scalaVersion := "2.12.8"
 
@@ -14,7 +14,7 @@ resolvers += Resolver.bintrayRepo("lkrollcom", "maven")
 
 libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.10.0"
 libraryDependencies += "com.lkroll.ep" %%% "epcompendium-core" % "5.0.0"
-libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.12.1"
+libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.12.2"
 libraryDependencies += "com.lkroll.common" %%% "common-data-tools" % "1.3.+"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
 libraryDependencies += "org.rogach" %%% "scallop" % "3.1.+"

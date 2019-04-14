@@ -343,14 +343,21 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
                   case Failure(e) => Future.successful(List(s"Failed to parse data from sheet: ${e.getMessage}"))
                 }
               } else {
-                var childUpdates = List.empty[String];
-                toImport.foreach { i =>
-                  i.importInto(char, idPool, importCache) match {
-                    case Ok(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
-                    case Err(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                val childUpdates = toImport.foldLeft(Future.successful(List.empty[String])) { (accf, i) =>
+                  accf.flatMap { acc =>
+                    i.importInto(char, idPool, importCache) match {
+                      case Ok(msg) => {
+                        val res = s"Imported ${i.updateLabel} ($msg)" :: acc;
+                        i.triggerWorkers(char).map(_ => res)
+                      }
+                      case Err(msg) => {
+                        val res = s"Failed to import ${i.updateLabel} (correctly): $msg" :: acc;
+                        Future.successful(res)
+                      }
+                    }
                   }
-                }
-                Future.successful(childUpdates.reverse)
+                };
+                childUpdates
               };
 
               val updateF = updates.map(u => char.name -> u).recover {
