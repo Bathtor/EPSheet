@@ -31,7 +31,7 @@ import com.lkroll.roll20.api.templates._
 import scalajs.js
 import scalajs.js.JSON
 //import fastparse.all._
-import util.{ Try, Success, Failure }
+import util.{Failure, Success, Try}
 import com.lkroll.ep.model.ActiveSkillSection
 import scalatags.Text.all._;
 
@@ -78,8 +78,8 @@ class EPTokensConf(args: Seq[String]) extends ScallopAPIConf(args) {
   val frayHalved = opt[Boolean]("fray-halved", descr = "Add Fray/2 as a token action");
   val skill = opt[List[String]](
     "skill",
-    descr = "Add the provided Active Skill as a token action. (Can be specified multiple times)")(
-      ScallopUtils.singleListArgConverter(identity));
+    descr = "Add the provided Active Skill as a token action. (Can be specified multiple times)"
+  )(ScallopUtils.singleListArgConverter(identity));
   conflicts(clear, List(force, ini, fray, frayHalved, skill));
   verify();
 }
@@ -125,11 +125,8 @@ object EPTokensCommand extends EPCommand[EPTokensConf] {
       }
       (char.name -> updates)
     };
-    val updates = div(
-      h4("Updated Characters"),
-      ul(for ((char, ups) <- updatedCharacters) yield li(
-        b(char),
-        ul(for (u <- ups) yield li(u)))));
+    val updates = div(h4("Updated Characters"),
+                      ul(for ((char, ups) <- updatedCharacters) yield li(b(char), ul(for (u <- ups) yield li(u)))));
     debug(s"Updates: $updates")
     ctx.reply("Token Setup", updates);
   }

@@ -39,15 +39,20 @@ object Header extends FieldGroup {
   val sty = EPStyle;
 
   val members: Seq[SheetElement] = Seq(
-    GroupWithRenderer(LogoRenderer, Seq(
-      div(sty.logoPlaceholder),
-      char.versionField like { f =>
-        div(
-          sty.aRight,
-          input(`type` := "hidden", name := f.name, value := f.initialValue),
-          span(t.version), span(name := f.name))
-      })),
-    GroupWithRenderer(CharNameRenderer, Seq(t.charName -> dualMode(char.characterName))));
+    GroupWithRenderer(
+      LogoRenderer,
+      Seq(
+        div(sty.logoPlaceholder),
+        char.versionField like { f =>
+          div(sty.aRight,
+              input(`type` := "hidden", name := f.name, value := f.initialValue),
+              span(t.version),
+              span(name := f.name))
+        }
+      )
+    ),
+    GroupWithRenderer(CharNameRenderer, Seq(t.charName -> dualMode(char.characterName)))
+  );
 
   override def renderer = HeaderRenderer;
 }
@@ -60,10 +65,7 @@ object HeaderRenderer extends GroupRenderer {
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
-    div(
-      EPStyle.labelGroup,
-      e,
-      div(EPStyle.subLabel, l));
+    div(EPStyle.labelGroup, e, div(EPStyle.subLabel, l));
 
   override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 }
@@ -85,10 +87,7 @@ object CharNameRenderer extends GroupRenderer {
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
-    div(
-      EPStyle.labelGroup,
-      e,
-      div(EPStyle.subLabel, l));
+    div(EPStyle.labelGroup, e, div(EPStyle.subLabel, l));
 
   override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 }

@@ -28,12 +28,12 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
+import com.lkroll.ep.model.{EPCharModel => epmodel}
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
 import concurrent.Future
-import scala.util.{ Try, Success, Failure }
+import scala.util.{Failure, Success, Try}
 import scala.collection.mutable
 import scalatags.Text.all._
 
@@ -42,22 +42,31 @@ object BattleManagerScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPBattlemanCommand);
 
   val minConf = new EPBattlemanConf(Seq("--start"));
-  
-  onChange("campaign:turnorder", { (_, _) => EPBattlemanCommand.state match {
-      case EPBattlemanCommand.Active(_, _, _) => {
-        val conf = minConf
-        val resetButton = EPBattlemanCommand.invoke("reset", List(conf.reset <<= true)).render;
-        sendChatWarning("Battleman (API)", 
-        Chat.GM.htmlMessage(div(p(
-            "It is not recommended to manually change the turn order, while a battle is active in the Battle Manager.",
-            "You might end up in an inconsistent state!",
-            ),
-           p("Do you wish to ", raw(resetButton), " the state?")    
-        )));
+
+  onChange(
+    "campaign:turnorder", { (_, _) =>
+      EPBattlemanCommand.state match {
+        case EPBattlemanCommand.Active(_, _, _) => {
+          val conf = minConf
+          val resetButton = EPBattlemanCommand.invoke("reset", List(conf.reset <<= true)).render;
+          sendChatWarning(
+            "Battleman (API)",
+            Chat.GM.htmlMessage(
+              div(
+                p(
+                  "It is not recommended to manually change the turn order, while a battle is active in the Battle Manager.",
+                  "You might end up in an inconsistent state!"
+                ),
+                p("Do you wish to ", raw(resetButton), " the state?")
+              )
+            )
+          );
+        }
+        case _ => (), // that's ok
       }
-      case _ => (), // that's ok
-    }});
-  
+    }
+  );
+
 }
 
 class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
@@ -67,17 +76,25 @@ class EPBattlemanConf(args: Seq[String]) extends ScallopAPIConf(args) {
   val start = opt[Boolean]("start", descr = "Start a battle with all the characters currently in the turn order.");
   val next = opt[Boolean]("next", descr = "Move to the next character, accounting for phases and turns.");
   val end = opt[Boolean]("end", descr = "Ends a battle by clearing the turn order and internal state.");
-  val add = opt[Boolean]("add", descr = "Adds the currently selected tokens to the turn order and battleman. Use this while a battle is active, instead of manually adding tokens to the turn order.");
-  val drop = opt[Boolean]("drop", descr = "Removes the currently selected tokens from the turn order and battleman. Use this while a battle is active, instead of manually removing tokens from the turn order.");
+  val add = opt[Boolean](
+    "add",
+    descr =
+      "Adds the currently selected tokens to the turn order and battleman. Use this while a battle is active, instead of manually adding tokens to the turn order."
+  );
+  val drop = opt[Boolean](
+    "drop",
+    descr =
+      "Removes the currently selected tokens from the turn order and battleman. Use this while a battle is active, instead of manually removing tokens from the turn order."
+  );
   val reset = opt[Boolean]("reset", descr = "Reset turn order to last valid state.");
-  
+
   requireOne(start, next, end, add, drop, reset);
   verify();
 }
 
 object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
   import APIImplicits._;
-  import TurnOrder.{ Entry, CustomEntry, TokenEntry };
+  import TurnOrder.{CustomEntry, Entry, TokenEntry};
   override def command = "epbattleman";
   override def options = (args) => new EPBattlemanConf(args);
   override def apply(config: EPBattlemanConf, ctx: ChatContext): Unit = {
@@ -129,7 +146,9 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
                     sorting ::= (ini -> e);
                   }
                   case None => {
-                    ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character. Unlinked tokens are currently not supported.");
+                    ctx.replyWarn(
+                      s"Token ${token.name}(${token.id}) does not represent any character. Unlinked tokens are currently not supported."
+                    );
                   }
                 }
               }
@@ -152,11 +171,9 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           turnOrder.set(newOrder);
           updateLastState(Some(newOrder));
           val part = ul(
-              for ((t, c) <- participants.values.toSeq) yield li(b(c.name))
-              );
-          val reply = div(
-              h4("Battle Participants"), 
-              p(part));
+            for ((t, c) <- participants.values.toSeq) yield li(b(c.name))
+          );
+          val reply = div(h4("Battle Participants"), p(part));
           ctx.reply("Battle Started!", reply);
         } else {
           ctx.replyWarn("There is no one to start a battle with :(");
@@ -245,7 +262,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
       case Success(res) => {
         state = state match {
           case Active(round, phase, s) => Active(round + 1, 0, s)
-          case s                    => error("Battleman is in an invalid state!"); s
+          case s                       => error("Battleman is in an invalid state!"); s
         };
         var sorting = List.empty[(Int, Entry)];
         res.foreach {
@@ -311,11 +328,12 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
                 sortingPost ::= sEntry;
               }
             }
-            case None => if (preMarker) {
-              sortingPre ::= (ini -> e);
-            } else {
-              sortingPost ::= (ini -> e)
-            };
+            case None =>
+              if (preMarker) {
+                sortingPre ::= (ini -> e);
+              } else {
+                sortingPost ::= (ini -> e)
+              };
           }
         }
         case e => debug(s"Dropping entry $e during sorting.");
@@ -337,7 +355,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
         participants.clear();
         iniCache.clear();
         val time = round * 3;
-        ctx.reply("Battle Ended!",s"The battle concluded in ${round} rounds (${time}s) and ${phase} phases.");
+        ctx.reply("Battle Ended!", s"The battle concluded in ${round} rounds (${time}s) and ${phase} phases.");
       }
       case _ => {
         ctx.replyWarn("There is no currently active battle to end.");
@@ -348,11 +366,11 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
   private def marker(ini: Int): TurnOrder.CustomEntry = {
     val s = state match {
       case Active(round, phase, _) => s"|Round ${round}|Phase ${phase + 1}|"
-      case Inactive             => "|Inactive|"
+      case Inactive                => "|Inactive|"
     };
     TurnOrder.CustomEntry(s, Left(ini))
   }
-  
+
   private def onAdd(ctx: ChatContext) {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
@@ -368,7 +386,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           case Some(char) => {
             debug(s"Token represents $char");
             EPScripts.checkVersion(char) match {
-              case Ok(_) => Some((token, char))
+              case Ok(_)    => Some((token, char))
               case Err(msg) => ctx.replyWarn(msg + " Skipping token."); None
             }
           }
@@ -391,7 +409,7 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
             }
           };
           var sortingPost = List.empty[(Int, Entry)];
-    
+
           var preMarker = true;
           turnOrder.get().foreach {
             case e @ CustomEntry(name, _) => {
@@ -403,10 +421,10 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
             }
             case e @ TokenEntry(id, Left(ini)) => {
               if (preMarker) {
-                  sortingPre ::= (ini -> e);
-                } else {
-                  sortingPost ::= (ini -> e)
-                }
+                sortingPre ::= (ini -> e);
+              } else {
+                sortingPost ::= (ini -> e)
+              }
             }
             case e => debug(s"Dropping entry $e during sorting.");
           }
@@ -414,42 +432,41 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
           turnOrder.set(newOrder);
           updateLastState(Some(newOrder));
           val part = ul(
-              for ((t, c, i) <- res) yield li(b(c.name))
-              );
-          val reply = div(
-              h4("New Battle Participants"), 
-              p(part));
+            for ((t, c, i) <- res) yield li(b(c.name))
+          );
+          val reply = div(h4("New Battle Participants"), p(part));
           ctx.reply("Battle Updated!", reply);
         }
-        case Failure(f) => error(f); ctx.replyError("Tokens could not be added to battleman. See log for error messages.")
+        case Failure(f) =>
+          error(f); ctx.replyError("Tokens could not be added to battleman. See log for error messages.")
       }
     }
   }
 
   private def assembleWithMarker(sortingPre: List[(Int, Entry)], sortingPost: List[(Int, Entry)]): List[Entry] = {
-		  (sortingPre.isEmpty, sortingPost.isEmpty) match {
-  		  case (true, true) => List.empty
-  		  case (true, false) => {
-  			  val sorted = sortingPost.sortBy(_._1)(Ordering[Int].reverse);
-  			  val maxEntry = sorted.head._1 + 1;
-  			  marker(maxEntry) :: sorted.map(_._2);
-  		  }
-  		  case (false, true) => {
-  			  val sorted = sortingPre.sortBy(_._1)(Ordering[Int].reverse);
-  			  val maxEntry = sorted.head._1 + 1;
-  			  sorted.map(_._2) ++ List(marker(maxEntry))
-  		  }
-  		  case (false, false) => {
-  			  val sortedPost = sortingPost.sortBy(_._1)(Ordering[Int].reverse);
-  			  val sortedPre = sortingPre.sortBy(_._1)(Ordering[Int].reverse);
-  			  val maxEntry = Math.max(sortedPost.head._1, sortedPre.head._1) + 1;
-  			  val pre = sortedPre.map(_._2);
-  			  val post = sortedPost.map(_._2);
-  			  pre ++ (marker(maxEntry) :: post)
-  		  }
-		  }
+    (sortingPre.isEmpty, sortingPost.isEmpty) match {
+      case (true, true) => List.empty
+      case (true, false) => {
+        val sorted = sortingPost.sortBy(_._1)(Ordering[Int].reverse);
+        val maxEntry = sorted.head._1 + 1;
+        marker(maxEntry) :: sorted.map(_._2);
+      }
+      case (false, true) => {
+        val sorted = sortingPre.sortBy(_._1)(Ordering[Int].reverse);
+        val maxEntry = sorted.head._1 + 1;
+        sorted.map(_._2) ++ List(marker(maxEntry))
+      }
+      case (false, false) => {
+        val sortedPost = sortingPost.sortBy(_._1)(Ordering[Int].reverse);
+        val sortedPre = sortingPre.sortBy(_._1)(Ordering[Int].reverse);
+        val maxEntry = Math.max(sortedPost.head._1, sortedPre.head._1) + 1;
+        val pre = sortedPre.map(_._2);
+        val post = sortedPost.map(_._2);
+        pre ++ (marker(maxEntry) :: post)
+      }
+    }
   }
-  
+
   private def onDrop(ctx: ChatContext) {
     val graphicTokens = ctx.selected;
     if (graphicTokens.isEmpty) {
@@ -464,17 +481,16 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
         participants.remove(token.id);
         iniCache.remove(token.id);
         token.id
-      }.toSet; 
+      }.toSet;
       turnOrder.modify(_.filterNot {
-          case TokenEntry(id, _) => ids.contains(id)
-          case _ => false
-        }
-      );
+        case TokenEntry(id, _) => ids.contains(id)
+        case _                 => false
+      });
       updateLastState();
-      ctx.reply("Battle Updated!",s"Removed ${ids.size} tokens from battleman.");
+      ctx.reply("Battle Updated!", s"Removed ${ids.size} tokens from battleman.");
     }
   }
-  
+
   private def onReset(ctx: ChatContext) {
     state match {
       case Active(_, _, lastState) => {
@@ -486,13 +502,13 @@ object EPBattlemanCommand extends EPCommand[EPBattlemanConf] {
       }
     }
   }
-  
+
   private def updateLastState(newOrder: Option[List[TurnOrder.Entry]] = None): Unit = {
     state match {
-        case a: Active => {
-          state = a.copy(lastState = newOrder.getOrElse(turnOrder.get()))
-        }
-          case Inactive => ()
+      case a: Active => {
+        state = a.copy(lastState = newOrder.getOrElse(turnOrder.get()))
       }
+      case Inactive => ()
+    }
   }
 }

@@ -29,35 +29,43 @@ import com.lkroll.roll20.facade.Roll20.EventInfo;
 import com.lkroll.roll20.sheet._
 import com.lkroll.ep.model._
 import SheetWorkerTypeShorthands._
-import util.{ Success, Failure }
-import concurrent.{ Future, Promise, ExecutionContext }
+import util.{Failure, Success}
+import concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
 
 object GearWorkers extends SheetWorker {
   import EPCharModel._
 
   val armourTotalCalc = op(armourEnergyBonus, armourKineticBonus, morphArmourEnergy, morphArmourKinetic, durability) update {
-    case (energyBonus, kineticBonus, energyMorph, kineticMorph, dur) => Seq(
-      armourEnergyTotal <<= (Math.min(dur, energyMorph + energyBonus)),
-      armourKineticTotal <<= (Math.min(dur, kineticMorph + kineticBonus)))
+    case (energyBonus, kineticBonus, energyMorph, kineticMorph, dur) =>
+      Seq(armourEnergyTotal <<= (Math.min(dur, energyMorph + energyBonus)),
+          armourKineticTotal <<= (Math.min(dur, kineticMorph + kineticBonus)))
   }
 
-  val armourBonusFields = op(armourItems.active, armourItems.accessory,
-    armourItems.energyBonus, armourItems.kineticBonus);
+  val armourBonusFields =
+    op(armourItems.active, armourItems.accessory, armourItems.energyBonus, armourItems.kineticBonus);
 
   val layeringPenaltyPerLayer = -20;
 
-  private val armourBonusSum = armourBonusFields.fold(armourItems, (0, 0, 20))((acc: (Int, Int, Int), v: (String, (Boolean, Boolean, Int, Int))) => v match {
-    case (_, ((active, accessory, energyBonus, kineticBonus))) => if (active) {
-      (acc._1 + energyBonus, acc._2 + kineticBonus, if (accessory) { acc._3 } else { acc._3 + layeringPenaltyPerLayer })
-    } else {
-      acc
-    }
-  })(t => Seq(armourEnergyBonus <<= t._1, armourKineticBonus <<= t._2, layeringPenalty <<= (if (t._3 > 0) 0 else t._3)));
+  private val armourBonusSum = armourBonusFields.fold(armourItems, (0, 0, 20))(
+    (acc: (Int, Int, Int), v: (String, (Boolean, Boolean, Int, Int))) =>
+      v match {
+        case (_, ((active, accessory, energyBonus, kineticBonus))) =>
+          if (active) {
+            (acc._1 + energyBonus, acc._2 + kineticBonus, if (accessory) {
+              acc._3
+            } else {
+              acc._3 + layeringPenaltyPerLayer
+            })
+          } else {
+            acc
+          }
+      }
+  )(t => Seq(armourEnergyBonus <<= t._1, armourKineticBonus <<= t._2, layeringPenalty <<= (if (t._3 > 0) 0 else t._3)));
 
   private val armourBonusCalc: Tuple4[Boolean, Boolean, Int, Int] => UpdateDecision = {
     case (active, accessory, energyBonus, kineticBonus) => (emptyUpdates, ExecuteChain)
-    case _ => (emptyUpdates, SkipChain)
+    case _                                              => (emptyUpdates, SkipChain)
   }
 
   val armourBonus = bind(armourBonusFields).update(armourBonusCalc, armourBonusSum.andThen(armourTotalCalc));
@@ -82,7 +90,14 @@ object GearWorkers extends SheetWorker {
     }
   };
 
-  val weaponRangeLimitsFields = op(somTotal, rangedWeapons.thrown, rangedWeapons.shortRangeUpperInput, rangedWeapons.mediumRangeUpperInput, rangedWeapons.longRangeUpperInput, rangedWeapons.extremeRangeUpperInput);
+  val weaponRangeLimitsFields = op(
+    somTotal,
+    rangedWeapons.thrown,
+    rangedWeapons.shortRangeUpperInput,
+    rangedWeapons.mediumRangeUpperInput,
+    rangedWeapons.longRangeUpperInput,
+    rangedWeapons.extremeRangeUpperInput
+  );
   val weaponRangeLimits = weaponRangeLimitsFields update {
     case (som, somFactor, srui, mrui, lrui, xrui) => {
       val (sru, mru, lru, xru) = if (somFactor) {
@@ -106,22 +121,26 @@ object GearWorkers extends SheetWorker {
         rangedWeapons.shortRangeLower <<= srl,
         rangedWeapons.mediumRangeLower <<= mrl,
         rangedWeapons.longRangeLower <<= lrl,
-        rangedWeapons.extremeRangeLower <<= xrl)
+        rangedWeapons.extremeRangeLower <<= xrl
+      )
     }
   };
-  val weaponRangeLimitsBinding = on(weaponRangeLimitsFields.getFields.map(f => s"change:${f.selector}").mkString(" "), (ei: EventInfo) => {
-    val repIdS = Roll20.getActiveRepeatingField();
-    debug(s"Got repid = $repIdS");
-    val f = if (repIdS == "-1") {
-      val op = weaponRangeLimits.all(RangedWeaponSection);
-      op()
-    } else {
-      weaponRangeLimits()
-    };
-    f.onFailure {
-      case e: Throwable => sheet.error(e)
-    };
-  });
+  val weaponRangeLimitsBinding = on(
+    weaponRangeLimitsFields.getFields.map(f => s"change:${f.selector}").mkString(" "),
+    (ei: EventInfo) => {
+      val repIdS = Roll20.getActiveRepeatingField();
+      debug(s"Got repid = $repIdS");
+      val f = if (repIdS == "-1") {
+        val op = weaponRangeLimits.all(RangedWeaponSection);
+        op()
+      } else {
+        weaponRangeLimits()
+      };
+      f.onFailure {
+        case e: Throwable => sheet.error(e)
+      };
+    }
+  );
 
   val damageAreaCalc = bind(op(rangedWeapons.damageArea)) update {
     case (daName) => {

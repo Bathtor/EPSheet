@@ -27,7 +27,7 @@ package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model.{ EPTranslation => TranslationKeys, _ }
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 
 object EPTranslation extends SheetI18NDefaults {
   val keys = TranslationKeys;
@@ -436,12 +436,12 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
     PsiType -> psiType,
     DerangementSeverity -> derangementSeverityOptions,
     TraitType -> traitTypeOptions,
-    ChatOutput -> chatOutputOptions);
+    ChatOutput -> chatOutputOptions
+  );
 
-  lazy val allShortOptions = Map[Enumeration, OptionLabel](
-    Skills.SkillCategory -> skillCategoryOptionsShort,
-    DamageType -> dmgTypeShort,
-    PsiType -> psiTypeShort,
-    TraitType -> traitTypeOptionsShort);
+  lazy val allShortOptions = Map[Enumeration, OptionLabel](Skills.SkillCategory -> skillCategoryOptionsShort,
+                                                           DamageType -> dmgTypeShort,
+                                                           PsiType -> psiTypeShort,
+                                                           TraitType -> traitTypeOptionsShort);
 
 }

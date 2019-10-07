@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, DisorderSection }
+import com.lkroll.ep.model.{EPCharModel => epmodel, DisorderSection}
 import APIImplicits._;
 
 case class DisorderImport(d: Disorder) extends Importable {

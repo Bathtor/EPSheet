@@ -28,12 +28,19 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, MorphSection, GearSection, ArmourItemSection, MeleeWeaponSection, RangedWeaponSection }
+import com.lkroll.ep.model.{
+  EPCharModel => epmodel,
+  MorphSection,
+  GearSection,
+  ArmourItemSection,
+  MeleeWeaponSection,
+  RangedWeaponSection
+}
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
 import concurrent.Future
-import scala.util.{ Try, Success, Failure }
+import scala.util.{Failure, Success, Try}
 import scala.collection.mutable
 
 object CharCleanerScript extends EPScript {
@@ -46,7 +53,9 @@ class CharCleanerConf(args: Seq[String]) extends ScallopAPIConf(args) {
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val egocast = opt[Boolean]("egocast", descr = "Remove everything not taken along on an Ego Cast from the sheet.");
   val backup = opt[Boolean]("backup", descr = "Remove everything not taken along during an Ego Backup from the sheet.");
-  val prefix = opt[String]("prefix", descr = "&lt;param&gt; will be prefixed to the sheet name (default: BACKUP)", default = Some("BACKUP"))(ScallopUtils.singleArgSpacedConverter(identity));
+  val prefix = opt[String]("prefix",
+                           descr = "&lt;param&gt; will be prefixed to the sheet name (default: BACKUP)",
+                           default = Some("BACKUP"))(ScallopUtils.singleArgSpacedConverter(identity));
 
   requireOne(egocast, backup);
   dependsOnAll(prefix, List(backup));
@@ -92,24 +101,28 @@ object CharCleanerCommand extends EPCommand[CharCleanerConf] {
           case None => ctx.reply(s"Token ${token.name}(${token.id}) does not represent any character!"); None
         }
       };
-      val updates = ul(for ((char, _) <- updatedCharacters) yield li(
-        b(char.name)));
+      val updates = ul(for ((char, _) <- updatedCharacters) yield li(b(char.name)));
       debug(s"Updates: ${updates.render}");
-      val msg = div(
-        h4("Updating Characters"),
-        p(updates));
-      val cleanType = if (config.egocast()) { "Egocast" } else if (config.backup()) { "Backup" } else { "???" };
-      ctx.replyHeader(s"Character Cleaner - ${cleanType}", msg);
-      val partials: List[Future[Unit]] = for ((char, upsF) <- updatedCharacters) yield upsF.map { msgs =>
-        val resp = div(
-          h4(s"Finished ${char.name}"),
-          p(ul(for (up <- msgs.reverse) yield li(up))));
-        ctx.replyBody(resp);
+      val msg = div(h4("Updating Characters"), p(updates));
+      val cleanType = if (config.egocast()) {
+        "Egocast"
+      } else if (config.backup()) {
+        "Backup"
+      } else {
+        "???"
       };
+      ctx.replyHeader(s"Character Cleaner - ${cleanType}", msg);
+      val partials: List[Future[Unit]] = for ((char, upsF) <- updatedCharacters)
+        yield
+          upsF.map { msgs =>
+            val resp = div(h4(s"Finished ${char.name}"), p(ul(for (up <- msgs.reverse) yield li(up))));
+            ctx.replyBody(resp);
+          };
       val partialF = Future.sequence(partials);
       partialF.onComplete {
         case Success(_) => ctx.replyFooter(h4("All done!"))
-        case Failure(e) => error(e); ctx.replyError("An error occurred during execution of a task. Please consult the log for details.")
+        case Failure(e) =>
+          error(e); ctx.replyError("An error occurred during execution of a task. Please consult the log for details.")
       }
     }
   }

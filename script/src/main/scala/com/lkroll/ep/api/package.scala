@@ -25,8 +25,8 @@
 package com.lkroll.ep
 
 import com.lkroll.ep.compendium.ChatRenderable
-import com.lkroll.roll20.core.{ Rolls, APIButton, RollExpression }
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
+import com.lkroll.roll20.core.{APIButton, RollExpression, Rolls}
+import com.lkroll.ep.model.{EPCharModel => epmodel}
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.templates._
 
@@ -90,12 +90,11 @@ package object api {
 
   import TemplateImplicits._;
 
-  def asInfoTemplate(
-    title:        String,
-    subtitle:     String,
-    importButton: Option[APIButton],
-    keys:         List[(String, String)],
-    description:  String): TemplateApplication = {
+  def asInfoTemplate(title: String,
+                     subtitle: String,
+                     importButton: Option[APIButton],
+                     keys: List[(String, String)],
+                     description: String): TemplateApplication = {
     val t = templateV("title" -> title);
     val st = templateV("subtitle" -> subtitle);
     val ib = templateV("import" -> importButton);
@@ -114,17 +113,24 @@ package object api {
     asInfoTemplate(r, importButton, buttons);
   }
 
-  def asInfoTemplate(r: ChatRenderable, importButton: APIButton, buttons: Iterable[(String, APIButton)]): TemplateApplication = {
-    val btns = buttons.map({
-      case (k, v) => (k -> v.render)
-    }).toMap;
+  def asInfoTemplate(r: ChatRenderable,
+                     importButton: APIButton,
+                     buttons: Iterable[(String, APIButton)]): TemplateApplication = {
+    val btns = buttons
+      .map({
+        case (k, v) => (k -> v.render)
+      })
+      .toMap;
     val rkv = r.templateKV;
     val kv = (rkv ++ btns).toList.sortBy(_._1); // override original fields with same name buttons
     asInfoTemplate(r.templateTitle, r.templateSubTitle, Some(importButton), kv, r.templateDescr)
   }
 
-  def asDefaultTemplate(character: String, attributeField: String, attributeSubField: Option[String] = None,
-                        testRoll: Rolls.InlineRoll[Int], testTarget: Rolls.InlineRoll[Int],
+  def asDefaultTemplate(character: String,
+                        attributeField: String,
+                        attributeSubField: Option[String] = None,
+                        testRoll: Rolls.InlineRoll[Int],
+                        testTarget: Rolls.InlineRoll[Int],
                         testMoF: Option[Rolls.InlineRoll[Int]] = None): TemplateApplication = {
     val char = templateV("character" -> character);
     val field = templateV("attribute-field" -> attributeField);
@@ -135,8 +141,10 @@ package object api {
     EPTemplates.default.fillWith(char, field, subField, roll, target, mof)
   }
 
-  def asDamageTemplate(character: String, attributeField: String,
-                       damageRoll: Rolls.InlineRoll[Int], damageType: String,
+  def asDamageTemplate(character: String,
+                       attributeField: String,
+                       damageRoll: Rolls.InlineRoll[Int],
+                       damageType: String,
                        armourPenetration: Int): TemplateApplication = {
     val char = templateV("character" -> character);
     val field = templateV("attribute-field" -> attributeField);

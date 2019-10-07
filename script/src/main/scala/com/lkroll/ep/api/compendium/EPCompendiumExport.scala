@@ -28,9 +28,9 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts }
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
-import util.{ Try, Success, Failure }
+import com.lkroll.ep.api.{EPCommand, EPScripts, ScallopUtils, asInfoTemplate}
+import com.lkroll.ep.model.{EPCharModel => epmodel}
+import util.{Failure, Success, Try}
 import org.rogach.scallop.singleArgConverter
 import scalatags.Text.all._;
 
@@ -80,9 +80,8 @@ object EPCompendiumExportCommand extends EPCommand[EPCompendiumExportConf] {
         }
       };
       val updates = div(
-        for ((char, ups) <- updatedCharacters) yield Seq(
-          h4(char.name),
-          ul(for (up <- ups) yield li(up))));
+        for ((char, ups) <- updatedCharacters) yield Seq(h4(char.name), ul(for (up <- ups) yield li(up)))
+      );
       debug(s"Updates: $updates");
       ctx.reply("Compendium Export", updates);
     }

@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, SoftwareSection }
+import com.lkroll.ep.model.{EPCharModel => epmodel, SoftwareSection}
 import APIImplicits._;
 
 case class SoftwareImport(s: Software) extends Importable {

@@ -34,8 +34,10 @@ object EPUpdates extends MinorVersionUpdateManager {
   val model = EPCharModel;
   val old = OldModels;
 
-  override def updateUnversioned(version: String): List[SheetWorkerOp] = List(
-    nop update { _ => Seq(model.versionField <<= version, model.characterSheet <<= s"${model.sheetName} v$version") });
+  override def updateUnversioned(version: String): List[SheetWorkerOp] =
+    List(nop update { _ =>
+      Seq(model.versionField <<= version, model.characterSheet <<= s"${model.sheetName} v$version")
+    });
 
   override def onEveryVersionUpdate(newVersion: String): Seq[(FieldLike[Any], Any)] = {
     log(s"Updated to version $newVersion");
@@ -43,19 +45,19 @@ object EPUpdates extends MinorVersionUpdateManager {
   }
 
   forVersion("1.4.0") {
-    List(
-      nameChange(old.V4.async, model.async))
+    List(nameChange(old.V4.async, model.async))
   }
   forVersion("1.5.0") {
-    List(
-      nameChangeRepeating(model.morphs, old.V5.MorphSection.aptitudeMax, model.morphs.aptitudeMax))
+    List(nameChangeRepeating(model.morphs, old.V5.MorphSection.aptitudeMax, model.morphs.aptitudeMax))
   }
   forVersion("1.6.0") {
     val assignDMax = op(model.durability).update(dur => Seq(model.damageMax <<= dur));
     List(assignDMax)
   }
   forVersion("1.7.0") {
-    val calc = nop { _: Option[Unit] => EPWorkers.chatOutputCalc().map(_ => ()) }; // workaround for initialisation timing
+    val calc = nop { _: Option[Unit] =>
+      EPWorkers.chatOutputCalc().map(_ => ())
+    }; // workaround for initialisation timing
     List(calc)
   }
   forVersion("1.8.0") {
@@ -79,19 +81,19 @@ object EPUpdates extends MinorVersionUpdateManager {
     List(speedUpdate, moaUpdate, assignSMax)
   }
   forVersion("1.9.0") {
-    val rangeUpdate = op(
-      RangedWeaponSection.shortRangeUpper,
-      RangedWeaponSection.mediumRangeUpper,
-      RangedWeaponSection.longRangeUpper,
-      RangedWeaponSection.extremeRangeUpper).update {
-        case (short, medium, long, extreme) => {
-          Seq(
-            RangedWeaponSection.shortRangeUpperInput <<= short.toDouble,
-            RangedWeaponSection.mediumRangeUpperInput <<= medium.toDouble,
-            RangedWeaponSection.longRangeUpperInput <<= long.toDouble,
-            RangedWeaponSection.extremeRangeUpperInput <<= extreme.toDouble)
-        }
-      };
+    val rangeUpdate = op(RangedWeaponSection.shortRangeUpper,
+                         RangedWeaponSection.mediumRangeUpper,
+                         RangedWeaponSection.longRangeUpper,
+                         RangedWeaponSection.extremeRangeUpper).update {
+      case (short, medium, long, extreme) => {
+        Seq(
+          RangedWeaponSection.shortRangeUpperInput <<= short.toDouble,
+          RangedWeaponSection.mediumRangeUpperInput <<= medium.toDouble,
+          RangedWeaponSection.longRangeUpperInput <<= long.toDouble,
+          RangedWeaponSection.extremeRangeUpperInput <<= extreme.toDouble
+        )
+      }
+    };
     val rangeUpdates = rangeUpdate.all(RangedWeaponSection);
     List(rangeUpdates)
   }
@@ -99,24 +101,24 @@ object EPUpdates extends MinorVersionUpdateManager {
     val identityUpdate = op(IdentitiesSection.identity).update {
       case (id) => {
         Seq(
-            IdentitiesSection.atNameShort,
-            IdentitiesSection.atNameLong,
-            IdentitiesSection.cNameShort,
-            IdentitiesSection.cNameLong,
-            IdentitiesSection.eNameShort,
-            IdentitiesSection.eNameLong,
-            IdentitiesSection.fNameShort,
-            IdentitiesSection.fNameLong,
-            IdentitiesSection.gNameShort,
-            IdentitiesSection.gNameLong,
-            IdentitiesSection.iNameShort,
-            IdentitiesSection.iNameLong,
-            IdentitiesSection.rNameShort,
-            IdentitiesSection.rNameLong,
-            IdentitiesSection.uNameShort,
-            IdentitiesSection.uNameLong,
-            IdentitiesSection.xNameShort,
-            IdentitiesSection.xNameLong,
+          IdentitiesSection.atNameShort,
+          IdentitiesSection.atNameLong,
+          IdentitiesSection.cNameShort,
+          IdentitiesSection.cNameLong,
+          IdentitiesSection.eNameShort,
+          IdentitiesSection.eNameLong,
+          IdentitiesSection.fNameShort,
+          IdentitiesSection.fNameLong,
+          IdentitiesSection.gNameShort,
+          IdentitiesSection.gNameLong,
+          IdentitiesSection.iNameShort,
+          IdentitiesSection.iNameLong,
+          IdentitiesSection.rNameShort,
+          IdentitiesSection.rNameLong,
+          IdentitiesSection.uNameShort,
+          IdentitiesSection.uNameLong,
+          IdentitiesSection.xNameShort,
+          IdentitiesSection.xNameLong
         ).map(e => e <<= e.defaultValue.get)
       }
     };

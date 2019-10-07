@@ -1,13 +1,13 @@
 package com.lkroll.ep.api
 
 import com.lkroll.roll20.core._
-import com.lkroll.roll20.api.{ Character => Roll20Char, _ }
+import com.lkroll.roll20.api.{Character => Roll20Char, _}
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
 import scalajs.js
 import scalajs.js.JSON
-import util.{ Try, Success, Failure }
-import com.lkroll.ep.model.{ EPCharModel => epmodel, DamageType, MorphType }
+import util.{Failure, Success, Try}
+import com.lkroll.ep.model.{EPCharModel => epmodel, DamageType, MorphType}
 
 object CharTools extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(CharToolsCommand);
@@ -21,16 +21,20 @@ class CharToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   val damage = opt[Int]("damage", descr = "Add damage to characters, calculating wounds as well.");
   val stress = opt[Int]("stress", descr = "Add stress to characters, calculating traumas as well.");
 
-  val armourPenetration = opt[Int]("ap", descr = "Subtract Armour Penetration from selected armour. Will always be interpreted as a negative number.", default = Some(0)).map(i => Math.abs(i));
+  val armourPenetration =
+    opt[Int]("ap",
+             descr =
+               "Subtract Armour Penetration from selected armour. Will always be interpreted as a negative number.",
+             default = Some(0)).map(i => Math.abs(i));
   val armour = opt[String](
     "armour",
-    descr = s"Reduce damage by character's armor value of the given type. Options are ${DamageType.values.mkString(", ")} or None").
-    map(s => if (s.equalsIgnoreCase("None")) None else Some(DamageType.withName(s)));
+    descr =
+      s"Reduce damage by character's armor value of the given type. Options are ${DamageType.values.mkString(", ")} or None"
+  ).map(s => if (s.equalsIgnoreCase("None")) None else Some(DamageType.withName(s)));
 
-  val characterName = opt[String](
-    "char-name",
-    descr = "Use character of this name instead of the selected token.")(
-      ScallopUtils.singleArgSpacedConverter(identity));
+  val characterName = opt[String]("char-name", descr = "Use character of this name instead of the selected token.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
 
   val output = opt[String]("output", descr = "Who should receive the final output. Default is public.");
 
@@ -111,11 +115,19 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
         msg ::= p("Is now catatonic until stress is reduced below ", em(luc), ".");
       } else {
         if (newTraumas >= 1) {
-          msg ::= p("Must ", char.rollButton("Resist Disorientation", "willx3-roll"), " or be forced to expend a Complex Action to regain their wits.");
+          msg ::= p("Must ",
+                    char.rollButton("Resist Disorientation", "willx3-roll"),
+                    " or be forced to expend a Complex Action to regain their wits.");
           if (traumas >= 4) {
-            msg ::= p("Acquires ", em(newTraumas), " new minor derangements or upgrades an equivalent number of existing derangements, potentially to a disorder.");
+            msg ::= p(
+              "Acquires ",
+              em(newTraumas),
+              " new minor derangements or upgrades an equivalent number of existing derangements, potentially to a disorder."
+            );
           } else {
-            msg ::= p("Acquires ", em(newTraumas), " new minor derangements or upgrades an equivalent number of existing derangements.");
+            msg ::= p("Acquires ",
+                      em(newTraumas),
+                      " new minor derangements or upgrades an equivalent number of existing derangements.");
           }
         }
       }
@@ -190,7 +202,9 @@ object CharToolsCommand extends EPCommand[CharToolsConf] {
         if (newWounds == 1) {
           msg ::= p("Must ", char.rollButton("Resist Knockdown", "somx3-roll"), " or fall prone.");
         } else if (newWounds >= 2) {
-          msg ::= p("Must ", char.rollButton("Resist Unconsciousness", "somx3-roll"), " or pass out until awoken or healed.");
+          msg ::= p("Must ",
+                    char.rollButton("Resist Unconsciousness", "somx3-roll"),
+                    " or pass out until awoken or healed.");
         }
       }
     } catch {

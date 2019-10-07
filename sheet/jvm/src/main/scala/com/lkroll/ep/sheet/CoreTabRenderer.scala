@@ -42,7 +42,7 @@ trait CoreTabRenderer extends GroupRenderer {
   }
 
   def renderNumberField[N](f: NumberField[N]): Tag = {
-    import Math.{ max => nmax, abs, floor, log10 };
+    import Math.{max => nmax, abs, floor, log10};
     implicit val nev = f.numericEvidence;
     f.valid match {
       case Some(NumberValidity(minV, maxV, stepV)) => {
@@ -57,10 +57,21 @@ trait CoreTabRenderer extends GroupRenderer {
           count += 1;
         }
         val decimalDigits = count + 1; // for the decimal point
-        val digits = integerDigits + decimalDigits + (if (nev.signum(minV) == -1) { 1 } else { 0 }); // +1 for leading minus if necessary
-        span(EPStyle.inlineNumber, maxWidth := digits.em,
-          input(`type` := "number", name := f.name, value := f.initialValue, min := minV.toString(),
-            max := maxV.toString(), step := stepV.toString()))
+        val digits = integerDigits + decimalDigits + (if (nev.signum(minV) == -1) {
+                                                        1
+                                                      } else {
+                                                        0
+                                                      }); // +1 for leading minus if necessary
+        span(
+          EPStyle.inlineNumber,
+          maxWidth := digits.em,
+          input(`type` := "number",
+                name := f.name,
+                value := f.initialValue,
+                min := minV.toString(),
+                max := maxV.toString(),
+                step := stepV.toString())
+        )
       }
       case None => {
         span(EPStyle.max3charinline, input(`type` := "number", name := f.name, value := f.initialValue))
@@ -72,8 +83,12 @@ trait CoreTabRenderer extends GroupRenderer {
   def renderNumberFieldNoWidth[N](f: NumberField[N]): Tag = {
     f.valid match {
       case Some(NumberValidity(minV, maxV, stepV)) => {
-        input(`type` := "number", name := f.name, value := f.initialValue,
-          min := minV.toString(), max := maxV.toString(), step := stepV.toString())
+        input(`type` := "number",
+              name := f.name,
+              value := f.initialValue,
+              min := minV.toString(),
+              max := maxV.toString(),
+              step := stepV.toString())
       }
       case None => {
         input(`type` := "number", name := f.name, value := f.initialValue)
@@ -86,23 +101,27 @@ trait CoreTabRenderer extends GroupRenderer {
     val selector: String => Option[Modifier] = ef.defaultValue match {
       case Some(dv) =>
         println(s"Default value for $ef is $dv");
-        (o: String) => if (dv == o) {
-          //println(s"Match of $dv with $o!");
-          Some(selected)
-        } else {
-          //println(s"No match between $dv and $o");
-          None
-        }
+        (o: String) =>
+          if (dv == o) {
+            //println(s"Match of $dv with $o!");
+            Some(selected)
+          } else {
+            //println(s"No match between $dv and $o");
+            None
+          }
       case None => println(s"No default value for $ef"); (o: String) => None
     }
     ef.enum match {
-      case Some(e) => EPTranslation.allFullOptions.get(e) match {
-        case Some(l) => {
-          val options = ef.options.map((o) => option(value := o, l.apply(o).attr, selector(o))).toSeq
-          select(name := ef.name, options)
+      case Some(e) =>
+        EPTranslation.allFullOptions.get(e) match {
+          case Some(l) => {
+            val options = ef.options.map((o) => option(value := o, l.apply(o).attr, selector(o))).toSeq
+            select(name := ef.name, options)
+          }
+          case None =>
+            println(s"Translation missing for enumeration: ${e.toString()}");
+            select(name := ef.name, ef.options.map(o => option(value := o, o, selector(o))).toSeq)
         }
-        case None => println(s"Translation missing for enumeration: ${e.toString()}"); select(name := ef.name, ef.options.map(o => option(value := o, o, selector(o))).toSeq)
-      }
       case None => select(name := ef.name, ef.options.map(o => option(value := o, o, selector(o))).toSeq)
     }
 
@@ -113,25 +132,29 @@ trait CoreTabRenderer extends GroupRenderer {
       button(`type` := "roll", name := b.name, value := b.roll.render)
     case (f: AutocalcField[_], _) =>
       span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(name := f.name))
-    case (f: Field[_], Normal) if f.editable() => f match {
-      case n: NumberField[_] => renderNumberField(n)
-      case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case ef: EnumField     => enumRender(ef)
-      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
-    }
-    case (f: Field[_], Presentation) if f.editable() => f match {
-      case ff: FlagField => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case _             => span(EPStyle.labelledValue, name := f.name)
-    }
+    case (f: Field[_], Normal) if f.editable() =>
+      f match {
+        case n: NumberField[_] => renderNumberField(n)
+        case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
+        case ef: EnumField     => enumRender(ef)
+        case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
+      }
+    case (f: Field[_], Presentation) if f.editable() =>
+      f match {
+        case ff: FlagField => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
+        case _             => span(EPStyle.labelledValue, name := f.name)
+      }
 
-    case (f: Field[_], Edit) if f.editable() => f match {
-      case n: NumberField[_] => renderNumberField(n)
-      case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
-      case ef: EnumField     => enumRender(ef)
-      case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
-    }
+    case (f: Field[_], Edit) if f.editable() =>
+      f match {
+        case n: NumberField[_] => renderNumberField(n)
+        case ff: FlagField     => input(`type` := "checkbox", name := ff.name, ff.defaultValue)
+        case ef: EnumField     => enumRender(ef)
+        case _                 => input(`type` := "text", name := f.name, value := f.initialValue)
+      }
     case (f: Field[_], _) if !(f.editable()) =>
-      span(input(`type` := "hidden", name := f.name, value := f.initialValue), span(EPStyle.labelledValue, name := f.name))
+      span(input(`type` := "hidden", name := f.name, value := f.initialValue),
+           span(EPStyle.labelledValue, name := f.name))
   };
 
   val textareaField: FieldDualRenderer = (f, mode) => {
@@ -143,15 +166,19 @@ trait CoreTabRenderer extends GroupRenderer {
 
   val textareaFieldGrow: FieldDualRenderer = (f, mode) => {
     mode match {
-      case RenderMode.Edit | RenderMode.Normal => div(EPStyle.`flex-grow`, EPStyle.inlineContentGroup, textarea(EPStyle.`two-line-textarea`, name := f.name, f.initialValue))
-      case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
+      case RenderMode.Edit | RenderMode.Normal =>
+        div(EPStyle.`flex-grow`,
+            EPStyle.inlineContentGroup,
+            textarea(EPStyle.`two-line-textarea`, name := f.name, f.initialValue))
+      case RenderMode.Presentation => span(EPStyle.labelledValue, name := f.name)
     }
   }
 
   val largeTextareaField: FieldDualRenderer = (f, mode) => {
     mode match {
-      case RenderMode.Edit | RenderMode.Normal => textarea(EPStyle.`eight-line-textarea`, name := f.name, f.initialValue)
-      case RenderMode.Presentation             => span(EPStyle.labelledValue, name := f.name)
+      case RenderMode.Edit | RenderMode.Normal =>
+        textarea(EPStyle.`eight-line-textarea`, name := f.name, f.initialValue)
+      case RenderMode.Presentation => span(EPStyle.labelledValue, name := f.name)
     }
   }
 
@@ -162,18 +189,17 @@ trait CoreTabRenderer extends GroupRenderer {
     }
   }
 
-  def textWithPlaceholder(placeholder: PlaceholderLabel): FieldSingleRenderer = (f) =>
-    input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs)
+  def textWithPlaceholder(placeholder: PlaceholderLabel): FieldSingleRenderer =
+    (f) => input(`type` := "text", name := f.name, value := f.initialValue, placeholder.attrs)
 
   val descriptionToggle: FieldSingleRenderer = (f) => {
     input(`type` := "checkbox", name := f.name, EPStyle.`description-toggle`)
   }
 
   val descriptionToggleWrapped: FieldSingleRenderer = (f) => {
-    label(
-      EPStyle.`toggle-wrapper-label`,
-      input(`type` := "checkbox", name := f.name, EPStyle.`description-toggle`),
-      span(EPTranslation.showHideDescription.title.attr))
+    label(EPStyle.`toggle-wrapper-label`,
+          input(`type` := "checkbox", name := f.name, EPStyle.`description-toggle`),
+          span(EPTranslation.showHideDescription.title.attr))
   }
 
   val inlineDescription: FieldSingleRenderer = (f) => {

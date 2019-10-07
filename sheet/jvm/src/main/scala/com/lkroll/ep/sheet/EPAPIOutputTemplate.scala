@@ -49,28 +49,30 @@ object EPAPIOutputTemplate extends APIOutputRollTemplate {
   }));
 
   // **** Layout ****
-  override def content: Tag = div(
-    switchExists(showHeader, {
-      switchExists(showFooter, {
-        // FULL
-        div(sty.`template-wrapper`, sty.`template-wrapper-full`,
-          titleRender,
-          div(contentField))
-      }, {
-        // Header-only
-        div(sty.`template-wrapper`, sty.`template-wrapper-header`,
-          titleRender,
-          div(contentField))
-      })
-    }, {
-      switchExists(showFooter, {
-        // Footer-only
-        div(sty.`template-wrapper`, sty.`template-wrapper-footer`,
-          div(contentField))
-      }, {
-        // Body
-        div(sty.`template-wrapper`, sty.`template-wrapper-body`,
-          div(contentField))
-      })
-    }));
+  override def content: Tag =
+    div(
+      switchExists(
+        showHeader, {
+          switchExists(
+            showFooter, {
+              // FULL
+              div(sty.`template-wrapper`, sty.`template-wrapper-full`, titleRender, div(contentField))
+            }, {
+              // Header-only
+              div(sty.`template-wrapper`, sty.`template-wrapper-header`, titleRender, div(contentField))
+            }
+          )
+        }, {
+          switchExists(
+            showFooter, {
+              // Footer-only
+              div(sty.`template-wrapper`, sty.`template-wrapper-footer`, div(contentField))
+            }, {
+              // Body
+              div(sty.`template-wrapper`, sty.`template-wrapper-body`, div(contentField))
+            }
+          )
+        }
+      )
+    );
 }

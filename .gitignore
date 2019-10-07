@@ -44,3 +44,8 @@ ep-sheet.css
 ep-sheet.html
 translation.json
 ep-script.js
+
+# Metals specific
+.bloop/
+.metals/
+.vscode/

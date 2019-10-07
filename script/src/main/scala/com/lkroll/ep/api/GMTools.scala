@@ -1,13 +1,13 @@
 package com.lkroll.ep.api
 
 import com.lkroll.roll20.core._
-import com.lkroll.roll20.api.{ Character => Roll20Char, _ }
+import com.lkroll.roll20.api.{Character => Roll20Char, _}
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
 import scalajs.js
 import scalajs.js.JSON
-import util.{ Try, Success, Failure }
-import com.lkroll.ep.model.{ EPCharModel => epmodel, ActiveSkillSection, KnowledgeSkillSection }
+import util.{Failure, Success, Try}
+import com.lkroll.ep.model.{EPCharModel => epmodel, ActiveSkillSection, KnowledgeSkillSection}
 
 object GMTools extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(GMToolsCommand);
@@ -19,15 +19,14 @@ class GMToolsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
   val bestMod = opt[Boolean]("best-mod", descr = "List selected characters sorted by best modifier.");
 
-  val skillName = opt[String](
-    "skill-name",
-    descr = "Select skills by name for selected characters.")(
-      ScallopUtils.singleArgSpacedConverter(identity));
+  val skillName = opt[String]("skill-name", descr = "Select skills by name for selected characters.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
 
   val characterNames = opt[List[String]](
     "char-name",
-    descr = "Use character of this name instead of selected tokens. (Can be specified multiple times.)")(
-      ScallopUtils.singleListArgConverter(identity));
+    descr = "Use character of this name instead of selected tokens. (Can be specified multiple times.)"
+  )(ScallopUtils.singleListArgConverter(identity));
 
   val charIds = opt[Boolean]("char-ids", descr = "Read character ids from trailing args.");
 
@@ -71,23 +70,23 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
       chars.map(skillTotals(_, skill))
     } else ctx.forChar(skillTotals(_, skill));
     if (config.bestMod()) {
-      val bySkillName = res.flatMap {
-        case (char, mods) => {
-          mods.map(t => (char.name, t._1, t._2))
+      val bySkillName = res
+        .flatMap {
+          case (char, mods) => {
+            mods.map(t => (char.name, t._1, t._2))
+          }
         }
-      }.groupBy(_._2).map {
-        case (skillName, l) => {
-          val l2 = l.map(t => (t._1, t._3));
-          (skillName -> l2)
-        }
-      };
+        .groupBy(_._2)
+        .map {
+          case (skillName, l) => {
+            val l2 = l.map(t => (t._1, t._3));
+            (skillName -> l2)
+          }
+        };
       val organised = bySkillName.map(t => (t._1 -> t._2.sortBy(_._2)));
-      val partials: Seq[Tag] = for ((skill, mods) <- organised.toSeq) yield div(
-        h4(skill),
-        p(ul(for ((char, total) <- mods) yield li(b(char), " has ", s"[[$total]]"))));
-      val results: Tag = div(
-        p("Best Modifiers (incl. wounds and traumas):"),
-        partials);
+      val partials: Seq[Tag] = for ((skill, mods) <- organised.toSeq)
+        yield div(h4(skill), p(ul(for ((char, total) <- mods) yield li(b(char), " has ", s"[[$total]]"))));
+      val results: Tag = div(p("Best Modifiers (incl. wounds and traumas):"), partials);
       debug(s"Results: $results");
       ctx.reply("GM Tools", results);
     }
@@ -99,8 +98,11 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
     val aSkills = char.repeating(ActiveSkillSection.skillName).filter(_.current.equalsIgnoreCase(skill));
     val aSkillMods: List[(String, Int)] = aSkills.flatMap { skillNameAttr =>
       val Some(rowId) = skillNameAttr.getRowId;
-      val field = char.repeatingAt(rowId)(ActiveSkillSection.field).map(_.apply).
-        map(f => if (f.isEmpty) "" else s" ($f)").getOrElse("");
+      val field = char
+        .repeatingAt(rowId)(ActiveSkillSection.field)
+        .map(_.apply)
+        .map(f => if (f.isEmpty) "" else s" ($f)")
+        .getOrElse("");
       val name = s"${skillNameAttr()}$field";
       val totalO = char.repeatingAt(rowId)(ActiveSkillSection.total).map(_.apply);
       totalO.map { total =>
@@ -111,8 +113,11 @@ object GMToolsCommand extends EPCommand[GMToolsConf] {
     val kSkills = char.repeating(KnowledgeSkillSection.skillName).filter(_.current.equalsIgnoreCase(skill));
     val kSkillMods: List[(String, Int)] = kSkills.flatMap { skillNameAttr =>
       val Some(rowId) = skillNameAttr.getRowId;
-      val field = char.repeatingAt(rowId)(KnowledgeSkillSection.field).map(_.apply).
-        map(f => if (f.isEmpty) "" else s" ($f)").getOrElse("");
+      val field = char
+        .repeatingAt(rowId)(KnowledgeSkillSection.field)
+        .map(_.apply)
+        .map(f => if (f.isEmpty) "" else s" ($f)")
+        .getOrElse("");
       val name = s"${skillNameAttr()}$field";
       val totalO = char.repeatingAt(rowId)(KnowledgeSkillSection.total).map(_.apply);
       totalO.map { total =>

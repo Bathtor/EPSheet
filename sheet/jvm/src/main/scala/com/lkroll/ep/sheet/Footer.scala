@@ -38,9 +38,8 @@ object Footer extends FieldGroup {
   val t = EPTranslation;
   val sty = EPStyle;
 
-  val members: Seq[SheetElement] = Seq(
-    (t.author -> span(EPStyle.labelledValue, char.author)),
-    (t.github -> span(EPStyle.labelledValue, a(href := char.github, char.github))));
+  val members: Seq[SheetElement] = Seq((t.author -> span(EPStyle.labelledValue, char.author)),
+                                       (t.github -> span(EPStyle.labelledValue, a(href := char.github, char.github))));
 
   override def renderer = FooterRenderer;
 }
@@ -53,9 +52,7 @@ object FooterRenderer extends GroupRenderer {
   };
 
   override def renderLabelled(l: LabelsI18N, e: Tag): Tag =
-    span(EPStyle.`flex-grow`, EPStyle.aCenter,
-      span(EPStyle.inlineLabel, l),
-      e);
+    span(EPStyle.`flex-grow`, EPStyle.aCenter, span(EPStyle.inlineLabel, l), e);
 
   override def fieldRenderers: FieldRenderer = CoreTabRenderer.fieldRenderers;
 }

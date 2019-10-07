@@ -42,65 +42,96 @@ object MorphTab extends FieldGroup {
 
   val morphsSection: SheetElement = char.morphs(
     eprow(
-      epcol(fblock(char.morphs.morphLabel, EPStyle.min5rem,
-        char.morphs.id.hidden,
-        char.morphs.active,
-        editOnly((t.morphLabel -> char.morphs.morphLabel)),
-        (t.morphName -> dualMode(char.morphs.morphName)),
-        (t.morphType -> dualMode(char.morphs.morphType)),
-        (t.morphLocation -> dualMode(char.morphs.morphLocation)),
-        (t.morphVisibleGender -> dualMode(char.morphs.visibleGender)),
-        (t.morphVisibleAge -> dualMode(char.morphs.visibleAge)),
-        (t.morphAptitudeMax -> dualMode(char.morphs.aptitudeMax)),
-        (t.morphAptitudeBoni -> dualMode(char.morphs.aptitudeBoni)),
-        (t.morphSkillBoni -> dualMode(char.morphs.skillBoni)),
-        (t.morphDurability -> dualMode(char.morphs.durability)),
-        (t.morphMobilitySystem -> dualMode(char.morphs.mobilitySystem)),
-        (t.morphArmourEnergy -> dualMode(char.morphs.armourEnergy)),
-        (t.morphArmourKinetic -> dualMode(char.morphs.armourKinetic)),
-        (t.morphSpeed -> dualMode(char.morphs.speed)),
-        (t.morphMOA -> dualMode(char.morphs.moa)),
-        (t.morphIniBonus -> dualMode(char.morphs.iniBonus)),
-        (t.morphIgnoredWounds -> dualMode(char.morphs.ignoredWounds)),
-        (t.morphTraits -> dualMode(char.morphs.traits.like(CoreTabRenderer.textareaField))),
-        (t.morphImplants -> dualMode(char.morphs.implants.like(CoreTabRenderer.textareaField))),
-        (t.morphDescription -> dualMode(char.morphs.description.like(CoreTabRenderer.textareaField)))))));
+      epcol(
+        fblock(
+          char.morphs.morphLabel,
+          EPStyle.min5rem,
+          char.morphs.id.hidden,
+          char.morphs.active,
+          editOnly((t.morphLabel -> char.morphs.morphLabel)),
+          (t.morphName -> dualMode(char.morphs.morphName)),
+          (t.morphType -> dualMode(char.morphs.morphType)),
+          (t.morphLocation -> dualMode(char.morphs.morphLocation)),
+          (t.morphVisibleGender -> dualMode(char.morphs.visibleGender)),
+          (t.morphVisibleAge -> dualMode(char.morphs.visibleAge)),
+          (t.morphAptitudeMax -> dualMode(char.morphs.aptitudeMax)),
+          (t.morphAptitudeBoni -> dualMode(char.morphs.aptitudeBoni)),
+          (t.morphSkillBoni -> dualMode(char.morphs.skillBoni)),
+          (t.morphDurability -> dualMode(char.morphs.durability)),
+          (t.morphMobilitySystem -> dualMode(char.morphs.mobilitySystem)),
+          (t.morphArmourEnergy -> dualMode(char.morphs.armourEnergy)),
+          (t.morphArmourKinetic -> dualMode(char.morphs.armourKinetic)),
+          (t.morphSpeed -> dualMode(char.morphs.speed)),
+          (t.morphMOA -> dualMode(char.morphs.moa)),
+          (t.morphIniBonus -> dualMode(char.morphs.iniBonus)),
+          (t.morphIgnoredWounds -> dualMode(char.morphs.ignoredWounds)),
+          (t.morphTraits -> dualMode(char.morphs.traits.like(CoreTabRenderer.textareaField))),
+          (t.morphImplants -> dualMode(char.morphs.implants.like(CoreTabRenderer.textareaField))),
+          (t.morphDescription -> dualMode(char.morphs.description.like(CoreTabRenderer.textareaField)))
+        )
+      )
+    )
+  );
 
   val members: Seq[SheetElement] = Seq(
     eprow(
-      epcol(fblock(t.activeMorph, EPStyle.min5rem,
-        char.morphSkillBoni.hidden,
-        char.currentMorph.hidden,
-        (t.morphName -> char.morphName),
-        (t.morphType -> char.morphType),
-        (t.morphVisibleGender -> char.morphVisibleGender),
-        (t.morphVisibleAge -> char.morphVisibleAge),
-        (t.morphDurability -> char.morphDurability),
-        (t.morphMobilitySystem -> char.morphMobilitySystem),
-        (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
-        (t.morphSpeed -> char.morphSpeed),
-        (t.morphMOA -> char.morphMOA),
-        (t.morphIniBonus -> char.morphIniBonus),
-        (t.morphIgnoredWounds -> char.morphIgnoredWounds),
-        (t.morphTraits -> textWithLookup(
-          char.morphTraits,
-          roll(char, "morph-traits-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> ""), Some(char.morphTraits), span(t.apiLookup)))),
-        (t.morphImplants -> textWithLookup(
-          char.morphImplants,
-          roll(char, "morph-implants-lookup-roll", "epcompendium-data", List[(String, Renderable)]("multi-search" -> ""), Some(char.morphImplants), span(t.apiLookup)))),
-        (t.morphDescription -> char.morphDescription)))),
+      epcol(
+        fblock(
+          t.activeMorph,
+          EPStyle.min5rem,
+          char.morphSkillBoni.hidden,
+          char.currentMorph.hidden,
+          (t.morphName -> char.morphName),
+          (t.morphType -> char.morphType),
+          (t.morphVisibleGender -> char.morphVisibleGender),
+          (t.morphVisibleAge -> char.morphVisibleAge),
+          (t.morphDurability -> char.morphDurability),
+          (t.morphMobilitySystem -> char.morphMobilitySystem),
+          (t.morphArmour -> coreSeq(char.morphArmourEnergy, span(" / "), char.morphArmourKinetic)),
+          (t.morphSpeed -> char.morphSpeed),
+          (t.morphMOA -> char.morphMOA),
+          (t.morphIniBonus -> char.morphIniBonus),
+          (t.morphIgnoredWounds -> char.morphIgnoredWounds),
+          (t.morphTraits -> textWithLookup(
+            char.morphTraits,
+            roll(char,
+                 "morph-traits-lookup-roll",
+                 "epcompendium-data",
+                 List[(String, Renderable)]("multi-search" -> ""),
+                 Some(char.morphTraits),
+                 span(t.apiLookup))
+          )),
+          (t.morphImplants -> textWithLookup(
+            char.morphImplants,
+            roll(char,
+                 "morph-implants-lookup-roll",
+                 "epcompendium-data",
+                 List[(String, Renderable)]("multi-search" -> ""),
+                 Some(char.morphImplants),
+                 span(t.apiLookup))
+          )),
+          (t.morphDescription -> char.morphDescription)
+        )
+      )
+    ),
     h2(sty.`h2hr`, t.morphBank),
-    morphsSection);
+    morphsSection
+  );
 
   override def renderer = CoreTabRenderer;
 
   def textWithLookup(f: TextField, roll: RollElement): SheetElement = {
     roll.child match {
-      case TagElement(t) => span(
-        input(`type` := "hidden", name := f.name),
-        span(sty.labelledValue, name := f.name),
-        input(sty.`using-api`, `type` := "hidden", name := char.usingAPIScript.name),
-        span(sty.`api-only`, sty.rollLabel, raw(" ◀ ︎"), button(sty.rollLabel, `type` := "roll", name := roll.roll.name, value := roll.roll.roll.render, t)))
+      case TagElement(t) =>
+        span(
+          input(`type` := "hidden", name := f.name),
+          span(sty.labelledValue, name := f.name),
+          input(sty.`using-api`, `type` := "hidden", name := char.usingAPIScript.name),
+          span(sty.`api-only`,
+               sty.rollLabel,
+               raw(" ◀ ︎"),
+               button(sty.rollLabel, `type` := "roll", name := roll.roll.name, value := roll.roll.roll.render, t))
+        )
       case _ => ??? // fail please
     }
 

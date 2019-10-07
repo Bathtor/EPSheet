@@ -6,20 +6,20 @@ name := "EP API Script"
 
 organization := "com.lkroll.ep"
 
-version := "1.0.1"
+version := "1.0.2"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.10"
 
 resolvers += Resolver.bintrayRepo("lkrollcom", "maven")
 
 libraryDependencies += "com.lkroll.roll20" %%% "roll20-api-framework" % "0.10.0"
-libraryDependencies += "com.lkroll.ep" %%% "epcompendium-core" % "5.0.0"
-libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.12.2"
+libraryDependencies += "com.lkroll.ep" %%% "epcompendium-core" % "6.0.0"
+libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.12.3"
 libraryDependencies += "com.lkroll.common" %%% "common-data-tools" % "1.3.+"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
-libraryDependencies += "org.rogach" %%% "scallop" % "3.1.+"
-libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.4" % "test"
-libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
+libraryDependencies += "org.rogach" %%% "scallop" % "3.3.+"
+libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.8" % "test"
+libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.8" % "test"
 
 lazy val submitScript = taskKey[Unit]("Submit the script that assembles the API script");
 lazy val openScript = taskKey[Unit]("Opens the API script");

@@ -27,7 +27,13 @@ package com.lkroll.ep.api.compendium
 import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, MeleeWeaponSection, RangedWeaponSection, DamageType => ModelDamageType, DamageArea => ModelDamageArea }
+import com.lkroll.ep.model.{
+  EPCharModel => epmodel,
+  MeleeWeaponSection,
+  RangedWeaponSection,
+  DamageType => ModelDamageType,
+  DamageArea => ModelDamageArea
+}
 import APIImplicits._;
 //import scala.util.{ Try, Success, Failure }
 
@@ -78,12 +84,16 @@ case class WeaponImport(weapon: Weapon) extends Importable {
         }
         char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(MeleeWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+          damageType
+        );
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.`type`.skill) match {
           case Some(skillId) => {
             char.createRepeating(MeleeWeaponSection.skillName, rowId) <<= weapon.`type`.skill;
-            char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(skillId);
+            char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(
+              skillId
+            );
             Ok("Ok");
           }
           case None => {
@@ -103,9 +113,13 @@ case class WeaponImport(weapon: Weapon) extends Importable {
         }
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+          damageType
+        );
         char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
-        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(damageArea);
+        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
+          damageArea
+        );
         weapon.area match {
           case DamageArea.UniformBlast(r) => {
             char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
@@ -162,7 +176,9 @@ case class WeaponImport(weapon: Weapon) extends Importable {
         cache.activeSkillId(weapon.`type`.skill) match {
           case Some(skillId) => {
             char.createRepeating(RangedWeaponSection.skillName, rowId) <<= weapon.`type`.skill;
-            char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(skillId);
+            char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(
+              skillId
+            );
             Ok("Ok");
           }
           case None => {
@@ -200,12 +216,16 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
         }
         char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+          damageType
+        );
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.weapon.`type`.skill) match {
           case Some(skillId) => {
             char.createRepeating(MeleeWeaponSection.skillName, rowId) <<= weapon.weapon.`type`.skill;
-            char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(skillId);
+            char.createRepeating(MeleeWeaponSection.skillTotal, rowId) <<= MeleeWeaponSection.skillTotal.valueAt(
+              skillId
+            );
             Ok("Ok");
           }
           case None => {
@@ -225,9 +245,13 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
         }
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
         char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(damageType);
+        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+          damageType
+        );
         char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
-        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(damageArea);
+        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
+          damageArea
+        );
         weapon.area match {
           case DamageArea.UniformBlast(r) => {
             char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
@@ -285,7 +309,9 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
         cache.activeSkillId(weapon.weapon.`type`.skill) match {
           case Some(skillId) => {
             char.createRepeating(RangedWeaponSection.skillName, rowId) <<= weapon.weapon.`type`.skill;
-            char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(skillId);
+            char.createRepeating(RangedWeaponSection.skillTotal, rowId) <<= RangedWeaponSection.skillTotal.valueAt(
+              skillId
+            );
             Ok("Ok");
           }
           case None => {

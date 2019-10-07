@@ -28,7 +28,13 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, ActiveSkillSection, KnowledgeSkillSection, Skills, Aptitude => ModelAptitude }
+import com.lkroll.ep.model.{
+  EPCharModel => epmodel,
+  ActiveSkillSection,
+  KnowledgeSkillSection,
+  Skills,
+  Aptitude => ModelAptitude
+}
 import APIImplicits._;
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
@@ -101,7 +107,9 @@ case class SkillImport(s: CharacterSkill) extends Importable {
         val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
         char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
         val globalModsExpression = SkillConversions.modsForSkillCategory(cat);
-        char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(globalModsExpression);
+        char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(
+          globalModsExpression
+        );
 
         char.createRepeating(ActiveSkillSection.specialisations, rowId) <<= s.specs.mkString(", ");
         val apt = SkillConversions.compendiumApt2ModelApt(s.apt);
@@ -147,7 +155,9 @@ case class SkillImport(s: CharacterSkill) extends Importable {
     val r = Try(this.assignedRowId.get).map(rowId => {
       s.cls match {
         case SkillClass.Active => {
-          char.createRepeating(ActiveSkillSection.skillName, Some(rowId)).setWithWorker(s.name); // force trigger of Fray/2 worker
+          char
+            .createRepeating(ActiveSkillSection.skillName, Some(rowId))
+            .setWithWorker(s.name); // force trigger of Fray/2 worker
         }
         case _ => Future.successful(())
       }
@@ -179,7 +189,9 @@ case class SkillDefImport(s: SkillDef) extends Importable {
         val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
         char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
         val globalModsExpression = SkillConversions.modsForSkillCategory(cat);
-        char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(globalModsExpression);
+        char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(
+          globalModsExpression
+        );
 
         char.createRepeating(ActiveSkillSection.specialisations, rowId) <<= ActiveSkillSection.specialisations.resetValue;
         val apt = SkillConversions.compendiumApt2ModelApt(s.apt);
@@ -225,7 +237,9 @@ case class SkillDefImport(s: SkillDef) extends Importable {
     val r = Try(this.assignedRowId.get).map(rowId => {
       s.cls match {
         case SkillClass.Active => {
-          char.createRepeating(ActiveSkillSection.skillName, Some(rowId)).setWithWorker(s.name); // force trigger of Fray/2 worker
+          char
+            .createRepeating(ActiveSkillSection.skillName, Some(rowId))
+            .setWithWorker(s.name); // force trigger of Fray/2 worker
         }
         case _ => Future.successful(())
       }

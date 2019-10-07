@@ -24,12 +24,12 @@
  */
 package com.lkroll.ep.api
 
-import scala.util.{ Try, Success, Failure }
-import com.lkroll.ep.model.{ AptitudeValues => ModelAptitudes, SkillMod => ModelSkillMod, MorphType => ModelMorphType };
-import com.lkroll.ep.compendium.{ AptitudeValues => CompendiumAptitudes, MorphType => CompendiumMorphType, Effect }
+import scala.util.{Failure, Success, Try}
+import com.lkroll.ep.model.{AptitudeValues => ModelAptitudes, SkillMod => ModelSkillMod, MorphType => ModelMorphType};
+import com.lkroll.ep.compendium.{AptitudeValues => CompendiumAptitudes, MorphType => CompendiumMorphType, Effect}
 
 package object compendium {
-  
+
   /*
    * Re-exports
    */
@@ -37,21 +37,19 @@ package object compendium {
   val Result = com.lkroll.common.result.Result;
   val Ok = com.lkroll.common.result.Ok;
   val Err = com.lkroll.common.result.Err;
-  
+
   /*
    * Implicits
    */
-  
+
   implicit class OptionOps[A](opt: Option[A]) {
 
     def toTry(msg: String): Try[A] = {
-      opt.map(Success(_)).
-        getOrElse(Failure(new NoSuchElementException(msg)))
+      opt.map(Success(_)).getOrElse(Failure(new NoSuchElementException(msg)))
     }
 
     def toTryOr(alt: => A): Try[A] = {
-      opt.map(Success(_)).
-        getOrElse(Success(alt))
+      opt.map(Success(_)).getOrElse(Success(alt))
     }
   }
 

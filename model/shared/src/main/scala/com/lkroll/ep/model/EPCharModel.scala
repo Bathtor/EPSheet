@@ -51,8 +51,10 @@ object EPCharModel extends SheetModel {
   val modQueryRaw = InputQuery("Test Modifier", Some(0));
   val modQuery = modQueryRaw.expr.label("user mod");
   // **** rolls ****
-  val epRoll = roll("ep-roll", Seq(100, 89, 78, 67, 56, 45, 34, 23, 12, 1).
-    foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1);
+  val epRoll = roll(
+    "ep-roll",
+    Seq(100, 89, 78, 67, 56, 45, 34, 23, 12, 1).foldLeft[IntRollExpression](Dice.d100)((acc, v) => acc.cs `=` v) - 1
+  );
   //val justEPRoll = button("just_ep_roll", epRoll);
   lazy val moxieTarget = roll("moxie-target", moxieMax.arith());
   lazy val moxiex10Target = roll("moxiex10-target", modQuery + moxie * 10);
@@ -65,7 +67,8 @@ object EPCharModel extends SheetModel {
   lazy val refx3Target = roll("refx3-target", modQuery + refTotal * 3 + globalMods);
   lazy val frayField = "fray_field".ref[Int].editable(false).default(refTotal);
   lazy val frayHalvedTarget = roll("fray-halved-target", modQuery + floor(frayField.altArith / 2) + globalPhysicalMods);
-  lazy val durEnergyArmour = roll("dur-energy-armour-target", modQuery + durability - damage + armourEnergyTotal + globalPhysicalMods);
+  lazy val durEnergyArmour =
+    roll("dur-energy-armour-target", modQuery + durability - damage + armourEnergyTotal + globalPhysicalMods);
   lazy val refCoox2Target = roll("ref-coox2-target", modQuery + refTotal + cooTotal * 2 + globalPhysicalMods);
   lazy val cooSomTarget = roll("coo-som-target", modQuery + cooTotal + somTotal + globalPhysicalMods);
   lazy val cogx3Target = roll("cogx3-target", modQuery + cogTotal * 3 + globalMods);
@@ -136,7 +139,8 @@ object EPCharModel extends SheetModel {
   val deathRating = "death_rating".editable(false).default(0);
   val initiative = "initiative".editable(false).default(0);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
-  lazy val iniRoll = roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
+  lazy val iniRoll =
+    roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
   val speed = "speed".editable(false).default(1);
   val speedExtra = "speed_extra".default(0).validIn(0, 99, 1);
   val mentalOnlyActions = "mental_only_actions".editable(false).default(0);
@@ -192,11 +196,14 @@ object EPCharModel extends SheetModel {
   lazy val meleeWeapons = MeleeWeaponSection;
   val rangeQueryRaw = LabelledSelectQuery(
     "Range",
-    Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10));
+    Seq("Short" -> 0, "Medium" -> -10, "Long" -> -20, "Extreme" -> -30, "Point Blank (<2m)" -> 10)
+  );
   val rangeQuery = rangeQueryRaw.expr.label("range mod");
-  val extraDamageQueryRaw = LabelledSelectQuery("Extra Damage", Seq("None" -> 0, "Excellent 30+" -> 5, "Excellent 60+" -> 10));
+  val extraDamageQueryRaw =
+    LabelledSelectQuery("Extra Damage", Seq("None" -> 0, "Excellent 30+" -> 5, "Excellent 60+" -> 10));
   val extraDamageQuery = extraDamageQueryRaw.expr.label("extra damage");
-  val extraDamageDiceQueryRaw = LabelledSelectQuery("Extra Dice", Seq("None" -> 0, "Burst Fire" -> 1, "Full Automatic" -> 3));
+  val extraDamageDiceQueryRaw =
+    LabelledSelectQuery("Extra Dice", Seq("None" -> 0, "Burst Fire" -> 1, "Full Automatic" -> 3));
   val extraDamageDiceQuery = DiceExprs.BasicRoll(extraDamageDiceQueryRaw.param, 10).label("extra damage");
   lazy val rangedWeapons = RangedWeaponSection;
   val rangedConcBFXDmg = roll("ranged_conc_bf_xdmg", 1.d(10));
@@ -223,11 +230,13 @@ object EPCharModel extends SheetModel {
   val psiSustainedMod = "psi_sustained_mod".editable(false).default(0);
   val targetQueryRaw = LabelledSelectQuery(
     "Target Type",
-    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> -20, "Non-sapient Animals" -> -30));
+    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> -20, "Non-sapient Animals" -> -30)
+  );
   val targetQuery = targetQueryRaw.expr.label("sentience mod");
   val targetStrainQueryRaw = LabelledSelectQuery(
     "Target Type",
-    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> 1, "Non-sapient Animals" -> 3));
+    Seq("Normal" -> 0, "Partially Sapient/Uplifted Animals" -> 1, "Non-sapient Animals" -> 3)
+  );
   val targetStrainQuery = targetStrainQueryRaw.expr.label("sentience mod");
   lazy val psiChi = PsiChiSection;
   lazy val psiGamma = PsiGammaSection;
@@ -280,4 +289,3 @@ object EPCharModel extends SheetModel {
   val globalMods = (miscActionMod - woundTraumaMods + psiSustainedMod).paren;
   val globalPhysicalMods = (globalMods + miscPhysicalMod + layeringPenalty).paren;
 }
-

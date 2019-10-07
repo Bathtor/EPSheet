@@ -31,7 +31,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, IdentitiesSection, MorphSection }
+import com.lkroll.ep.model.{EPCharModel => epmodel, IdentitiesSection, MorphSection}
 import APIImplicits._;
 
 class CharacterImport(val c: EPCharacter) extends Importable {
@@ -70,10 +70,11 @@ class CharacterImport(val c: EPCharacter) extends Importable {
           this.skillSet = Some(skilli); // latest successful skill
           acc // ignore ok
         }
-        case Err(err) => acc match {
-          case Ok(_)       => res // replace oks with errors
-          case Err(errAcc) => Err(s"${errAcc}, ${err}")
-        }
+        case Err(err) =>
+          acc match {
+            case Ok(_)       => res // replace oks with errors
+            case Err(errAcc) => Err(s"${errAcc}, ${err}")
+          }
       }
     };
     var res = skillRes match {

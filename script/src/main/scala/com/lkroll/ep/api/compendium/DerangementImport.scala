@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, DerangementSection, DerangementSeverity => ModelSeverity }
+import com.lkroll.ep.model.{EPCharModel => epmodel, DerangementSection, DerangementSeverity => ModelSeverity}
 import APIImplicits._;
 
 case class DerangementImport(d: Derangement, duration: Float) extends Importable {

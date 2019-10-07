@@ -28,9 +28,9 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts }
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
-import scala.util.{ Try, Success, Failure }
+import com.lkroll.ep.api.{EPCommand, EPScripts, ScallopUtils, asInfoTemplate}
+import com.lkroll.ep.model.{EPCharModel => epmodel}
+import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
 import org.rogach.scallop.singleArgConverter
 import scalatags.Text.all._;
@@ -42,23 +42,75 @@ All names must be exact. Use '!${EPCompendiumDataCommand.command} --search' to f
 """);
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
-  val weapon = opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies the weapon to use the specified ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val withAccessory = opt[String]("with-accessory", descr = "Must be used together with --weapon. Modifies the weapon to have the specified weapon accessory.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val morphModel = opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val morph = opt[List[String]]("morph", descr = "Import a custom morph instance with the given label. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val egoTrait = opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val derangement = opt[List[String]]("derangement", descr = "Import a derangement with the given name and default duration. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val withDuration = opt[FloatOrInline]("duration", descr = "Must be used together with --derangement. Import derangement with given duration.")(singleArgConverter(FloatOrInline.fromString(_)));
-  val disorder = opt[List[String]]("disorder", descr = "Import a disorder with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val armour = opt[List[String]]("armour", descr = "Import an armour with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val withMod = opt[String]("with-mod", descr = "Must be used together with --armour. Modifies the amour to have the specified armour mod.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val gear = opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val software = opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val substance = opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val psiSleight = opt[List[String]]("psi-sleight", descr = "Import a psi-sleight with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val skill = opt[List[String]]("skill", descr = "Import a skill with the given name. (Can be specified multiple times)")(ScallopUtils.singleListArgConverter(identity));
-  val fromSheet = opt[Boolean]("from-sheet", descr = "Import a JSON formatted item from the API Text Exchange field on the character sheet linked with a selected token");
+  val weapon =
+    opt[List[String]]("weapon", descr = "Import a weapon with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val withAmmo = opt[String](
+    "with-ammo",
+    descr = "Must be used together with --weapon. Modifies the weapon to use the specified ammo."
+  )(ScallopUtils.singleArgSpacedConverter(identity));
+  val withAccessory = opt[String](
+    "with-accessory",
+    descr = "Must be used together with --weapon. Modifies the weapon to have the specified weapon accessory."
+  )(ScallopUtils.singleArgSpacedConverter(identity));
+  val morphModel =
+    opt[List[String]]("morph-model", descr = "Import a generic morph model name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val morph = opt[List[String]](
+    "morph",
+    descr = "Import a custom morph instance with the given label. (Can be specified multiple times)"
+  )(ScallopUtils.singleListArgConverter(identity));
+  val egoTrait =
+    opt[List[String]]("trait", descr = "Import an ego trait with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val derangement = opt[List[String]](
+    "derangement",
+    descr = "Import a derangement with the given name and default duration. (Can be specified multiple times)"
+  )(ScallopUtils.singleListArgConverter(identity));
+  val withDuration = opt[FloatOrInline](
+    "duration",
+    descr = "Must be used together with --derangement. Import derangement with given duration."
+  )(singleArgConverter(FloatOrInline.fromString(_)));
+  val disorder =
+    opt[List[String]]("disorder", descr = "Import a disorder with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val armour =
+    opt[List[String]]("armour", descr = "Import an armour with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val withMod = opt[String](
+    "with-mod",
+    descr = "Must be used together with --armour. Modifies the amour to have the specified armour mod."
+  )(ScallopUtils.singleArgSpacedConverter(identity));
+  val gear =
+    opt[List[String]]("gear", descr = "Import a gear item with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val software =
+    opt[List[String]]("software", descr = "Import a program with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val substance =
+    opt[List[String]]("substance", descr = "Import a substance with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val psiSleight = opt[List[String]](
+    "psi-sleight",
+    descr = "Import a psi-sleight with the given name. (Can be specified multiple times)"
+  )(ScallopUtils.singleListArgConverter(identity));
+  val skill =
+    opt[List[String]]("skill", descr = "Import a skill with the given name. (Can be specified multiple times)")(
+      ScallopUtils.singleListArgConverter(identity)
+    );
+  val fromSheet = opt[Boolean](
+    "from-sheet",
+    descr =
+      "Import a JSON formatted item from the API Text Exchange field on the character sheet linked with a selected token"
+  );
 
   dependsOnAll(withAmmo, List(weapon));
   dependsOnAll(withAccessory, List(weapon));
@@ -75,7 +127,8 @@ object FloatOrInline {
   import fastparse.all._
 
   lazy val parser: P[FloatOrInline] = P(inline | raw);
-  lazy val raw: P[AFloat] = P((CharIn('0' to '9').rep(1) ~ ("." ~ CharIn('0' to '9').rep(1)).?).!).map(s => AFloat(s.toFloat));
+  lazy val raw: P[AFloat] =
+    P((CharIn('0' to '9').rep(1) ~ ("." ~ CharIn('0' to '9').rep(1)).?).!).map(s => AFloat(s.toFloat));
   lazy val inline: P[Inline] = P("$[[" ~/ ws ~ CharIn('0' to '9').rep(1).! ~ ws ~ "]]").map(s => Inline(s.toInt));
   lazy val ws = P(" ".rep);
 
@@ -299,87 +352,91 @@ object EPCompendiumImportCommand extends EPCommand[EPCompendiumImportConf] {
         }
       }
       val numImports = toImport.size;
-      ctx.replyHeader("Compendium Import", p(s"Importing ${numImports} ${if (numImports > 1) { "items" } else { "item" }}..."));
-      val updatedCharactersF = tokens.foldLeft(Future.successful(List.empty[Tuple2[String, List[String]]])) { (f, token) =>
-        val resF = f.flatMap { charUpdates =>
-          debug(s"Working on token: ${token.name} (${token.id})");
-          token.represents match {
-            case Some(char) => {
-              debug(s"Token represents $char");
+      ctx.replyHeader("Compendium Import", p(s"Importing ${numImports} ${if (numImports > 1) {
+        "items"
+      } else {
+        "item"
+      }}..."));
+      val updatedCharactersF = tokens.foldLeft(Future.successful(List.empty[Tuple2[String, List[String]]])) {
+        (f, token) =>
+          val resF = f.flatMap { charUpdates =>
+            debug(s"Working on token: ${token.name} (${token.id})");
+            token.represents match {
+              case Some(char) => {
+                debug(s"Token represents $char");
 
-              val idPool = RowIdPool();
-              val importCache = ImportCache(char);
+                val idPool = RowIdPool();
+                val importCache = ImportCache(char);
 
-              val updates: Future[List[String]] = if (config.fromSheet()) {
-                val apiText = char.attribute(epmodel.apiText);
-                val text = apiText();
-                EPCompendium.readData(text) match {
-                  case Success(d) => {
-                    Importable.fromData(d) match {
-                      case Some(i) => {
-                        i.importInto(char, idPool, importCache) match {
-                          case Ok(msg) => {
-                            val f = i.triggerWorkers(char);
-                            f.map { _ =>
-                              apiText <<= ""; // clear field
-                              var childUpdates = List(s"Imported ${i.updateLabel} ($msg)");
-                              (i.children ++ toImport).foreach { i =>
-                                i.importInto(char, idPool, importCache) match {
-                                  case Ok(msg)  => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
-                                  case Err(msg) => childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                val updates: Future[List[String]] = if (config.fromSheet()) {
+                  val apiText = char.attribute(epmodel.apiText);
+                  val text = apiText();
+                  EPCompendium.readData(text) match {
+                    case Success(d) => {
+                      Importable.fromData(d) match {
+                        case Some(i) => {
+                          i.importInto(char, idPool, importCache) match {
+                            case Ok(msg) => {
+                              val f = i.triggerWorkers(char);
+                              f.map { _ =>
+                                apiText <<= ""; // clear field
+                                var childUpdates = List(s"Imported ${i.updateLabel} ($msg)");
+                                (i.children ++ toImport).foreach { i =>
+                                  i.importInto(char, idPool, importCache) match {
+                                    case Ok(msg) => childUpdates ::= s"Imported ${i.updateLabel} ($msg)"
+                                    case Err(msg) =>
+                                      childUpdates ::= s"Failed to import ${i.updateLabel} (correctly): $msg"
+                                  }
                                 }
+                                childUpdates
                               }
-                              childUpdates
                             }
-                          }
-                          case Err(msg) => {
-                            Future.successful(List(s"Failed to import ${i.updateLabel} (correctly): $msg"))
-                          }
-                        };
-                      }
-                      case None => Future.successful(List(s"Data from sheet (${d.getClass}) is not importable."))
-                    }
-                  }
-                  case Failure(e) => Future.successful(List(s"Failed to parse data from sheet: ${e.getMessage}"))
-                }
-              } else {
-                val childUpdates = toImport.foldLeft(Future.successful(List.empty[String])) { (accf, i) =>
-                  accf.flatMap { acc =>
-                    i.importInto(char, idPool, importCache) match {
-                      case Ok(msg) => {
-                        val res = s"Imported ${i.updateLabel} ($msg)" :: acc;
-                        i.triggerWorkers(char).map(_ => res)
-                      }
-                      case Err(msg) => {
-                        val res = s"Failed to import ${i.updateLabel} (correctly): $msg" :: acc;
-                        Future.successful(res)
+                            case Err(msg) => {
+                              Future.successful(List(s"Failed to import ${i.updateLabel} (correctly): $msg"))
+                            }
+                          };
+                        }
+                        case None => Future.successful(List(s"Data from sheet (${d.getClass}) is not importable."))
                       }
                     }
+                    case Failure(e) => Future.successful(List(s"Failed to parse data from sheet: ${e.getMessage}"))
                   }
+                } else {
+                  val childUpdates = toImport.foldLeft(Future.successful(List.empty[String])) { (accf, i) =>
+                    accf.flatMap { acc =>
+                      i.importInto(char, idPool, importCache) match {
+                        case Ok(msg) => {
+                          val res = s"Imported ${i.updateLabel} ($msg)" :: acc;
+                          i.triggerWorkers(char).map(_ => res)
+                        }
+                        case Err(msg) => {
+                          val res = s"Failed to import ${i.updateLabel} (correctly): $msg" :: acc;
+                          Future.successful(res)
+                        }
+                      }
+                    }
+                  };
+                  childUpdates
                 };
-                childUpdates
-              };
 
-              val updateF = updates.map(u => char.name -> u).recover {
-                case ex: Throwable => char.name -> List(s"An error occurred: ${ex.getMessage}")
-              };
-              updateF.map(u => u :: charUpdates)
+                val updateF = updates.map(u => char.name -> u).recover {
+                  case ex: Throwable => char.name -> List(s"An error occurred: ${ex.getMessage}")
+                };
+                updateF.map(u => u :: charUpdates)
+              }
+              case None => {
+                ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!");
+                Future.successful(charUpdates) // just pass on the accumulator
+              }
             }
-            case None => {
-              ctx.replyWarn(s"Token ${token.name}(${token.id}) does not represent any character!");
-              Future.successful(charUpdates) // just pass on the accumulator
-            }
-          }
-        };
-        resF
+          };
+          resF
       };
       updatedCharactersF.onComplete {
         case Success(updatedCharacters) => {
-          val updates = div(
-            h3("Updated Characters"),
-            for ((char, ups) <- updatedCharacters.reverse) yield Seq(
-              h4(char),
-              ul(for (up <- ups) yield li(up))));
+          val updates = div(h3("Updated Characters"),
+                            for ((char, ups) <- updatedCharacters.reverse)
+                              yield Seq(h4(char), ul(for (up <- ups) yield li(up))));
           debug(s"Updates: $updates")
           ctx.replyFooter(updates);
         }

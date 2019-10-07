@@ -25,7 +25,7 @@
 package com.lkroll.ep.api
 
 import com.lkroll.roll20.core.TemplateRef
-import com.lkroll.roll20.api.{ APIScript, APICommand }
+import com.lkroll.roll20.api.{APICommand, APIScript}
 import com.lkroll.ep.model.EPCharModel
 
 trait EPScript extends APIScript {

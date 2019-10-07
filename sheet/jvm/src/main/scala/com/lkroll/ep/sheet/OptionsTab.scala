@@ -43,33 +43,40 @@ object OptionsTab extends FieldGroup {
       sty.`flex-start`,
       fcol(
         Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
-        fblock(t.sheetSettings, EPStyle.min5rem,
+        fblock(
+          t.sheetSettings,
+          EPStyle.min5rem,
           (t.chatOutput -> char.chatOutputSelect),
           (t.usingAPIScript -> char.usingAPIScript),
           char.chatOutputOther.hidden,
           char.chatOutputEPRolls.hidden,
-          flexFill)),
+          flexFill
+        )
+      ),
       fcol(
         Seq(sty.`flex-grow`, sty.exactly15rem, sty.marginr1rem),
-        fblock(t.miscModifiers, EPStyle.min5rem,
+        fblock(
+          t.miscModifiers,
+          EPStyle.min5rem,
           (t.woundsIgnored -> char.woundsIgnored),
           (t.traumasIgnored -> char.traumasIgnored),
           (t.miscActionMod -> char.miscActionMod),
           (t.miscPhysicalMod -> char.miscPhysicalMod),
           (t.miscInitiativeMod -> char.miscInitiativeMod),
           (t.miscDurBonus -> char.durabilityBonus),
-          flexFill))),
+          flexFill
+        )
+      )
+    ),
     frow(
       sty.`flex-stretch`,
       fcol(
         Seq(EPStyle.`flex-grow`, sty.marginr1rem, sty.exactly15rem),
-        block(
-          t.miscNotes,
-          char.miscNotes.like(CoreTabRenderer.largeTextareaField)),
-        condBlock(
-          char.usingAPIScript,
-          t.apiText,
-          char.apiText.like(CoreTabRenderer.largeTextareaField)))));
+        block(t.miscNotes, char.miscNotes.like(CoreTabRenderer.largeTextareaField)),
+        condBlock(char.usingAPIScript, t.apiText, char.apiText.like(CoreTabRenderer.largeTextareaField))
+      )
+    )
+  );
 
   override def renderer = CoreTabRenderer;
 }

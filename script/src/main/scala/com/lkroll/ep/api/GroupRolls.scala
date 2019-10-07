@@ -28,12 +28,12 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, ActiveSkillSection }
+import com.lkroll.ep.model.{EPCharModel => epmodel, ActiveSkillSection}
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
 import concurrent.Future
-import util.{ Try, Success, Failure }
+import util.{Failure, Success, Try}
 
 object GroupRollsScript extends EPScript {
   override def apiCommands: Seq[APICommand[_]] = Seq(EPGroupRollsCommand);
@@ -45,12 +45,12 @@ class EPGroupRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   banner("Roll for multiple tokens at once.")
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
 
-  val mod = opt[Int]("mod", descr = "The value used to replace roll queries for modifiers (default: 0).", default = Some(0));
+  val mod =
+    opt[Int]("mod", descr = "The value used to replace roll queries for modifiers (default: 0).", default = Some(0));
   val ini = opt[Boolean]("ini", descr = "Roll Initiative.");
-  val skill = opt[List[String]](
-    "skill",
-    descr = "Roll the provided Active Skill.")(
-      ScallopUtils.singleListArgConverter(identity));
+  val skill = opt[List[String]]("skill", descr = "Roll the provided Active Skill.")(
+    ScallopUtils.singleListArgConverter(identity)
+  );
   val frayHalved = opt[Boolean]("fray-halved", descr = "Roll Fray/2.");
   requireOne(ini, skill, frayHalved);
   dependsOnAny(mod, List(skill, frayHalved));
@@ -107,8 +107,9 @@ object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
     val resFutures = targets.map {
       case (token, char) => {
         val strippedIni = epmodel.iniRoll.formula match {
-          case RollExprs.WithOption(expr, _) => expr.forCharacter(char.name) // drop the to-tracker option and target for character
-          case _                             => ??? // this shouldn't happen unless there's a bug
+          case RollExprs.WithOption(expr, _) =>
+            expr.forCharacter(char.name) // drop the to-tracker option and target for character
+          case _ => ??? // this shouldn't happen unless there's a bug
         };
 
         rollViaChat(Rolls.SimpleRoll(strippedIni)).map(r => (token, char, r))
@@ -125,9 +126,7 @@ object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
         campaign.turnOrder ++= res.map(t => (t._1 -> t._3));
         campaign.turnOrder.dedup();
         campaign.turnOrder.sortDesc();
-        val msg = div(
-          h4("Participants"),
-          ul(for ((_, char, roll) <- res) yield li(b(char.name), ": ", s"[[$roll]]")));
+        val msg = div(h4("Participants"), ul(for ((_, char, roll) <- res) yield li(b(char.name), ": ", s"[[$roll]]")));
         ctx.reply("Rolled Initiative", msg);
       }
       case Failure(e) => {
@@ -196,7 +195,10 @@ object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
     resFuture.onComplete(f);
   }
 
-  def rollSuccess(targets: List[(Token, Character)], title: String, rollTarget: Character => Int, ctx: ChatContext): Unit = {
+  def rollSuccess(targets: List[(Token, Character)],
+                  title: String,
+                  rollTarget: Character => Int,
+                  ctx: ChatContext): Unit = {
     rollEPRoll(targets) {
       case Success(res) => {
         val resOut = res.map {
@@ -213,48 +215,27 @@ object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
 
             val rollRes = p(b(char.name), s": [[${dieRoll}]] vs [[${target}]]");
             val rollJudgement = if (isAutoSuccess) {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-success sheet-result-indent",
-                  "Roll is an automatic success! » MoS [[0]]"))
+              div(rollRes,
+                  p(cls := "sheet-roll-success sheet-result-indent", "Roll is an automatic success! » MoS [[0]]"))
             } else if (isAutoFailure) {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-failure sheet-result-indent",
-                  s"Roll is an automatic failure... » MoF [[${mof}]]"))
+              div(rollRes,
+                  p(cls := "sheet-roll-failure sheet-result-indent",
+                    s"Roll is an automatic failure... » MoF [[${mof}]]"))
             } else if (isSuccess && isCrit) {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-success sheet-result-indent",
-                  s"Roll is a critical success! » MoS [[${mos}]]"))
+              div(rollRes,
+                  p(cls := "sheet-roll-success sheet-result-indent", s"Roll is a critical success! » MoS [[${mos}]]"))
             } else if (isFailure && isCrit) {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-failure sheet-result-indent",
-                  s"Roll is a critical failure... » MoF [[${mof}]]"))
+              div(rollRes,
+                  p(cls := "sheet-roll-failure sheet-result-indent", s"Roll is a critical failure... » MoF [[${mof}]]"))
             } else if (isSuccess) {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-success sheet-result-indent",
-                  s"Roll is a success! » MoS [[${mos}]]"))
+              div(rollRes, p(cls := "sheet-roll-success sheet-result-indent", s"Roll is a success! » MoS [[${mos}]]"))
             } else {
-              div(
-                rollRes,
-                p(
-                  cls := "sheet-roll-failure sheet-result-indent",
-                  s"Roll is a failure... » MoF [[${mof}]]"))
+              div(rollRes, p(cls := "sheet-roll-failure sheet-result-indent", s"Roll is a failure... » MoF [[${mof}]]"))
             };
             (token, char, rollJudgement)
           }
         };
-        val msg = div(
-          h4("Participants"),
-          div(for ((_, _, judge) <- resOut) yield judge));
+        val msg = div(h4("Participants"), div(for ((_, _, judge) <- resOut) yield judge));
         ctx.reply(title, msg)
       }
       case Failure(e) => {

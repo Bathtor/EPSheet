@@ -28,10 +28,11 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPScripts, EPScript }
-import util.{ Try, Success, Failure }
+import com.lkroll.ep.api.{EPScript, EPScripts, ScallopUtils, asInfoTemplate}
+import util.{Failure, Success, Try}
 import org.rogach.scallop.singleArgConverter
 
 object CompendiumScript extends EPScript {
-  override def apiCommands: Seq[APICommand[_]] = Seq(EPCompendiumImportCommand, EPCompendiumDataCommand, EPCompendiumExportCommand);
+  override def apiCommands: Seq[APICommand[_]] =
+    Seq(EPCompendiumImportCommand, EPCompendiumDataCommand, EPCompendiumExportCommand);
 }

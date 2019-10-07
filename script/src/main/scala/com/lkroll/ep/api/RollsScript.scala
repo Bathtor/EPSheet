@@ -28,11 +28,11 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, EPTranslation => ept, DamageType }
+import com.lkroll.ep.model.{EPCharModel => epmodel, EPTranslation => ept, DamageType}
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
-import util.{ Try, Success, Failure }
+import util.{Failure, Success, Try}
 import CoreImplicits._;
 
 object RollsScript extends EPScript {
@@ -86,7 +86,8 @@ class SpecialRollsConf(args: Seq[String]) extends ScallopAPIConf(args) {
   val ap = opt[Int]("ap", default = Some(0), descr = "armour penetration");
   val damageType = opt[String]("damage-type", descr = "damage type (Kinetic or Energy)");
   val label = opt[String]("label", descr = "custom roll label")(ScallopUtils.singleArgSpacedConverter(identity));
-  val sublabel = opt[String]("sublabel", descr = "custom roll sublabel")(ScallopUtils.singleArgSpacedConverter(identity));
+  val sublabel =
+    opt[String]("sublabel", descr = "custom roll sublabel")(ScallopUtils.singleArgSpacedConverter(identity));
   requireOne(success, damage);
   dependsOnAll(target, List(success));
   dependsOnAll(damageDice, List(damage));
@@ -121,7 +122,8 @@ object SpecialRollsCommand extends EPCommand[SpecialRollsConf] {
           attributeSubField = config.sublabel.toOption,
           testRoll = roll,
           testTarget = targetR,
-          testMoF = mofO);
+          testMoF = mofO
+        );
       };
       templF.onComplete {
         case Success(templ) => ctx.reply(templ)
@@ -134,7 +136,8 @@ object SpecialRollsCommand extends EPCommand[SpecialRollsConf] {
         attributeField = config.label.getOrElse("Damage Roll"),
         damageRoll = Rolls.InlineRoll(rollExpr),
         damageType = config.damageType.getOrElse("Unspecified"),
-        armourPenetration = config.ap());
+        armourPenetration = config.ap()
+      );
       ctx.reply(templ);
     }
   }
@@ -185,18 +188,21 @@ object EPRollsCommand extends EPCommand[EPRollsConf] {
 
   private def transformDefault(ctx: ChatContext, vars: TemplateVars, target: ChatCommand): Unit = {
     var testTarget, testRoll: Option[Int] = None;
-    val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, (ir, tvar) => {
-      Try(ir.results.total.toInt) match {
-        case Success(total) => {
-          tvar.key match {
-            case "test-roll"   => { testRoll = Some(total); RollsScript.transformRoll(total) }
-            case "test-target" => { testTarget = Some(total); RollsScript.transformTarget(ir.expression) }
-            case _             => TemplateVal.InlineRoll(total)
+    val replacedVars = vars.replaceInlineRollRefs(
+      ctx.inlineRolls,
+      (ir, tvar) => {
+        Try(ir.results.total.toInt) match {
+          case Success(total) => {
+            tvar.key match {
+              case "test-roll"   => { testRoll = Some(total); RollsScript.transformRoll(total) }
+              case "test-target" => { testTarget = Some(total); RollsScript.transformTarget(ir.expression) }
+              case _             => TemplateVal.InlineRoll(total)
+            }
           }
+          case Failure(e) => error(e); TemplateVal.Empty
         }
-        case Failure(e) => error(e); TemplateVal.Empty
       }
-    });
+    );
     val mofO = for {
       targetValue <- testTarget;
       rollValue <- testRoll
@@ -216,38 +222,57 @@ object EPRollsCommand extends EPCommand[EPRollsConf] {
 
   private def transformDamage(ctx: ChatContext, vars: TemplateVars, target: ChatCommand): Unit = {
     var damageTotal: Option[Int] = None;
-    val replacedVars = vars.replaceInlineRollRefs(ctx.inlineRolls, (ir, tvar) => {
-      Try(ir.results.total.toInt) match {
-        case Success(total) => tvar.key match {
-          case "damage-roll" => { damageTotal = Some(total); TemplateVal.InlineRoll(total) }
-          case _             => TemplateVal.InlineRoll(total)
+    val replacedVars = vars.replaceInlineRollRefs(
+      ctx.inlineRolls,
+      (ir, tvar) => {
+        Try(ir.results.total.toInt) match {
+          case Success(total) =>
+            tvar.key match {
+              case "damage-roll" => { damageTotal = Some(total); TemplateVal.InlineRoll(total) }
+              case _             => TemplateVal.InlineRoll(total)
+            }
+          case Failure(e) => { error(e); TemplateVal.Empty }
         }
-        case Failure(e) => { error(e); TemplateVal.Empty }
       }
-    });
+    );
     val msg = damageTotal match {
       case Some(total) => {
         val c = CharToolsCommand.minConf;
-        val armour = vars.lookup("damage-type").map {
-          case TemplateVar(_, TemplateVal.Raw(s)) => Some(DamageType.withName(s))
-          case tv                                 => { error(s"Invalid value for damage-type: $tv"); None }
-        }.flatten;
-        val ap: Int = vars.lookup("armour-penetration").map {
-          case TemplateVar(_, TemplateVal.Number(i: Int)) => Some(i)
-          case TemplateVar(_, TemplateVal.Raw(s))         => Try(s.toInt).toOption
-          case tv                                         => { error(s"Invalid value for armour-penetration: $tv"); None }
-        }.flatten.getOrElse(0);
-        val applyDamage = CharToolsCommand.invoke(ept.applyDamage.dynamic.render, List(
-          c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
-          c.damage <<= total,
-          c.armour <<? armour,
-          c.armourPenetration <<= ap));
-        val applyCritDamage = CharToolsCommand.invoke(ept.applyCritDamage.dynamic.render, List(
-          c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
-          c.damage <<= total,
-          c.armour <<? Option.empty[DamageType.DamageType],
-          c.armourPenetration <<= ap));
-        val augmentedVars = templateV("apply-damage" -> applyDamage) :: templateV("apply-crit-damage" -> applyCritDamage) :: replacedVars;
+        val armour = vars
+          .lookup("damage-type")
+          .map {
+            case TemplateVar(_, TemplateVal.Raw(s)) => Some(DamageType.withName(s))
+            case tv                                 => { error(s"Invalid value for damage-type: $tv"); None }
+          }
+          .flatten;
+        val ap: Int = vars
+          .lookup("armour-penetration")
+          .map {
+            case TemplateVar(_, TemplateVal.Number(i: Int)) => Some(i)
+            case TemplateVar(_, TemplateVal.Raw(s))         => Try(s.toInt).toOption
+            case tv                                         => { error(s"Invalid value for armour-penetration: $tv"); None }
+          }
+          .flatten
+          .getOrElse(0);
+        val applyDamage = CharToolsCommand.invoke(
+          ept.applyDamage.dynamic.render,
+          List(c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
+               c.damage <<= total,
+               c.armour <<? armour,
+               c.armourPenetration <<= ap)
+        );
+        val applyCritDamage = CharToolsCommand.invoke(
+          ept.applyCritDamage.dynamic.render,
+          List(
+            c.characterName <<= epmodel.characterName.expr.forTarget.render.replaceAll("@", "&#64;"),
+            c.damage <<= total,
+            c.armour <<? Option.empty[DamageType.DamageType],
+            c.armourPenetration <<= ap
+          )
+        );
+        val augmentedVars = templateV("apply-damage" -> applyDamage) :: templateV(
+          "apply-crit-damage" -> applyCritDamage
+        ) :: replacedVars;
         EPTemplates.damage.fillWith(augmentedVars)
       }
       case None => {

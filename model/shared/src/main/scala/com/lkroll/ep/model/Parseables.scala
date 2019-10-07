@@ -25,9 +25,7 @@
 
 package com.lkroll.ep.model
 
-object Parseables {
-
-}
+object Parseables {}
 
 object Aptitude extends Enumeration {
 
@@ -41,7 +39,12 @@ object Aptitude extends Enumeration {
   def defaultValues: AptitudeValues = AptitudeValues(None, None, None, None, None, None, None)
 }
 
-case class AptitudeValues(cog: Option[Int], coo: Option[Int], int: Option[Int],
-                          ref: Option[Int], sav: Option[Int], som: Option[Int], wil: Option[Int]);
+case class AptitudeValues(cog: Option[Int],
+                          coo: Option[Int],
+                          int: Option[Int],
+                          ref: Option[Int],
+                          sav: Option[Int],
+                          som: Option[Int],
+                          wil: Option[Int]);
 
 case class SkillMod(skill: String, field: Option[String], mod: Int);

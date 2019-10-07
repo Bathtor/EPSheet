@@ -29,8 +29,8 @@ import com.lkroll.roll20.facade.Roll20.EventInfo;
 import com.lkroll.roll20.sheet._
 import com.lkroll.ep.model._
 import SheetWorkerTypeShorthands._
-import util.{ Success, Failure }
-import concurrent.{ Future, Promise, ExecutionContext }
+import util.{Failure, Success}
+import concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
 
 object PsiWorkers extends SheetWorker {
@@ -38,8 +38,7 @@ object PsiWorkers extends SheetWorker {
 
   val psiSustainedCalc = bind(op(psiCurrentSustained)) update {
     case (sustained) => {
-      Seq(
-        psiSustainedMod <<= -sustained * 10)
+      Seq(psiSustainedMod <<= -sustained * 10)
     }
   }
 

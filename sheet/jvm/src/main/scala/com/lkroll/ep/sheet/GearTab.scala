@@ -81,7 +81,8 @@ object GearTab extends FieldGroup {
       span(
         span(sty.`area-field`, name := areaShort.name, SheetI18NAttrs.datai18nDynamic),
         input(sty.`area-field`, tpe := "hidden", name := area.name),
-        span(sty.`uniform-radius-field`, raw("("), span(name := radius.name), raw("m)")))
+        span(sty.`uniform-radius-field`, raw("("), span(name := radius.name), raw("m)"))
+      )
     }
     override def renderer(): GroupRenderer = null;
     override def members(): Seq[SheetElement] = null;
@@ -89,7 +90,8 @@ object GearTab extends FieldGroup {
 
   def area(area: FieldLike[_], areaShort: FieldLike[_], radius: FieldLike[_]) = AreaGroup(area, areaShort, radius);
 
-  case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]) extends FieldGroup {
+  case class RangeGroup(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_])
+      extends FieldGroup {
 
     val fieldRenderer = CoreTabRenderer.fieldRenderers;
 
@@ -100,65 +102,74 @@ object GearTab extends FieldGroup {
         fieldRenderer(rangeStart, mode),
         span(raw(" - ")),
         fieldRenderer(rangeEnd, mode),
-        span(name := unit.name))
+        span(name := unit.name)
+      )
     }
     override def renderer(): GroupRenderer = null;
     override def members(): Seq[SheetElement] = null;
   }
 
-  def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]): RangeGroup = RangeGroup(rangeLabel, rangeStart, rangeEnd, unit);
+  def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]): RangeGroup =
+    RangeGroup(rangeLabel, rangeStart, rangeEnd, unit);
 
-  def checklabel(label: LabelsI18N, innerSep: Option[String] = None): GroupRenderer.FieldSingleRenderer = (f) => f match {
-    case ff: FlagField => {
-      import CoreTabRenderer.obool2Checked;
-      innerSep match {
-        case Some(sep) => span(input(`type` := "checkbox", style := "display: none", name := ff.name, ff.defaultValue), span(sty.`checklabel`, raw(sep)), span(sty.`checklabel`, label))
-        case None      => span(input(`type` := "checkbox", style := "display: none", name := ff.name, ff.defaultValue), span(sty.`checklabel`, label))
+  def checklabel(label: LabelsI18N, innerSep: Option[String] = None): GroupRenderer.FieldSingleRenderer =
+    (f) =>
+      f match {
+        case ff: FlagField => {
+          import CoreTabRenderer.obool2Checked;
+          innerSep match {
+            case Some(sep) =>
+              span(input(`type` := "checkbox", style := "display: none", name := ff.name, ff.defaultValue),
+                   span(sty.`checklabel`, raw(sep)),
+                   span(sty.`checklabel`, label))
+            case None =>
+              span(input(`type` := "checkbox", style := "display: none", name := ff.name, ff.defaultValue),
+                   span(sty.`checklabel`, label))
+          }
+        }
       }
-    }
-  }
-  def checklabellike(label: LabelsI18N, ff: FlagField, innerSep: Option[String] = None): FieldWithRenderer = ff.like(checklabel(label, innerSep));
+  def checklabellike(label: LabelsI18N, ff: FlagField, innerSep: Option[String] = None): FieldWithRenderer =
+    ff.like(checklabel(label, innerSep));
 
   val meleeDamageRollExcellent60: Button = roll(
     char.meleeWeapons,
     "damage_roll_excellent60",
     char.chatOutputEPRolls,
-    EPDamageTemplate(
-      char.characterName,
-      char.meleeWeapons.weapon,
-      char.meleeWeapons.damageRollExcellent60,
-      char.meleeWeapons.damageType,
-      char.meleeWeapons.armourPenetration));
+    EPDamageTemplate(char.characterName,
+                     char.meleeWeapons.weapon,
+                     char.meleeWeapons.damageRollExcellent60,
+                     char.meleeWeapons.damageType,
+                     char.meleeWeapons.armourPenetration)
+  );
   val meleeDamageRollExcellent30: Button = roll(
     char.meleeWeapons,
     "damage_roll_excellent30",
     char.chatOutputEPRolls,
-    EPDamageTemplate(
-      char.characterName,
-      char.meleeWeapons.weapon,
-      char.meleeWeapons.damageRollExcellent30,
-      char.meleeWeapons.damageType,
-      char.meleeWeapons.armourPenetration));
+    EPDamageTemplate(char.characterName,
+                     char.meleeWeapons.weapon,
+                     char.meleeWeapons.damageRollExcellent30,
+                     char.meleeWeapons.damageType,
+                     char.meleeWeapons.armourPenetration)
+  );
   val meleeDamageRoll: Button = roll(
     char.meleeWeapons,
     "damage_roll",
     char.chatOutputEPRolls,
-    EPDamageTemplate(
-      char.characterName,
-      char.meleeWeapons.weapon,
-      char.meleeWeapons.damageRoll,
-      char.meleeWeapons.damageType,
-      char.meleeWeapons.armourPenetration));
+    EPDamageTemplate(char.characterName,
+                     char.meleeWeapons.weapon,
+                     char.meleeWeapons.damageRoll,
+                     char.meleeWeapons.damageType,
+                     char.meleeWeapons.armourPenetration)
+  );
   val meleeDamageRollQuery: RollElement = roll(
     char.meleeWeapons,
     "damage_query_roll",
     char.chatOutputEPRolls,
-    EPDamageTemplate(
-      char.characterName,
-      char.meleeWeapons.weapon,
-      char.meleeWeapons.damageRollQuery,
-      char.meleeWeapons.damageType,
-      char.meleeWeapons.armourPenetration),
+    EPDamageTemplate(char.characterName,
+                     char.meleeWeapons.weapon,
+                     char.meleeWeapons.damageRollQuery,
+                     char.meleeWeapons.damageType,
+                     char.meleeWeapons.armourPenetration),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.dmg),
       char.meleeWeapons.numDamageDice,
@@ -168,7 +179,9 @@ object GearTab extends FieldGroup {
       span("+"),
       char.meleeWeapons.damageBonus,
       span(" / "),
-      char.meleeWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))));
+      char.meleeWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))
+    )
+  );
   val meleeAttackRoll: RollElement = roll(
     char.meleeWeapons,
     "weapon_roll",
@@ -181,8 +194,10 @@ object GearTab extends FieldGroup {
       char.meleeWeapons.attackTarget,
       CommandButton("damage", meleeDamageRoll),
       CommandButton("damage+5", meleeDamageRollExcellent30),
-      CommandButton("damage+10", meleeDamageRollExcellent60)),
-    char.meleeWeapons.weapon.like(rowItemName));
+      CommandButton("damage+10", meleeDamageRollExcellent60)
+    ),
+    char.meleeWeapons.weapon.like(rowItemName)
+  );
 
   val meleeWeapons: SheetElement = block(
     t.meleeWeapons,
@@ -202,46 +217,54 @@ object GearTab extends FieldGroup {
             meleeDamageRollExcellent30.hidden,
             meleeDamageRollExcellent60.hidden,
             char.meleeWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.meleeWeapons.showDescription,
-            char.meleeWeapons.description)),
-        editOnly(tightcol(
-          tightfrow(
-            char.meleeWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
-            span(EPStyle.inlineLabel, t.weaponSkill),
-            char.meleeWeapons.skillSearch.like(skillSearchBox),
-            char.meleeWeapons.skillName,
-            char.meleeWeapons.skillTotal.hidden,
-            flexFill),
-          tightfrow(
-            span(EPStyle.lineLabel, t.dmg),
-            char.meleeWeapons.damageType,
-            char.meleeWeapons.damageTypeShort.hidden,
-            char.meleeWeapons.numDamageDice,
-            span("d10÷"),
-            char.meleeWeapons.damageDivisor,
-            span("+"),
-            char.meleeWeapons.damageBonus,
-            span(" / "),
-            (t.ap -> char.meleeWeapons.armourPenetration),
-            flexFill),
-          tightfrow(
-            sty.halfRemRowSeparator,
-            span(sty.lineLabel, t.weaponDescription),
-            MarkupElement(char.meleeWeapons.description.like(CoreTabRenderer.textareaFieldGrow))))))
-    });
+            flexFill
+          ),
+          descrpar(char.meleeWeapons.showDescription, char.meleeWeapons.description)
+        ),
+        editOnly(
+          tightcol(
+            tightfrow(
+              char.meleeWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
+              span(EPStyle.inlineLabel, t.weaponSkill),
+              char.meleeWeapons.skillSearch.like(skillSearchBox),
+              char.meleeWeapons.skillName,
+              char.meleeWeapons.skillTotal.hidden,
+              flexFill
+            ),
+            tightfrow(
+              span(EPStyle.lineLabel, t.dmg),
+              char.meleeWeapons.damageType,
+              char.meleeWeapons.damageTypeShort.hidden,
+              char.meleeWeapons.numDamageDice,
+              span("d10÷"),
+              char.meleeWeapons.damageDivisor,
+              span("+"),
+              char.meleeWeapons.damageBonus,
+              span(" / "),
+              (t.ap -> char.meleeWeapons.armourPenetration),
+              flexFill
+            ),
+            tightfrow(sty.halfRemRowSeparator,
+                      span(sty.lineLabel, t.weaponDescription),
+                      MarkupElement(char.meleeWeapons.description.like(CoreTabRenderer.textareaFieldGrow)))
+          )
+        )
+      )
+    }
+  );
 
   val rangedDamageConcExtraBF: Button = roll(
     char,
     "ranged_damage_conc_extra_bf",
     char.chatOutputOther,
-    EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcBFXDmg));
+    EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcBFXDmg)
+  );
   val rangedDamageConcExtraFA: Button = roll(
     char,
     "ranged_damage_conc_extra_fa",
     char.chatOutputOther,
-    EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcFAXDmg));
+    EPDamageTemplate(char.characterName, t.concentrateFire, char.rangedConcFAXDmg)
+  );
   val rangedDamageRollExcellent60: Button = roll(
     char.rangedWeapons,
     "damage_roll_excellent60",
@@ -253,7 +276,9 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.damageType,
       char.rangedWeapons.armourPenetration,
       CommandButton("+1d10 extra damage", rangedDamageConcExtraBF),
-      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)
+    )
+  );
   val rangedDamageRollExcellent30: Button = roll(
     char.rangedWeapons,
     "damage_roll_excellent30",
@@ -265,9 +290,12 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.damageType,
       char.rangedWeapons.armourPenetration,
       CommandButton("+1d10 extra damage", rangedDamageConcExtraBF),
-      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)
+    )
+  );
   val rangedDamageRoll: Button = roll(
-    char.rangedWeapons, "damage_roll",
+    char.rangedWeapons,
+    "damage_roll",
     char.chatOutputEPRolls,
     EPDamageTemplate(
       char.characterName,
@@ -276,16 +304,18 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.damageType,
       char.rangedWeapons.armourPenetration,
       CommandButton("+1d10 extra damage", rangedDamageConcExtraBF),
-      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)));
+      CommandButton("+3d10 extra damage", rangedDamageConcExtraFA)
+    )
+  );
   val rangedDamageRollQuery: RollElement = roll(
-    char.rangedWeapons, "damage_roll",
+    char.rangedWeapons,
+    "damage_roll",
     char.chatOutputEPRolls,
-    EPDamageTemplate(
-      char.characterName,
-      char.rangedWeapons.weapon,
-      char.rangedWeapons.damageRollQuery,
-      char.rangedWeapons.damageType,
-      char.rangedWeapons.armourPenetration),
+    EPDamageTemplate(char.characterName,
+                     char.rangedWeapons.weapon,
+                     char.rangedWeapons.damageRollQuery,
+                     char.rangedWeapons.damageType,
+                     char.rangedWeapons.armourPenetration),
     buttonSeq(
       span(EPStyle.subtleInlineLabel, t.dmg),
       char.rangedWeapons.numDamageDice,
@@ -295,7 +325,9 @@ object GearTab extends FieldGroup {
       span("+"),
       char.rangedWeapons.damageBonus,
       span(" / "),
-      char.rangedWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))));
+      char.rangedWeapons.armourPenetration.like(f => span(span(name := f.name), span(t.ap)))
+    )
+  );
   val rangedAttackRoll: RollElement = roll(
     char.rangedWeapons,
     "weapon_roll",
@@ -308,8 +340,10 @@ object GearTab extends FieldGroup {
       char.rangedWeapons.attackTarget,
       CommandButton("damage", rangedDamageRoll),
       CommandButton("damage+5", rangedDamageRollExcellent30),
-      CommandButton("damage+10", rangedDamageRollExcellent60)),
-    char.rangedWeapons.weapon.like(rowItemName));
+      CommandButton("damage+10", rangedDamageRollExcellent60)
+    ),
+    char.rangedWeapons.weapon.like(rowItemName)
+  );
 
   val rangedWeapons: SheetElement = block(
     t.rangedWeapons,
@@ -339,83 +373,121 @@ object GearTab extends FieldGroup {
             span(raw(" ~ ")),
             rangedDamageRollQuery,
             span(raw(" ")),
-            area(char.rangedWeapons.damageArea, char.rangedWeapons.damageAreaShort, char.rangedWeapons.uniformBlastArea),
+            area(char.rangedWeapons.damageArea,
+                 char.rangedWeapons.damageAreaShort,
+                 char.rangedWeapons.uniformBlastArea),
             rangedDamageRoll.hidden,
             rangedDamageRollExcellent30.hidden,
             rangedDamageRollExcellent60.hidden,
-            span(raw(" ~ ")), span(EPStyle.subtleInlineLabel, t.weaponRanges),
+            span(raw(" ~ ")),
+            span(EPStyle.subtleInlineLabel, t.weaponRanges),
             span(EPStyle.inlineLabel, t.shortRange),
-            char.rangedWeapons.shortRangeLower, span(raw("-")), char.rangedWeapons.shortRangeUpper, span(raw("m ")),
+            char.rangedWeapons.shortRangeLower,
+            span(raw("-")),
+            char.rangedWeapons.shortRangeUpper,
+            span(raw("m ")),
             span(EPStyle.inlineLabel, t.mediumRange),
-            char.rangedWeapons.mediumRangeLower, span(raw("-")), char.rangedWeapons.mediumRangeUpper, span(raw("m ")),
+            char.rangedWeapons.mediumRangeLower,
+            span(raw("-")),
+            char.rangedWeapons.mediumRangeUpper,
+            span(raw("m ")),
             span(EPStyle.inlineLabel, t.longRange),
-            char.rangedWeapons.longRangeLower, span(raw("-")), char.rangedWeapons.longRangeUpper, span(raw("m ")),
+            char.rangedWeapons.longRangeLower,
+            span(raw("-")),
+            char.rangedWeapons.longRangeUpper,
+            span(raw("m ")),
             span(EPStyle.inlineLabel, t.extremeRange),
-            char.rangedWeapons.extremeRangeLower, span(raw("-")), char.rangedWeapons.extremeRangeUpper, span(raw("m")),
+            char.rangedWeapons.extremeRangeLower,
+            span(raw("-")),
+            char.rangedWeapons.extremeRangeUpper,
+            span(raw("m")),
             char.rangedWeapons.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.rangedWeapons.showDescription,
-            char.rangedWeapons.description)),
-        editOnly(tightcol(
-          tightfrow(
-            char.rangedWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
-            span(EPStyle.inlineLabel, t.weaponSkill),
-            char.rangedWeapons.skillSearch.like(skillSearchBox),
-            char.rangedWeapons.skillName,
-            char.rangedWeapons.skillTotal.hidden,
-            span(raw(" + ")), char.rangedWeapons.miscMod,
-            flexFill),
-          tightfrow(
-            span(EPStyle.lineLabel, t.dmg),
-            char.rangedWeapons.damageType,
-            char.rangedWeapons.damageTypeShort.hidden,
-            char.rangedWeapons.numDamageDice,
-            span("d10÷"),
-            char.rangedWeapons.damageDivisor,
-            span("+"),
-            char.rangedWeapons.damageBonus,
-            span(" / "),
-            (t.ap -> char.rangedWeapons.armourPenetration),
-            (t.damageArea -> char.rangedWeapons.damageArea),
-            (t.uniformRadius -> char.rangedWeapons.uniformBlastArea),
-            flexFill),
-          tightfrow(
-            span(EPStyle.lineLabel, t.firingModes),
-            (t.singleShot -> char.rangedWeapons.singleShot),
-            (t.semiAutomatic -> char.rangedWeapons.semiAutomatic),
-            (t.burstFire -> char.rangedWeapons.burstFire),
-            (t.fullAutomatic -> char.rangedWeapons.fullAutomatic),
-            flexFill),
-          tightfrow(
-            span(EPStyle.lineLabel, t.weaponRanges),
-            char.rangedWeapons.rangeUnitSymbol.hidden,
-            span(raw(" ")),
-            (t.thrown -> char.rangedWeapons.thrown),
-            range(t.shortRange, char.rangedWeapons.shortRangeLower, char.rangedWeapons.shortRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
-            range(t.mediumRange, char.rangedWeapons.mediumRangeLower, char.rangedWeapons.mediumRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
-            range(t.longRange, char.rangedWeapons.longRangeLower, char.rangedWeapons.longRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
-            range(t.extremeRange, char.rangedWeapons.extremeRangeLower, char.rangedWeapons.extremeRangeUpperInput, char.rangedWeapons.rangeUnitSymbol),
-            flexFill),
-          tightfrow(
-            span(EPStyle.lineLabel, t.magazine),
-            char.rangedWeapons.magazineCurrent, span("/"), char.rangedWeapons.magazineSize,
-            (t.ammoType -> char.rangedWeapons.magazineType),
-            flexFill),
-          tightfrow(
-            sty.halfRemRowSeparator,
-            span(sty.lineLabel, t.weaponDescription),
-            MarkupElement(char.rangedWeapons.description.like(CoreTabRenderer.textareaFieldGrow))))))
-    });
+            flexFill
+          ),
+          descrpar(char.rangedWeapons.showDescription, char.rangedWeapons.description)
+        ),
+        editOnly(
+          tightcol(
+            tightfrow(
+              char.rangedWeapons.weapon.like(CoreTabRenderer.textWithPlaceholder(t.weaponName.placeholder)),
+              span(EPStyle.inlineLabel, t.weaponSkill),
+              char.rangedWeapons.skillSearch.like(skillSearchBox),
+              char.rangedWeapons.skillName,
+              char.rangedWeapons.skillTotal.hidden,
+              span(raw(" + ")),
+              char.rangedWeapons.miscMod,
+              flexFill
+            ),
+            tightfrow(
+              span(EPStyle.lineLabel, t.dmg),
+              char.rangedWeapons.damageType,
+              char.rangedWeapons.damageTypeShort.hidden,
+              char.rangedWeapons.numDamageDice,
+              span("d10÷"),
+              char.rangedWeapons.damageDivisor,
+              span("+"),
+              char.rangedWeapons.damageBonus,
+              span(" / "),
+              (t.ap -> char.rangedWeapons.armourPenetration),
+              (t.damageArea -> char.rangedWeapons.damageArea),
+              (t.uniformRadius -> char.rangedWeapons.uniformBlastArea),
+              flexFill
+            ),
+            tightfrow(
+              span(EPStyle.lineLabel, t.firingModes),
+              (t.singleShot -> char.rangedWeapons.singleShot),
+              (t.semiAutomatic -> char.rangedWeapons.semiAutomatic),
+              (t.burstFire -> char.rangedWeapons.burstFire),
+              (t.fullAutomatic -> char.rangedWeapons.fullAutomatic),
+              flexFill
+            ),
+            tightfrow(
+              span(EPStyle.lineLabel, t.weaponRanges),
+              char.rangedWeapons.rangeUnitSymbol.hidden,
+              span(raw(" ")),
+              (t.thrown -> char.rangedWeapons.thrown),
+              range(t.shortRange,
+                    char.rangedWeapons.shortRangeLower,
+                    char.rangedWeapons.shortRangeUpperInput,
+                    char.rangedWeapons.rangeUnitSymbol),
+              range(t.mediumRange,
+                    char.rangedWeapons.mediumRangeLower,
+                    char.rangedWeapons.mediumRangeUpperInput,
+                    char.rangedWeapons.rangeUnitSymbol),
+              range(t.longRange,
+                    char.rangedWeapons.longRangeLower,
+                    char.rangedWeapons.longRangeUpperInput,
+                    char.rangedWeapons.rangeUnitSymbol),
+              range(t.extremeRange,
+                    char.rangedWeapons.extremeRangeLower,
+                    char.rangedWeapons.extremeRangeUpperInput,
+                    char.rangedWeapons.rangeUnitSymbol),
+              flexFill
+            ),
+            tightfrow(
+              span(EPStyle.lineLabel, t.magazine),
+              char.rangedWeapons.magazineCurrent,
+              span("/"),
+              char.rangedWeapons.magazineSize,
+              (t.ammoType -> char.rangedWeapons.magazineType),
+              flexFill
+            ),
+            tightfrow(sty.halfRemRowSeparator,
+                      span(sty.lineLabel, t.weaponDescription),
+                      MarkupElement(char.rangedWeapons.description.like(CoreTabRenderer.textareaFieldGrow)))
+          )
+        )
+      )
+    }
+  );
 
   val armourWorn: SheetElement = block(
     t.armourWorn,
-    tightfrow(
-      flexFill,
-      (t.energy -> char.armourEnergyBonus),
-      (t.kinetic -> char.armourKineticBonus),
-      (t.layeringPenalty -> char.layeringPenalty),
-      flexFill),
+    tightfrow(flexFill,
+              (t.energy -> char.armourEnergyBonus),
+              (t.kinetic -> char.armourKineticBonus),
+              (t.layeringPenalty -> char.layeringPenalty),
+              flexFill),
     div(sty.smallWrapBoxTitle, sty.halfRemRowSeparator, span(t.armourActiveTotal)),
     char.armourItems {
       TightRepRow(
@@ -423,27 +495,33 @@ object GearTab extends FieldGroup {
           flowpar(
             char.armourItems.active,
             char.armourItems.itemName.like(rowItemName),
-            span("(", span(name := char.armourItems.energyBonus.name), "/", span(name := char.armourItems.kineticBonus.name), ")"),
+            span("(",
+                 span(name := char.armourItems.energyBonus.name),
+                 "/",
+                 span(name := char.armourItems.kineticBonus.name),
+                 ")"),
             char.armourItems.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.armourItems.showDescription,
-            char.armourItems.description)),
-        editOnly(tightfrow(
-          char.armourItems.active,
-          char.armourItems.itemName.like(CoreTabRenderer.textWithPlaceholder(t.armourName.placeholder)),
-          (t.armourAccessory -> char.armourItems.accessory),
-          (t.energy -> char.armourItems.energyBonus),
-          (t.kinetic -> char.armourItems.kineticBonus),
-          span(sty.inlineLabel, t.equipmentDescription),
-          MarkupElement(char.armourItems.description.like(CoreTabRenderer.textareaFieldGrow)))))
-    });
+            flexFill
+          ),
+          descrpar(char.armourItems.showDescription, char.armourItems.description)
+        ),
+        editOnly(
+          tightfrow(
+            char.armourItems.active,
+            char.armourItems.itemName.like(CoreTabRenderer.textWithPlaceholder(t.armourName.placeholder)),
+            (t.armourAccessory -> char.armourItems.accessory),
+            (t.energy -> char.armourItems.energyBonus),
+            (t.kinetic -> char.armourItems.kineticBonus),
+            span(sty.inlineLabel, t.equipmentDescription),
+            MarkupElement(char.armourItems.description.like(CoreTabRenderer.textareaFieldGrow))
+          )
+        )
+      )
+    }
+  );
 
-  val currency: SheetElement = sblock(t.currency, sty.nop,
-    tightfrow(
-      (t.cryptoCredits -> char.cryptoCredits),
-      flexFill,
-      (t.cash -> char.cash)));
+  val currency: SheetElement =
+    sblock(t.currency, sty.nop, tightfrow((t.cryptoCredits -> char.cryptoCredits), flexFill, (t.cash -> char.cash)));
 
   val equipment: SheetElement = block(
     t.equipment,
@@ -452,18 +530,25 @@ object GearTab extends FieldGroup {
         presOnly(
           flowpar(
             char.equipment.itemName.like(rowItemName),
-            span("["), char.equipment.amount.like(CoreTabRenderer.presEditableNum), span("]"),
+            span("["),
+            char.equipment.amount.like(CoreTabRenderer.presEditableNum),
+            span("]"),
             char.equipment.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.equipment.showDescription,
-            char.equipment.description)),
-        editOnly(tightfrow(
-          char.equipment.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
-          char.equipment.amount,
-          span(sty.inlineLabel, t.equipmentDescription),
-          MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow)))))
-    });
+            flexFill
+          ),
+          descrpar(char.equipment.showDescription, char.equipment.description)
+        ),
+        editOnly(
+          tightfrow(
+            char.equipment.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
+            char.equipment.amount,
+            span(sty.inlineLabel, t.equipmentDescription),
+            MarkupElement(char.equipment.description.like(CoreTabRenderer.textareaFieldGrow))
+          )
+        )
+      )
+    }
+  );
 
   val software: SheetElement = block(
     t.software,
@@ -478,68 +563,71 @@ object GearTab extends FieldGroup {
             char.software.quality,
             span(raw(")")),
             char.software.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.software.showDescription,
-            char.software.description)),
-        editOnly(tightfrow(
-          char.software.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
-          char.software.quality.like(CoreTabRenderer.textWithPlaceholder(t.softwareQuality.placeholder)),
-          (t.qualityMod -> char.software.qualityMod),
-          span(sty.inlineLabel, t.equipmentDescription),
-          MarkupElement(char.software.description.like(CoreTabRenderer.textareaFieldGrow)))))
-    });
+            flexFill
+          ),
+          descrpar(char.software.showDescription, char.software.description)
+        ),
+        editOnly(
+          tightfrow(
+            char.software.itemName.like(CoreTabRenderer.textWithPlaceholder(t.equipmentName.placeholder)),
+            char.software.quality.like(CoreTabRenderer.textWithPlaceholder(t.softwareQuality.placeholder)),
+            (t.qualityMod -> char.software.qualityMod),
+            span(sty.inlineLabel, t.equipmentDescription),
+            MarkupElement(char.software.description.like(CoreTabRenderer.textareaFieldGrow))
+          )
+        )
+      )
+    }
+  );
 
   val fireModes: SheetElement = block(
     t.firingModes,
     flowpar(
       span(sty.tfrowName, t.singleShot.fullLabel.text),
-      span(raw(" (")), span(t.singleShot), span(raw(")")),
-      CoreTabRenderer.labelDescription(t.singleShotDescription)),
+      span(raw(" (")),
+      span(t.singleShot),
+      span(raw(")")),
+      CoreTabRenderer.labelDescription(t.singleShotDescription)
+    ),
     flowpar(
       span(sty.tfrowName, t.semiAutomatic.fullLabel.text),
-      span(raw(" (")), span(t.semiAutomatic), span(raw(")")),
-      CoreTabRenderer.labelDescription(t.semiAutomaticDescription)),
+      span(raw(" (")),
+      span(t.semiAutomatic),
+      span(raw(")")),
+      CoreTabRenderer.labelDescription(t.semiAutomaticDescription)
+    ),
     flowpar(
       span(sty.tfrowName, t.burstFire.fullLabel.text),
-      span(raw(" (")), span(t.burstFire), span(raw(")")),
-      CoreTabRenderer.labelDescription(t.burstFireDescription)),
+      span(raw(" (")),
+      span(t.burstFire),
+      span(raw(")")),
+      CoreTabRenderer.labelDescription(t.burstFireDescription)
+    ),
     flowpar(
       span(sty.tfrowName, t.fullAutomatic.fullLabel.text),
-      span(raw(" (")), span(t.fullAutomatic), span(raw(")")),
-      CoreTabRenderer.labelDescription(t.fullAutomaticDescription)));
+      span(raw(" (")),
+      span(t.fullAutomatic),
+      span(raw(")")),
+      CoreTabRenderer.labelDescription(t.fullAutomaticDescription)
+    )
+  );
 
   val members: Seq[SheetElement] = Seq(
     frow(
       sty.`flex-start`,
-      fcol(
-        Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
-        meleeWeapons,
-        rangedWeapons,
-        fireModes),
-      fcol(
-        Seq(EPStyle.`flex-grow`, sty.exactly20rem),
-        armourWorn,
-        currency,
-        equipment,
-        software)),
+      fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem), meleeWeapons, rangedWeapons, fireModes),
+      fcol(Seq(EPStyle.`flex-grow`, sty.exactly20rem), armourWorn, currency, equipment, software)
+    ),
     frow(
       sty.`flex-stretch`,
-      fcol(
-        Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
-        block(
-          t.gearFreeform,
-          char.gear1.like(CoreTabRenderer.largeTextareaField))),
-      fcol(
-        Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
-        block(
-          t.gearFreeform,
-          char.gear2.like(CoreTabRenderer.largeTextareaField))),
-      fcol(
-        Seq(EPStyle.`flex-grow`, sty.exactly15rem),
-        block(
-          t.gearFreeform,
-          char.gear3.like(CoreTabRenderer.largeTextareaField)))));
+      fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
+           block(t.gearFreeform, char.gear1.like(CoreTabRenderer.largeTextareaField))),
+      fcol(Seq(EPStyle.`flex-grow`, sty.marginrp5rem, sty.exactly15rem),
+           block(t.gearFreeform, char.gear2.like(CoreTabRenderer.largeTextareaField))),
+      fcol(Seq(EPStyle.`flex-grow`, sty.exactly15rem),
+           block(t.gearFreeform, char.gear3.like(CoreTabRenderer.largeTextareaField)))
+    )
+  );
 
   override def renderer = CoreTabRenderer;
 }

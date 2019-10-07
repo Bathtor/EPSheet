@@ -40,44 +40,33 @@ object EPStyle extends SheetStyle {
     backgroundImage := "url('http://files.lars-kroll.com/EclipsePhase_Logo_Black.png')",
     backgroundRepeat := "no-repeat",
     backgroundPosition := "right top",
-    backgroundSize := "35rem");
+    backgroundSize := "35rem"
+  );
 
-  val wrapBox = cls(
-    backgroundColor := c.boxBackground.css,
-    border := "1px solid #000000",
-    borderRadius := "3px",
-    padding := "3px",
-    marginBottom := "5px");
+  val wrapBox = cls(backgroundColor := c.boxBackground.css,
+                    border := "1px solid #000000",
+                    borderRadius := "3px",
+                    padding := "3px",
+                    marginBottom := "5px");
 
-  val flexRow = cls(
-    width := "100%");
+  val flexRow = cls(width := "100%");
 
-  val headerBox = cls(
-    width := "100%");
+  val headerBox = cls(width := "100%");
 
-  val footerBox = cls(
-    borderTopStyle.solid,
-    borderTopWidth := "1px",
-    borderTopColor := c.roll20border.css,
-    width := "100%");
+  val footerBox =
+    cls(borderTopStyle.solid, borderTopWidth := "1px", borderTopColor := c.roll20border.css, width := "100%");
 
-  val logoBox = cls(
-    width := "35rem");
+  val logoBox = cls(width := "35rem");
 
-  val logoPlaceholder = cls(
-    height := "5.2rem");
+  val logoPlaceholder = cls(height := "5.2rem");
 
-  val aRight = cls(
-    textAlign.right);
+  val aRight = cls(textAlign.right);
 
-  val aCenter = cls(
-    textAlign.center);
+  val aCenter = cls(textAlign.center);
 
-  val noBreak = cls(
-    whiteSpace.nowrap);
+  val noBreak = cls(whiteSpace.nowrap);
 
-  val margin5px = cls(
-    margin := "5px");
+  val margin5px = cls(margin := "5px");
 
   val wrapBoxTitle = cls(
     color := c.titleText.css,
@@ -88,7 +77,8 @@ object EPStyle extends SheetStyle {
     fontSize := "1.1rem",
     fontWeight := 700,
     textTransform.uppercase,
-    textAlign.center);
+    textAlign.center
+  );
 
   val smallWrapBoxTitle = cls(
     color := c.titleText.css,
@@ -100,58 +90,34 @@ object EPStyle extends SheetStyle {
     fontWeight := 700,
     textTransform.uppercase,
     textAlign.center,
-    span(
-      fontSize := "0.9rem",
-      fontWeight := 700,
-      textTransform.uppercase));
+    span(fontSize := "0.9rem", fontWeight := 700, textTransform.uppercase)
+  );
 
-  val largeText = cls(
-    input(
-      fontSize := "2.2rem",
-      fontWeight.bold),
-    span(
-      fontSize := "2.2rem",
-      fontWeight.bold));
+  val largeText = cls(input(fontSize := "2.2rem", fontWeight.bold), span(fontSize := "2.2rem", fontWeight.bold));
 
-  val aptTable = cls(
-    tableLayout.fixed,
-    width := "100%",
-    minWidth := "32rem",
-    th(width := 2.9.em),
-    td(span(
-      textAlign.right,
-      display.block,
-      paddingRight := "2px")));
+  val aptTable = cls(tableLayout.fixed,
+                     width := "100%",
+                     minWidth := "32rem",
+                     th(width := 2.9.em),
+                     td(span(textAlign.right, display.block, paddingRight := "2px")));
 
-  val repTable = cls(
-    tableLayout.fixed,
-    width := "100%",
-    minWidth := "32rem",
-    td(
-      textAlign.center,
-      span(
-        textAlign.right,
-        display.block,
-        paddingRight := "2px")));
+  val repTable = cls(tableLayout.fixed,
+                     width := "100%",
+                     minWidth := "32rem",
+                     td(textAlign.center, span(textAlign.right, display.block, paddingRight := "2px")));
 
   val yLabelCol = cls();
   val spacerCol = cls(width := "12%");
   val repScoreCol = cls(width := "14%");
   val favLvlCol = cls(width := "10%");
 
-  val skillName = cls(
-    fontWeight.bold);
+  val skillName = cls(fontWeight.bold);
 
-  val skillField = cls(
-    fontStyle.oblique,
-    paddingLeft := "2px",
-    paddingRight := "4px");
+  val skillField = cls(fontStyle.oblique, paddingLeft := "2px", paddingRight := "4px");
 
-  val skillApt = cls(
-    textTransform.uppercase);
+  val skillApt = cls(textTransform.uppercase);
 
-  val skillSpec = cls(
-    fontStyle.italic);
+  val skillSpec = cls(fontStyle.italic);
 
   val skillTotal = cls(
     fontWeight.normal,
@@ -162,27 +128,16 @@ object EPStyle extends SheetStyle {
     borderBottomColor := c.lightGrey.css,
     borderBottomWidth := "1px",
     width := "1.5em",
-    textAlign.right);
+    textAlign.right
+  );
 
-  val tfrowName = cls(
-    paddingLeft := 2.px,
-    paddingRight := 2.px,
-    fontWeight.bold);
+  val tfrowName = cls(paddingLeft := 2.px, paddingRight := 2.px, fontWeight.bold);
 
-  val rollLabel = cls(
-    paddingLeft := 2.px,
-    paddingRight := 2.px,
-    fontWeight.bold,
-    color := c.textHighlight.css);
+  val rollLabel = cls(paddingLeft := 2.px, paddingRight := 2.px, fontWeight.bold, color := c.textHighlight.css);
 
-  val rollList = cls(
-    display.block,
-    marginLeft := 5.px,
-    marginRight := 5.px);
+  val rollList = cls(display.block, marginLeft := 5.px, marginRight := 5.px);
 
-  val tcol = cls(
-    width := "100%",
-    display.block);
+  val tcol = cls(width := "100%", display.block);
 
   val `left-top-corner` = cls();
 
@@ -198,34 +153,20 @@ object EPStyle extends SheetStyle {
     paddingRight := "2px",
     borderTopStyle.dashed,
     borderTopColor := c.darkGrey.css,
-    borderTopWidth := "1px");
+    borderTopWidth := "1px"
+  );
 
-  val inlineLabel = cls(
-    fontWeight.bold,
-    marginRight := 2.px);
+  val inlineLabel = cls(fontWeight.bold, marginRight := 2.px);
 
-  val subtleInlineLabel = cls(
-    fontStyle.italic);
+  val subtleInlineLabel = cls(fontStyle.italic);
 
-  val lineLabel = cls(
-    textTransform.uppercase,
-    color := c.darkText.css,
-    fontSize := 1.1.rem,
-    marginRight := 5.px);
+  val lineLabel = cls(textTransform.uppercase, color := c.darkText.css, fontSize := 1.1.rem, marginRight := 5.px);
 
-  val inlineContentGroup = cls(
-    display.`inline-flex`,
-    marginLeft := 2.px,
-    marginRight := 2.px,
-    marginTop := 2.px,
-    whiteSpace.nowrap);
+  val inlineContentGroup =
+    cls(display.`inline-flex`, marginLeft := 2.px, marginRight := 2.px, marginTop := 2.px, whiteSpace.nowrap);
 
-  val inlineLabelGroup = cls(
-    display.`inline-flex`,
-    marginLeft := 2.px,
-    marginRight := 2.px,
-    marginTop := 2.px,
-    whiteSpace.nowrap);
+  val inlineLabelGroup =
+    cls(display.`inline-flex`, marginLeft := 2.px, marginRight := 2.px, marginTop := 2.px, whiteSpace.nowrap);
 
   val flowPar = cls(
     display.`inline-block`,
@@ -238,7 +179,8 @@ object EPStyle extends SheetStyle {
     marginBottom := 0.px,
     fontSize := 1.1.rem,
     lineHeight := 1.4,
-    input(margin := 0.px));
+    input(margin := 0.px)
+  );
 
   val flowRow = cls(
     display.`inline-block`,
@@ -249,7 +191,8 @@ object EPStyle extends SheetStyle {
     marginBottom := 0.px,
     fontSize := 1.1.rem,
     lineHeight := 1.4,
-    input(margin := 0.px));
+    input(margin := 0.px)
+  );
 
   val indentPar = cls(
     display.`inline-block`,
@@ -261,17 +204,15 @@ object EPStyle extends SheetStyle {
     marginBottom := 0.px,
     fontSize := 1.1.rem,
     lineHeight := 1.4,
-    input(margin := 0.px));
+    input(margin := 0.px)
+  );
 
-  val note = cls(
-    display.`inline-block`,
-    marginLeft := "2px",
-    marginRight := "2px",
-    whiteSpace.normal,
-    fontSize.smaller,
-    inlineLabel(
-      fontWeight.normal,
-      fontStyle.italic));
+  val note = cls(display.`inline-block`,
+                 marginLeft := "2px",
+                 marginRight := "2px",
+                 whiteSpace.normal,
+                 fontSize.smaller,
+                 inlineLabel(fontWeight.normal, fontStyle.italic));
 
   val fieldLabel = cls(
     backgroundColor := c.primaryShade3.css,
@@ -280,7 +221,8 @@ object EPStyle extends SheetStyle {
     paddingBottom := "1px",
     paddingLeft := "3px",
     paddingRight := "1px",
-    whiteSpace.nowrap);
+    whiteSpace.nowrap
+  );
 
   val fieldLabelBold = cls(
     backgroundColor := c.primaryShade3.css,
@@ -290,14 +232,11 @@ object EPStyle extends SheetStyle {
     paddingLeft := "3px",
     paddingRight := "1px",
     whiteSpace.nowrap,
-    fontWeight.bold);
+    fontWeight.bold
+  );
 
-  val secondTableHeader = cls(
-    color := c.titleText.css,
-    fontSize := "0.9rem",
-    fontWeight.bold,
-    textTransform.uppercase,
-    textAlign.center);
+  val secondTableHeader =
+    cls(color := c.titleText.css, fontSize := "0.9rem", fontWeight.bold, textTransform.uppercase, textAlign.center);
 
   val labelGroup = cls(
     borderBottomWidth := "1px",
@@ -306,89 +245,62 @@ object EPStyle extends SheetStyle {
     marginLeft := "5px",
     marginRight := "5px",
     display.block //    ,
-  //    div(display.`inline-block`)
+    //    div(display.`inline-block`)
   );
 
-  val halfRemRowSeparator = cls(
-    borderBottomWidth := 1.px,
-    borderBottomStyle.solid,
-    borderBottomColor := c.lightGrey.css,
-    marginBottom := 0.8.rem,
-    paddingBottom := 0.8.rem);
+  val halfRemRowSeparator = cls(borderBottomWidth := 1.px,
+                                borderBottomStyle.solid,
+                                borderBottomColor := c.lightGrey.css,
+                                marginBottom := 0.8.rem,
+                                paddingBottom := 0.8.rem);
 
   val wrapButton = cls();
 
-  val inlineNumber = cls(
-    display.`inline-flex`);
+  val inlineNumber = cls(display.`inline-flex`);
 
-  val rem15 = cls(
-    width := "24rem"); // scaled due to roll20 changes
+  val rem15 = cls(width := "24rem"); // scaled due to roll20 changes
 
-  val max2p5rem = cls(
-    maxWidth := "4rem"); // scaled due to roll20 changes
+  val max2p5rem = cls(maxWidth := "4rem"); // scaled due to roll20 changes
 
-  val max3charinline = cls(
-    maxWidth := "3em",
-    display.`inline-flex`);
+  val max3charinline = cls(maxWidth := "3em", display.`inline-flex`);
 
-  val max5em = cls(
-    maxWidth := "5em");
+  val max5em = cls(maxWidth := "5em");
 
-  val max8em = cls(
-    maxWidth := "8em");
+  val max8em = cls(maxWidth := "8em");
 
-  val max5rem = cls(
-    maxWidth := "8rem"); // scaled due to roll20 changes
+  val max5rem = cls(maxWidth := "8rem"); // scaled due to roll20 changes
 
-  val max10rem = cls(
-    maxWidth := 16.rem); // scaled due to roll20 changes
+  val max10rem = cls(maxWidth := 16.rem); // scaled due to roll20 changes
 
-  val max15rem = cls(
-    maxWidth := 24.rem); // scaled due to roll20 changes
+  val max15rem = cls(maxWidth := 24.rem); // scaled due to roll20 changes
 
-  val max20rem = cls(
-    maxWidth := 32.rem); // scaled due to roll20 changes
+  val max20rem = cls(maxWidth := 32.rem); // scaled due to roll20 changes
 
-  val min5rem = cls(
-    maxWidth := "100%",
-    minWidth := "8rem"); // scaled due to roll20 changes
+  val min5rem = cls(maxWidth := "100%", minWidth := "8rem"); // scaled due to roll20 changes
 
-  val min1rem = cls(
-    maxWidth := "100%",
-    minWidth := "1.6rem"); // scaled due to roll20 changes
+  val min1rem = cls(maxWidth := "100%", minWidth := "1.6rem"); // scaled due to roll20 changes
 
-  val min02rem = cls(
-    maxWidth := "100%",
-    minWidth := "0.3rem"); // scaled due to roll20 changes
+  val min02rem = cls(maxWidth := "100%", minWidth := "0.3rem"); // scaled due to roll20 changes
 
-  val exactly15rem = cls(
-    width := "24rem"); // scaled due to roll20 changes
+  val exactly15rem = cls(width := "24rem"); // scaled due to roll20 changes
 
-  val exactly20rem = cls(
-    width := "32rem"); // scaled due to roll20 changes
+  val exactly20rem = cls(width := "32rem"); // scaled due to roll20 changes
 
-  val exactly23rem = cls(
-    width := "36rem"); // scaled due to roll20 changes
+  val exactly23rem = cls(width := "36rem"); // scaled due to roll20 changes
 
-  val marginr1rem = cls(
-    marginRight := "1.6rem"); // scaled due to roll20 changes
+  val marginr1rem = cls(marginRight := "1.6rem"); // scaled due to roll20 changes
 
-  val marginrp5rem = cls(
-    marginRight := 0.8.rem); // scaled due to roll20 changes
+  val marginrp5rem = cls(marginRight := 0.8.rem); // scaled due to roll20 changes
 
-  val skillRow = cls(
-    width := "100%");
+  val skillRow = cls(width := "100%");
 
-  val growFull = cls(
-    width := "100%");
+  val growFull = cls(width := "100%");
 
   val nop = cls();
 
-  val description = cls(
-    fontSize := 0.9.em);
+  val description = cls(fontSize := 0.9.em);
 
-  val smallDescription = cls(
-    fontSize := 0.7.em);
+  val smallDescription = cls(fontSize := 0.7.em);
 
   val labelledValue = cls();
 

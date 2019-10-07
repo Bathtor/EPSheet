@@ -46,14 +46,40 @@ object EPDamageTemplate extends RollTemplate {
   def apply(cf: Field[String], al: LabelI18N, rf: RollField[Int]): TemplateApplication =
     apply(character <<= cf, attributeLabel <<= al, damageRoll <<= rf);
 
-  def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int]): TemplateApplication =
+  def apply(cf: Field[String],
+            af: Field[String],
+            rf: RollField[Int],
+            dtf: Field[String],
+            apf: Field[Int]): TemplateApplication =
     apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf);
 
-  def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int], apiApply: CommandButton): TemplateApplication =
-    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, applyDamage <<= apiApply);
+  def apply(cf: Field[String],
+            af: Field[String],
+            rf: RollField[Int],
+            dtf: Field[String],
+            apf: Field[Int],
+            apiApply: CommandButton): TemplateApplication =
+    apply(character <<= cf,
+          attributeField <<= af,
+          damageRoll <<= rf,
+          damageType <<= dtf,
+          armourPenetration <<= apf,
+          applyDamage <<= apiApply);
 
-  def apply(cf: Field[String], af: Field[String], rf: RollField[Int], dtf: Field[String], apf: Field[Int], xdbf: CommandButton, xdfa: CommandButton): TemplateApplication =
-    apply(character <<= cf, attributeField <<= af, damageRoll <<= rf, damageType <<= dtf, armourPenetration <<= apf, concentrateBF <<= xdbf, concentrateFA <<= xdfa);
+  def apply(cf: Field[String],
+            af: Field[String],
+            rf: RollField[Int],
+            dtf: Field[String],
+            apf: Field[Int],
+            xdbf: CommandButton,
+            xdfa: CommandButton): TemplateApplication =
+    apply(character <<= cf,
+          attributeField <<= af,
+          damageRoll <<= rf,
+          damageType <<= dtf,
+          armourPenetration <<= apf,
+          concentrateBF <<= xdbf,
+          concentrateFA <<= xdfa);
 
   // **** Fields ****
   val character = attribute[String]("character");
@@ -72,36 +98,47 @@ object EPDamageTemplate extends RollTemplate {
     p(span(t.damageInflicts), span(raw(" ")), span(fontWeight.bold, t.damageValue), span(": "), r);
 
   // **** Layout ****
-  override def content: Tag = div(
-    sty.`template-wrapper`,
-    h3(character),
-    exists(attributeLabel) {
-      h4(attributeLabel)
-    },
-    exists(attributeField) {
-      h4(attributeField)
-    },
-    p(span(t.damageInflicts), span(": "), damageRoll, span(raw(" ")), span(fontWeight.bold, t.damageValue),
-      exists(damageType) {
-        Seq(span(raw(" ")), span(damageType))
-      }, exists(damageExplanation) {
-        Seq(span(raw(" ")), span(damageExplanation))
-      }),
-    exists(armourPenetration) {
-      p(span(sty.fieldvalue, armourPenetration), span(" "), span(fontWeight.bold, t.ap), span(" "), span(fontStyle.italic, t.orTotalAP))
-    },
-    exists(concentrateBF) {
-      exists(concentrateFA) {
-        Seq(
-          h4(span(sty.`sub-header`, t.concentrateFire)),
-          p(span(fontWeight.bold, t.burstFire), span(": "), concentrateBF),
-          p(span(fontWeight.bold, t.fullAutomatic), span(": "), concentrateFA))
+  override def content: Tag =
+    div(
+      sty.`template-wrapper`,
+      h3(character),
+      exists(attributeLabel) {
+        h4(attributeLabel)
+      },
+      exists(attributeField) {
+        h4(attributeField)
+      },
+      p(
+        span(t.damageInflicts),
+        span(": "),
+        damageRoll,
+        span(raw(" ")),
+        span(fontWeight.bold, t.damageValue),
+        exists(damageType) {
+          Seq(span(raw(" ")), span(damageType))
+        },
+        exists(damageExplanation) {
+          Seq(span(raw(" ")), span(damageExplanation))
+        }
+      ),
+      exists(armourPenetration) {
+        p(span(sty.fieldvalue, armourPenetration),
+          span(" "),
+          span(fontWeight.bold, t.ap),
+          span(" "),
+          span(fontStyle.italic, t.orTotalAP))
+      },
+      exists(concentrateBF) {
+        exists(concentrateFA) {
+          Seq(
+            h4(span(sty.`sub-header`, t.concentrateFire)),
+            p(span(fontWeight.bold, t.burstFire), span(": "), concentrateBF),
+            p(span(fontWeight.bold, t.fullAutomatic), span(": "), concentrateFA)
+          )
+        }
+      },
+      exists(applyDamage) {
+        Seq(h4(span(sty.`sub-header`, t.apiHead)), p(applyDamage), p(applyCritDamage))
       }
-    },
-    exists(applyDamage) {
-      Seq(
-        h4(span(sty.`sub-header`, t.apiHead)),
-        p(applyDamage),
-        p(applyCritDamage))
-    });
+    );
 }

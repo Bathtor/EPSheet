@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, PsiChiSection, PsiGammaSection, PsiType => ModelPsiType }
+import com.lkroll.ep.model.{EPCharModel => epmodel, PsiChiSection, PsiGammaSection, PsiType => ModelPsiType}
 import APIImplicits._;
 
 object SleightConversions {

@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, GearSection, EffectsSection }
+import com.lkroll.ep.model.{EPCharModel => epmodel, GearSection, EffectsSection}
 import APIImplicits._;
 
 case class SubstanceImport(s: Substance) extends Importable {
@@ -36,7 +36,9 @@ case class SubstanceImport(s: Substance) extends Importable {
   override def importInto(char: Character, idPool: RowIdPool, cache: ImportCache): Result[String] = {
     val adcStr = s.addiction.map(a => s"${a.`type`.entryName} with modifier ${a.modStr}").getOrElse("–");
     val effects = s.effects.map(_.text).mkString(",");
-    val extraDescr = s"""in category ${s.category} ${s.application.map(_.shortLabel).mkString("(", ",", ")")} of type ${s.classification.label}
+    val extraDescr = s"""in category ${s.category} ${s.application
+      .map(_.shortLabel)
+      .mkString("(", ",", ")")} of type ${s.classification.label}
 Addiction: $adcStr
 Onset Time: ${s.onset.renderShort}, Duration: ${s.duration.renderShort}
 ---

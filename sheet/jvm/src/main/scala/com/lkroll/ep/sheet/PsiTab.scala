@@ -42,21 +42,33 @@ object PsiTab extends FieldGroup {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
   }
 
-  val chiStrainDamageRoll = roll(char.psiChi, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.explained(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
-    buttonSeq(
-      span(EPStyle.subtleInlineLabel, t.strain),
-      span(raw("1d10/2+")),
-      char.psiChi.strainMod));
+  val chiStrainDamageRoll = roll(
+    char.psiChi,
+    "strain_damage_roll",
+    char.chatOutputOther,
+    EPDamageTemplate.explained(char.characterName, char.psiChi.sleight, char.psiChi.strainDamage, t.strain),
+    buttonSeq(span(EPStyle.subtleInlineLabel, t.strain), span(raw("1d10/2+")), char.psiChi.strainMod)
+  );
 
-  val gammaStrainDamageRoll = roll(char.psiGamma, "strain_damage_roll", char.chatOutputOther, EPDamageTemplate.explained(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
-    buttonSeq(
-      span(EPStyle.subtleInlineLabel, t.strain),
-      span(raw("1d10/2+")),
-      char.psiGamma.strainMod));
+  val gammaStrainDamageRoll = roll(
+    char.psiGamma,
+    "strain_damage_roll",
+    char.chatOutputOther,
+    EPDamageTemplate.explained(char.characterName, char.psiGamma.sleight, char.psiGamma.strainDamage, t.strain),
+    buttonSeq(span(EPStyle.subtleInlineLabel, t.strain), span(raw("1d10/2+")), char.psiGamma.strainMod)
+  );
 
-  val gammaSleightRoll = roll(char.psiGamma, "sleight_roll", char.chatOutputEPRolls,
-    EPDefaultTemplate(char.characterName, char.psiGamma.skillName, char.psiGamma.sleight, char.epRoll, char.psiGamma.attackTarget),
-    char.psiGamma.sleight.like(GearTab.rowItemName));
+  val gammaSleightRoll = roll(
+    char.psiGamma,
+    "sleight_roll",
+    char.chatOutputEPRolls,
+    EPDefaultTemplate(char.characterName,
+                      char.psiGamma.skillName,
+                      char.psiGamma.sleight,
+                      char.epRoll,
+                      char.psiGamma.attackTarget),
+    char.psiGamma.sleight.like(GearTab.rowItemName)
+  );
 
   val psiChi = block(
     t.psiChi,
@@ -75,22 +87,27 @@ object PsiTab extends FieldGroup {
             span(raw(" / ")),
             char.psiChi.duration,
             char.psiChi.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.psiChi.showDescription,
-            char.psiChi.description)),
-        editOnly(tightfrow(
-          sty.halfRemRowSeparator,
-          char.psiChi.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
-          char.psiChi.psiType,
-          char.psiChi.psiTypeShort.hidden,
-          (t.psiRange -> char.psiChi.range),
-          (t.psiAction -> char.psiChi.action),
-          (t.psiDuration -> char.psiChi.duration),
-          (t.strainMod -> char.psiChi.strainMod),
-          span(EPStyle.inlineLabel, t.sleightDescription),
-          MarkupElement(char.psiChi.description.like(CoreTabRenderer.textareaFieldGrow)))))
-    });
+            flexFill
+          ),
+          descrpar(char.psiChi.showDescription, char.psiChi.description)
+        ),
+        editOnly(
+          tightfrow(
+            sty.halfRemRowSeparator,
+            char.psiChi.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
+            char.psiChi.psiType,
+            char.psiChi.psiTypeShort.hidden,
+            (t.psiRange -> char.psiChi.range),
+            (t.psiAction -> char.psiChi.action),
+            (t.psiDuration -> char.psiChi.duration),
+            (t.strainMod -> char.psiChi.strainMod),
+            span(EPStyle.inlineLabel, t.sleightDescription),
+            MarkupElement(char.psiChi.description.like(CoreTabRenderer.textareaFieldGrow))
+          )
+        )
+      )
+    }
+  );
   val psiGamma = block(
     t.psiGamma,
     char.psiGamma {
@@ -111,55 +128,69 @@ object PsiTab extends FieldGroup {
             span(raw(" / ")),
             char.psiGamma.duration,
             char.psiGamma.showDescription.like(CoreTabRenderer.descriptionToggleWrapped),
-            flexFill),
-          descrpar(
-            char.psiGamma.showDescription,
-            char.psiGamma.description)),
-        editOnly(tightfrow(
-          sty.halfRemRowSeparator,
-          char.psiGamma.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
-          char.psiGamma.psiType,
-          char.psiGamma.psiTypeShort.hidden,
-          span(EPStyle.inlineLabel, t.psiSkill),
-          char.psiGamma.skillSearch.like(GearTab.skillSearchBox),
-          char.psiGamma.skillName,
-          char.psiGamma.skillTotal.hidden,
-          (t.psiRange -> char.psiGamma.range),
-          (t.psiAction -> char.psiGamma.action),
-          (t.psiDuration -> char.psiGamma.duration),
-          (t.strainMod -> char.psiGamma.strainMod),
-          span(EPStyle.inlineLabel, t.sleightDescription),
-          MarkupElement(char.psiGamma.description.like(CoreTabRenderer.textareaFieldGrow)))))
-    });
+            flexFill
+          ),
+          descrpar(char.psiGamma.showDescription, char.psiGamma.description)
+        ),
+        editOnly(
+          tightfrow(
+            sty.halfRemRowSeparator,
+            char.psiGamma.sleight.like(CoreTabRenderer.textWithPlaceholder(t.sleightName.placeholder)),
+            char.psiGamma.psiType,
+            char.psiGamma.psiTypeShort.hidden,
+            span(EPStyle.inlineLabel, t.psiSkill),
+            char.psiGamma.skillSearch.like(GearTab.skillSearchBox),
+            char.psiGamma.skillName,
+            char.psiGamma.skillTotal.hidden,
+            (t.psiRange -> char.psiGamma.range),
+            (t.psiAction -> char.psiGamma.action),
+            (t.psiDuration -> char.psiGamma.duration),
+            (t.strainMod -> char.psiGamma.strainMod),
+            span(EPStyle.inlineLabel, t.sleightDescription),
+            MarkupElement(char.psiGamma.description.like(CoreTabRenderer.textareaFieldGrow))
+          )
+        )
+      )
+    }
+  );
 
-  val specialRolls = block(t.specialRolls, arrowList(
-    rwd(roll(char, "psychic-stab-dmg-roll", char.chatOutputOther,
-      EPDamageTemplate.explained(char.characterName, t.psychicStab, char.psychicStabDamage, t.psychicDamage),
-      span(sty.rollLabel, t.psychicStab)))));
+  val specialRolls = block(
+    t.specialRolls,
+    arrowList(
+      rwd(
+        roll(
+          char,
+          "psychic-stab-dmg-roll",
+          char.chatOutputOther,
+          EPDamageTemplate.explained(char.characterName, t.psychicStab, char.psychicStabDamage, t.psychicDamage),
+          span(sty.rollLabel, t.psychicStab)
+        )
+      )
+    )
+  );
 
   val members: Seq[SheetElement] = Seq(
-    eprow(frow(
-      sty.`flex-centre`,
-      flexFillNarrow,
-      sblock(t.async, sty.max20rem,
-        char.async, span(raw("&nbsp;")), span(t.asyncTrait)),
-      flexFillNarrow,
-      sblock(t.psiDuration, sty.max20rem,
-        (t.psiTempTime -> char.psiTempTime), span(t.psiTempUnits)),
-      flexFillNarrow,
-      sblock(t.psiSustained, sty.max20rem,
-        (t.psiCurrent -> char.psiCurrentSustained),
-        (t.psiSustainedMod -> char.psiSustainedMod)),
-      flexFillNarrow)),
+    eprow(
+      frow(
+        sty.`flex-centre`,
+        flexFillNarrow,
+        sblock(t.async, sty.max20rem, char.async, span(raw("&nbsp;")), span(t.asyncTrait)),
+        flexFillNarrow,
+        sblock(t.psiDuration, sty.max20rem, (t.psiTempTime -> char.psiTempTime), span(t.psiTempUnits)),
+        flexFillNarrow,
+        sblock(t.psiSustained,
+               sty.max20rem,
+               (t.psiCurrent -> char.psiCurrentSustained),
+               (t.psiSustainedMod -> char.psiSustainedMod)),
+        flexFillNarrow
+      )
+    ),
     frow(
       sty.`flex-start`,
-      fcol(
-        Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
-        psiChi),
-      fcol(
-        Seq(EPStyle.`flex-grow`, sty.exactly20rem),
-        psiGamma,
-        specialRolls)));
+      fcol(Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem), psiChi),
+      fcol(Seq(EPStyle.`flex-grow`, sty.exactly20rem), psiGamma, specialRolls)
+    )
+  );
 
   override def renderer = CoreTabRenderer;
 }

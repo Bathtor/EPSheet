@@ -44,9 +44,8 @@ object EPIniTemplate extends RollTemplate {
   val iniRoll = rollable[Int]("ini-roll");
 
   // **** Layout ****
-  override def content: Tag = div(
-    sty.`template-wrapper`,
-    h3(character),
-    p(span(t.rollsfor), raw("&nbsp;"), span(fontWeight.bold, t.init), raw(":&nbsp;"), iniRoll));
+  override def content: Tag =
+    div(sty.`template-wrapper`,
+        h3(character),
+        p(span(t.rollsfor), raw("&nbsp;"), span(fontWeight.bold, t.init), raw(":&nbsp;"), iniRoll));
 }
-

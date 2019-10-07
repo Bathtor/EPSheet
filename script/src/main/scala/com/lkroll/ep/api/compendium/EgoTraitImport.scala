@@ -28,7 +28,7 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.ep.compendium._
 import com.lkroll.ep.compendium.utils.OptionPickler._
-import com.lkroll.ep.model.{ EPCharModel => epmodel, CharacterTraitSection, TraitType => ModelTraitType }
+import com.lkroll.ep.model.{EPCharModel => epmodel, CharacterTraitSection, TraitType => ModelTraitType}
 import APIImplicits._;
 
 case class EgoTraitImport(t: EPTrait) extends Importable {
@@ -46,7 +46,9 @@ case class EgoTraitImport(t: EPTrait) extends Importable {
         val rowId = Some(idPool.generateRowId());
         char.createRepeating(CharacterTraitSection.traitName, rowId) <<= t.name;
         char.createRepeating(CharacterTraitSection.traitType, rowId) <<= ctt2mtt(t.traitType).toString();
-        char.createRepeating(CharacterTraitSection.traitTypeShort, rowId) <<= ModelTraitType.dynamicLabelShort(t.traitType);
+        char.createRepeating(CharacterTraitSection.traitTypeShort, rowId) <<= ModelTraitType.dynamicLabelShort(
+          t.traitType
+        );
         char.createRepeating(CharacterTraitSection.description, rowId) <<= t.descr;
         Ok("Ok")
       }

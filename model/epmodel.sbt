@@ -5,11 +5,11 @@ name := "EP Model Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.12.2"
+version in ThisBuild := "1.12.3"
 
-scalaVersion in ThisBuild := "2.12.8"
+scalaVersion in ThisBuild := "2.12.10"
 
-resolvers in ThisBuild += "Apache" at "http://repo.maven.apache.org/maven2"
+resolvers in ThisBuild += "Apache" at "https://repo.maven.apache.org/maven2"
 resolvers in ThisBuild += Resolver.bintrayRepo("lkrollcom", "maven")
 resolvers in ThisBuild += Resolver.mavenLocal
 
@@ -25,9 +25,7 @@ lazy val epmodel = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   settings(
     name := "EP Model",
     libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-model" % "0.11.1",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
-    EclipseKeys.useProjectId := true,
-    EclipseKeys.eclipseOutput := Some("./etarget"),
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.8" % "test",
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.lkroll.ep.model"
     //EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed

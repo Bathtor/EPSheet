@@ -40,75 +40,160 @@ object SkillTab extends FieldGroup {
   val t = EPTranslation;
   val sty = EPStyle;
 
-  val members: Seq[SheetElement] = Seq(frow(
-    sty.`flex-start`,
-    fcol(
-      Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
-      block(
-        t.activeSkills,
-        char.activeSkills(
-          TightRepRow(
-            char.activeSkills.rowId.hidden,
-            char.activeSkills.globalMods.hidden,
-            presOnly(tightfrow(
-              char.activeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll(char.activeSkills, "active_skill_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.field, char.epRoll, char.activeSkills.rollTarget), char.activeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
-              char.activeSkills.categoryShort.like(SkillRenderers.categoryRenderer),
-              char.activeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
-              char.activeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
-              //span(raw(" &mdash; ")),
-              roll(char.activeSkills, "active_spec_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.activeSkills.skillName, char.activeSkills.specialisations, char.epRoll, char.activeSkills.rollSpecTarget), char.activeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
-              flexFill)),
-            editOnly(tightfrow(
-              sty.halfRemRowSeparator,
-              char.activeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
-              (t.skillNoDefaulting -> char.activeSkills.noDefaulting),
-              char.activeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
-              char.activeSkills.category,
-              char.activeSkills.linkedAptitude,
-              (t.skillRanks -> char.activeSkills.ranks),
-              (t.skillMorphBonus -> char.activeSkills.morphBonus),
-              (t.skillTotal -> char.activeSkills.total),
-              char.activeSkills.specialisations.like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
-              flexFill)))))),
-    fcol(
-      Seq(EPStyle.`flex-grow`, EPStyle.exactly20rem),
-      block(
-        t.knowledgeSkills,
-        char.knowledgeSkills(
-          TightRepRow(
-            char.knowledgeSkills.rowId.hidden,
-            presOnly(tightfrow(
-              char.knowledgeSkills.total like { total => span(sty.skillTotal, name := total.name) },
-              roll(char.knowledgeSkills, "knowledge_skill_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.field, char.epRoll, char.knowledgeSkills.rollTarget), char.knowledgeSkills.skillName like { sname => span(sty.skillName, name := sname.name) }),
-              char.knowledgeSkills.field like { sfield => span(sty.skillField, name := sfield.name) },
-              char.knowledgeSkills.linkedAptitude like { apt => span(sty.skillApt, "(", span(name := apt.name), ")") },
-              //span(raw(" &mdash; ")),
-              roll(char.knowledgeSkills, "knowledge_spec_roll", char.chatOutputEPRolls, EPDefaultTemplate(char.characterName, char.knowledgeSkills.skillName, char.knowledgeSkills.specialisations, char.epRoll, char.knowledgeSkills.rollSpecTarget), char.knowledgeSkills.specialisations like { sspec => span(sty.skillSpec, name := sspec.name) }),
-              flexFill)),
-            editOnly(tightfrow(
-              sty.halfRemRowSeparator,
-              char.knowledgeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
-              (t.skillNoDefaulting -> char.knowledgeSkills.noDefaulting),
-              char.knowledgeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
-              char.knowledgeSkills.linkedAptitude,
-              (t.skillRanks -> char.knowledgeSkills.ranks),
-              (t.skillMorphBonus -> char.knowledgeSkills.morphBonus),
-              (t.skillTotal -> char.knowledgeSkills.total),
-              char.knowledgeSkills.specialisations.like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
-              flexFill))))),
-      block(
-        t.skillCommands,
-        char.generateSkillsLabel like { rid => input(`type` := "hidden", name := rid.name, value := rid.initialValue) },
-        tightfrow(
-          pseudoButton(char.generateSkills, char.generateSkillsLabel),
-          pseudoButton(char.sortSkills, t.skillsSort),
-          flexFill),
-        tightfrow(
-          (t.skillsSortBy -> char.sortSkillsBy),
-          flexFill),
-        note(t.skillReloadPage),
-        note(t.skillNoSortManual)))));
+  val members: Seq[SheetElement] = Seq(
+    frow(
+      sty.`flex-start`,
+      fcol(
+        Seq(sty.`flex-grow`, sty.exactly20rem, sty.marginr1rem),
+        block(
+          t.activeSkills,
+          char.activeSkills(
+            TightRepRow(
+              char.activeSkills.rowId.hidden,
+              char.activeSkills.globalMods.hidden,
+              presOnly(
+                tightfrow(
+                  char.activeSkills.total like { total =>
+                    span(sty.skillTotal, name := total.name)
+                  },
+                  roll(
+                    char.activeSkills,
+                    "active_skill_roll",
+                    char.chatOutputEPRolls,
+                    EPDefaultTemplate(char.characterName,
+                                      char.activeSkills.skillName,
+                                      char.activeSkills.field,
+                                      char.epRoll,
+                                      char.activeSkills.rollTarget),
+                    char.activeSkills.skillName like { sname =>
+                      span(sty.skillName, name := sname.name)
+                    }
+                  ),
+                  char.activeSkills.categoryShort.like(SkillRenderers.categoryRenderer),
+                  char.activeSkills.field like { sfield =>
+                    span(sty.skillField, name := sfield.name)
+                  },
+                  char.activeSkills.linkedAptitude like { apt =>
+                    span(sty.skillApt, "(", span(name := apt.name), ")")
+                  },
+                  //span(raw(" &mdash; ")),
+                  roll(
+                    char.activeSkills,
+                    "active_spec_roll",
+                    char.chatOutputEPRolls,
+                    EPDefaultTemplate(char.characterName,
+                                      char.activeSkills.skillName,
+                                      char.activeSkills.specialisations,
+                                      char.epRoll,
+                                      char.activeSkills.rollSpecTarget),
+                    char.activeSkills.specialisations like { sspec =>
+                      span(sty.skillSpec, name := sspec.name)
+                    }
+                  ),
+                  flexFill
+                )
+              ),
+              editOnly(
+                tightfrow(
+                  sty.halfRemRowSeparator,
+                  char.activeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
+                  (t.skillNoDefaulting -> char.activeSkills.noDefaulting),
+                  char.activeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
+                  char.activeSkills.category,
+                  char.activeSkills.linkedAptitude,
+                  (t.skillRanks -> char.activeSkills.ranks),
+                  (t.skillMorphBonus -> char.activeSkills.morphBonus),
+                  (t.skillTotal -> char.activeSkills.total),
+                  char.activeSkills.specialisations
+                    .like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
+                  flexFill
+                )
+              )
+            )
+          )
+        )
+      ),
+      fcol(
+        Seq(EPStyle.`flex-grow`, EPStyle.exactly20rem),
+        block(
+          t.knowledgeSkills,
+          char.knowledgeSkills(
+            TightRepRow(
+              char.knowledgeSkills.rowId.hidden,
+              presOnly(
+                tightfrow(
+                  char.knowledgeSkills.total like { total =>
+                    span(sty.skillTotal, name := total.name)
+                  },
+                  roll(
+                    char.knowledgeSkills,
+                    "knowledge_skill_roll",
+                    char.chatOutputEPRolls,
+                    EPDefaultTemplate(char.characterName,
+                                      char.knowledgeSkills.skillName,
+                                      char.knowledgeSkills.field,
+                                      char.epRoll,
+                                      char.knowledgeSkills.rollTarget),
+                    char.knowledgeSkills.skillName like { sname =>
+                      span(sty.skillName, name := sname.name)
+                    }
+                  ),
+                  char.knowledgeSkills.field like { sfield =>
+                    span(sty.skillField, name := sfield.name)
+                  },
+                  char.knowledgeSkills.linkedAptitude like { apt =>
+                    span(sty.skillApt, "(", span(name := apt.name), ")")
+                  },
+                  //span(raw(" &mdash; ")),
+                  roll(
+                    char.knowledgeSkills,
+                    "knowledge_spec_roll",
+                    char.chatOutputEPRolls,
+                    EPDefaultTemplate(char.characterName,
+                                      char.knowledgeSkills.skillName,
+                                      char.knowledgeSkills.specialisations,
+                                      char.epRoll,
+                                      char.knowledgeSkills.rollSpecTarget),
+                    char.knowledgeSkills.specialisations like { sspec =>
+                      span(sty.skillSpec, name := sspec.name)
+                    }
+                  ),
+                  flexFill
+                )
+              ),
+              editOnly(
+                tightfrow(
+                  sty.halfRemRowSeparator,
+                  char.knowledgeSkills.skillName.like(CoreTabRenderer.textWithPlaceholder(t.skillName.placeholder)),
+                  (t.skillNoDefaulting -> char.knowledgeSkills.noDefaulting),
+                  char.knowledgeSkills.field.like(CoreTabRenderer.textWithPlaceholder(t.skillField.placeholder)),
+                  char.knowledgeSkills.linkedAptitude,
+                  (t.skillRanks -> char.knowledgeSkills.ranks),
+                  (t.skillMorphBonus -> char.knowledgeSkills.morphBonus),
+                  (t.skillTotal -> char.knowledgeSkills.total),
+                  char.knowledgeSkills.specialisations
+                    .like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
+                  flexFill
+                )
+              )
+            )
+          )
+        ),
+        block(
+          t.skillCommands,
+          char.generateSkillsLabel like { rid =>
+            input(`type` := "hidden", name := rid.name, value := rid.initialValue)
+          },
+          tightfrow(pseudoButton(char.generateSkills, char.generateSkillsLabel),
+                    pseudoButton(char.sortSkills, t.skillsSort),
+                    flexFill),
+          tightfrow((t.skillsSortBy -> char.sortSkillsBy), flexFill),
+          note(t.skillReloadPage),
+          note(t.skillNoSortManual)
+        )
+      )
+    )
+  );
 
   override def renderer = CoreTabRenderer;
 

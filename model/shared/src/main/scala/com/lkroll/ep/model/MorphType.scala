@@ -31,4 +31,3 @@ object MorphType extends Enumeration {
 
   val None, Synthmorph, Biomorph, Pod, Infomorph = Value
 }
-

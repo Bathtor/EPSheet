@@ -26,7 +26,7 @@
 package com.lkroll.ep.model
 
 import scalajs.js
-import util.{ Try, Success, Failure }
+import util.{Failure, Success, Try}
 import com.lkroll.ep.model._
 import scala.collection.Seq
 import scala.scalajs.js.Any.jsArrayOps
@@ -37,10 +37,11 @@ object ValueParsers {
     def sequence: Try[Array[V]] = {
       arr.foldLeft(Try(Array.empty[V])) { (acc, tv) =>
         acc match {
-          case Success(a) => tv match {
-            case Success(v) => Success(a :+ v)
-            case Failure(e) => Failure(e)
-          }
+          case Success(a) =>
+            tv match {
+              case Success(v) => Success(a :+ v)
+              case Failure(e) => Failure(e)
+            }
           case f: Failure[Array[V]] => f
         }
       }
@@ -138,7 +139,8 @@ object ValueParsers {
           case Some(data) => {
             Success(data.flatMap(skillFromJson).toSeq)
           }
-          case None => Failure(new ParsingException("Object was not an array")) //EPWorkers.error("Object was not an array!"); Seq.empty
+          case None =>
+            Failure(new ParsingException("Object was not an array")) //EPWorkers.error("Object was not an array!"); Seq.empty
         }
       } else {
         val commaSplit = s.split(",");
@@ -172,7 +174,12 @@ object ValueParsers {
     } yield SkillMod(skill, field, mod)
   }
 
-  private def dynamicToOption[T](d: Dynamic): Option[T] = if (js.isUndefined(d)) { None } else { Some(d.asInstanceOf[T]) }
+  private def dynamicToOption[T](d: Dynamic): Option[T] =
+    if (js.isUndefined(d)) {
+      None
+    } else {
+      Some(d.asInstanceOf[T])
+    }
 }
 
 class ParsingException(message: String) extends Exception(message) {

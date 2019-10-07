@@ -6,11 +6,11 @@ name := "EP Sheet Root"
 
 organization in ThisBuild := "com.lkroll.ep"
 
-version in ThisBuild := "1.12.2"
+version in ThisBuild := "1.12.3"
 
-scalaVersion in ThisBuild := "2.12.8"
+scalaVersion in ThisBuild := "2.12.10"
 
-resolvers in ThisBuild += "Apache" at "http://repo.maven.apache.org/maven2"
+resolvers in ThisBuild += "Apache" at "https://repo.maven.apache.org/maven2"
 resolvers in ThisBuild += Resolver.bintrayRepo("lkrollcom", "maven")
 resolvers in ThisBuild += Resolver.mavenLocal
 
@@ -51,12 +51,9 @@ lazy val epsheet = crossProject(JSPlatform, JVMPlatform).in(file(".")).
     libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.6.+",
     libraryDependencies += "com.lkroll.roll20" %%% "roll20-sheet-framework" % "0.11.1", 
     libraryDependencies += "com.lkroll.ep" %%% "ep-model" % version.value,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
-    EclipseKeys.useProjectId := true,
-    EclipseKeys.eclipseOutput := Some("./etarget"),
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.8" % "test",
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.lkroll.ep.sheet"
-    //EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed
   ).
   jvmSettings(
     // Add JVM-specific settings here

@@ -50,14 +50,23 @@ object Skills {
     def dynamicLabelShort(v: Value): String = s"${labelShortPrefix}-${v.toString()}";
   }
 
-  case class ActiveSkillTuple(id: String, rowId: Option[String], name: Option[String], category: Option[String], aptitude: Option[String], field: Option[String]) {
+  case class ActiveSkillTuple(id: String,
+                              rowId: Option[String],
+                              name: Option[String],
+                              category: Option[String],
+                              aptitude: Option[String],
+                              field: Option[String]) {
     val sortId: String = rowId match {
       case Some("?") => id
       case Some(x)   => x
       case None      => id
     }
   }
-  case class KnowledgeSkillTuple(id: String, rowId: Option[String], name: Option[String], aptitude: Option[String], field: Option[String]) {
+  case class KnowledgeSkillTuple(id: String,
+                                 rowId: Option[String],
+                                 name: Option[String],
+                                 aptitude: Option[String],
+                                 field: Option[String]) {
     val sortId: String = rowId match {
       case Some("?") => id
       case Some(x)   => x
@@ -77,11 +86,16 @@ object Skills {
 
     val activeIdOrd = Ordering[String].on((x: ActiveSkillTuple) => x.sortId);
     val knowledgeIdOrd = Ordering[String].on((x: KnowledgeSkillTuple) => x.sortId);
-    val activeNameOrd = Ordering[(Option[String], Option[String], String)].on((x: ActiveSkillTuple) => (x.name, x.field, x.sortId));
-    val knowledgeNameOrd, knowledgeCategoryOrd = Ordering[(Option[String], Option[String], String)].on((x: KnowledgeSkillTuple) => (x.name, x.field, x.sortId));
-    val activeCategoryOrd = Ordering[(Option[String], Option[String], Option[String], String)].on((x: ActiveSkillTuple) => (x.category, x.name, x.field, x.sortId));
-    val activeAptOrd = Ordering[(Option[String], Option[String], Option[String], String)].on((x: ActiveSkillTuple) => (x.aptitude, x.name, x.field, x.sortId));
-    val knowledgeAptOrd = Ordering[(Option[String], Option[String], Option[String], String)].on((x: KnowledgeSkillTuple) => (x.aptitude, x.name, x.field, x.sortId));
+    val activeNameOrd =
+      Ordering[(Option[String], Option[String], String)].on((x: ActiveSkillTuple) => (x.name, x.field, x.sortId));
+    val knowledgeNameOrd, knowledgeCategoryOrd =
+      Ordering[(Option[String], Option[String], String)].on((x: KnowledgeSkillTuple) => (x.name, x.field, x.sortId));
+    val activeCategoryOrd = Ordering[(Option[String], Option[String], Option[String], String)]
+      .on((x: ActiveSkillTuple) => (x.category, x.name, x.field, x.sortId));
+    val activeAptOrd = Ordering[(Option[String], Option[String], Option[String], String)]
+      .on((x: ActiveSkillTuple) => (x.aptitude, x.name, x.field, x.sortId));
+    val knowledgeAptOrd = Ordering[(Option[String], Option[String], Option[String], String)]
+      .on((x: KnowledgeSkillTuple) => (x.aptitude, x.name, x.field, x.sortId));
 
     def activeOrdering(sortBy: SortBy): Ordering[ActiveSkillTuple] = {
       sortBy match {
@@ -164,11 +178,17 @@ object Skills {
     Skill("Spray Weapons", None, Active, Combat, COO),
     Skill("Swimming", None, Active, Physical, SOM),
     Skill("Throwing Weapons", None, Active, Combat, COO),
-    Skill("Unarmed Combat", None, Active, Combat, SOM));
+    Skill("Unarmed Combat", None, Active, Combat, SOM)
+  );
 }
 
 import Skills._
 import SkillClass._
 import SkillCategory._
 
-case class Skill(name: String, field: Option[String], cls: SkillClass, category: SkillCategory, apt: Aptitude.Aptitude, noDefaulting: Boolean = false)
+case class Skill(name: String,
+                 field: Option[String],
+                 cls: SkillClass,
+                 category: SkillCategory,
+                 apt: Aptitude.Aptitude,
+                 noDefaulting: Boolean = false)

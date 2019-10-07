@@ -25,7 +25,7 @@
 package com.lkroll.ep.api
 
 object ScallopUtils {
-  import org.rogach.scallop.{ ArgType, ValueConverter };
+  import org.rogach.scallop.{ArgType, ValueConverter};
 
   def singleListArgConverter[A](conv: String => A) = new ValueConverter[List[A]] {
     def parse(s: List[(String, List[String])]) = {

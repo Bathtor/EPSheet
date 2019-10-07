@@ -32,13 +32,14 @@ import com.lkroll.roll20.sheet.model._
 import com.lkroll.roll20.core._
 import com.lkroll.ep.model._
 import SheetWorkerTypeShorthands._
-import util.{ Success, Failure }
-import concurrent.{ Future, Promise, ExecutionContext }
+import util.{Failure, Success}
+import concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
 
 object EPWorkers extends SheetWorkerRoot {
 
-  override def children: Seq[SheetWorker] = Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
+  override def children: Seq[SheetWorker] =
+    Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
 
   lazy val tabbedWorker = TabbedWorker(EPCharModel, EPUpdates);
 
@@ -116,7 +117,8 @@ object EPWorkers extends SheetWorkerRoot {
         lucidity <<= luc,
         stressMax <<= luc,
         insanityRating <<= baseLuc * 2, // the book isn't clear about this, but it's my interpretation
-        psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt)
+        psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt
+      )
     }
   };
 
@@ -128,8 +130,7 @@ object EPWorkers extends SheetWorkerRoot {
       } else {
         Math.ceil(luc.toFloat / 5.0f).toInt
       };
-      Seq(
-        traumaThreshold <<= tt)
+      Seq(traumaThreshold <<= tt)
     }
   };
 
@@ -144,10 +145,9 @@ object EPWorkers extends SheetWorkerRoot {
     case (wil) => {
       log(s"Updating will dependent stats with ${wil}");
       val luc = wil * 2;
-      Seq(
-        museLucidity <<= luc,
-        museTraumaThreshold <<= Math.ceil(luc.toFloat / 5.0f).toInt,
-        museInsanityRating <<= luc * 2)
+      Seq(museLucidity <<= luc,
+          museTraumaThreshold <<= Math.ceil(luc.toFloat / 5.0f).toInt,
+          museInsanityRating <<= luc * 2)
     }
   };
 
@@ -165,28 +165,45 @@ object EPWorkers extends SheetWorkerRoot {
 
   val cooTotalCalc = bind(op(cooBase, cooTemp, cooMorph, cooMorphMax)) update (aptTotalCalc(cooTotal), SkillWorkers.skillTotalCalc);
 
-  val intTotalCalc = bind(op(intBase, intTemp, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(SkillWorkers.skillTotalCalc));
+  val intTotalCalc = bind(op(intBase, intTemp, intMorph, intMorphMax)) update (aptTotalCalc(intTotal), initCalc.andThen(
+    SkillWorkers.skillTotalCalc
+  ));
 
-  val refTotalCalc = bind(op(refBase, refTemp, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(SkillWorkers.skillTotalCalc));
+  val refTotalCalc = bind(op(refBase, refTemp, refMorph, refMorphMax)) update (aptTotalCalc(refTotal), initCalc.andThen(
+    SkillWorkers.skillTotalCalc
+  ));
 
   val savTotalCalc = bind(op(savBase, savTemp, savMorph, savMorphMax)) update (aptTotalCalc(savTotal), SkillWorkers.skillTotalCalc);
 
-  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc.andThen(GearWorkers.weaponRangeLimits.all(RangedWeaponSection)).andThen(SkillWorkers.skillTotalCalc));
+  val somTotalCalc = bind(op(somBase, somTemp, somMorph, somMorphMax)) update (aptTotalCalc(somTotal), dbCalc
+    .andThen(GearWorkers.weaponRangeLimits.all(RangedWeaponSection))
+    .andThen(SkillWorkers.skillTotalCalc));
 
-  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc.andThen(traumaThresholdCalc).andThen(SkillWorkers.skillTotalCalc));
+  val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc
+    .andThen(traumaThresholdCalc)
+    .andThen(SkillWorkers.skillTotalCalc));
 
-  val aptTotals = cogTotalCalc ++ List(cooTotalCalc, intTotalCalc, refTotalCalc, savTotalCalc, somTotalCalc, wilTotalCalc);
+  val aptTotals = cogTotalCalc ++ List(cooTotalCalc,
+                                       intTotalCalc,
+                                       refTotalCalc,
+                                       savTotalCalc,
+                                       somTotalCalc,
+                                       wilTotalCalc);
 
-  val aptTotalsAll = aptTotals ++ List(initCalc, dbCalc, willStatsCalc, traumaThresholdCalc, GearWorkers.weaponRangeLimits.all(RangedWeaponSection), SkillWorkers.skillTotalCalc);
+  val aptTotalsAll = aptTotals ++ List(initCalc,
+                                       dbCalc,
+                                       willStatsCalc,
+                                       traumaThresholdCalc,
+                                       GearWorkers.weaponRangeLimits.all(RangedWeaponSection),
+                                       SkillWorkers.skillTotalCalc);
 
   val durStatsCalc = op(durabilityBonus, morphDurability, morphType) update {
     case (bonus, morphDur, mt) => {
       val dur = morphDur + bonus;
-      Seq(
-        durability <<= dur,
-        damageMax <<= dur,
-        woundThreshold <<= Math.ceil(dur.toFloat / 5.0f).toInt,
-        deathRating <<= drCalc(dur, MorphType.withName(mt)))
+      Seq(durability <<= dur,
+          damageMax <<= dur,
+          woundThreshold <<= Math.ceil(dur.toFloat / 5.0f).toInt,
+          deathRating <<= drCalc(dur, MorphType.withName(mt)))
     }
   }
 
@@ -211,7 +228,10 @@ object EPWorkers extends SheetWorkerRoot {
     }
   }
 
-  private[sheet] def searchSkillAndSetNameTotal(needle: String, section: RepeatingSection, nameField: TextField, totalField: FieldRefRepeating[Int]): Future[Unit] = {
+  private[sheet] def searchSkillAndSetNameTotal(needle: String,
+                                                section: RepeatingSection,
+                                                nameField: TextField,
+                                                totalField: FieldRefRepeating[Int]): Future[Unit] = {
     val rowId = Roll20.getActiveRepeatingField();
     val simpleRowId = extractSimpleRowId(rowId);
     val rowAttrsF = getRowAttrs(activeSkills, Seq(activeSkills.skillName));
@@ -225,37 +245,43 @@ object EPWorkers extends SheetWorkerRoot {
         case (id, attrs) => attrs(activeSkills.skillName).map((_, id))
       }.toMap;
       val needleL = needle.toLowerCase();
-      val ratings = nameToId.keys.flatMap(n => {
-        val nL = n.toLowerCase();
-        val matchRes = (nL, needleL).zipped.takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
-        val matchLength = matchRes.length;
-        log(s"Compared $nL with $needleL and matched $matchRes of length $matchLength");
-        if (matchLength > 0) {
-          Some((matchLength, n))
-        } else {
-          None
-        }
-      }).toList;
+      val ratings = nameToId.keys
+        .flatMap(n => {
+          val nL = n.toLowerCase();
+          val matchRes = (nL, needleL).zipped.takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
+          val matchLength = matchRes.length;
+          log(s"Compared $nL with $needleL and matched $matchRes of length $matchLength");
+          if (matchLength > 0) {
+            Some((matchLength, n))
+          } else {
+            None
+          }
+        })
+        .toList;
       if (ratings.isEmpty) {
         log(s"No match found for $needle");
-        setAttrs(Map(
-          section.at(simpleRowId, nameField) <<= nameField.resetValue,
-          section.at(simpleRowId, totalField) <<= totalField.resetValue))
+        setAttrs(
+          Map(section.at(simpleRowId, nameField) <<= nameField.resetValue,
+              section.at(simpleRowId, totalField) <<= totalField.resetValue)
+        )
       } else {
         val sorted = ratings.sorted;
         val selection = sorted.last;
         log(s"Selected $selection as best fit for $needle");
         val selectionId = nameToId(selection._2);
-        setAttrs(Map(
-          section.at(simpleRowId, nameField) <<= selection._2,
-          section.at(simpleRowId, totalField) <<= totalField.valueAt(selectionId)))
+        setAttrs(
+          Map(section.at(simpleRowId, nameField) <<= selection._2,
+              section.at(simpleRowId, totalField) <<= totalField.valueAt(selectionId))
+        )
       }
     };
     doF.onFailure {
       case e: Throwable =>
-        error(e); setAttrs(Map(
-          section.at(simpleRowId, nameField) <<= nameField.resetValue,
-          section.at(simpleRowId, totalField) <<= totalField.resetValue))
+        error(e);
+        setAttrs(
+          Map(section.at(simpleRowId, nameField) <<= nameField.resetValue,
+              section.at(simpleRowId, totalField) <<= totalField.resetValue)
+        )
     }
     doF.flatMap(identity)
   }

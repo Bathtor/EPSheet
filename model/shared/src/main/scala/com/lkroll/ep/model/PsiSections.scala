@@ -64,7 +64,10 @@ object PsiGammaSection extends RepeatingSection {
   val skillSearch = "skill_search".options("Control", "Psi Assault", "Sense");
   val skillName = "skill_name".editable(false).default("None");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
-  val attackTarget = roll("attack_target", EPCharModel.targetQuery.arith + EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalMods);
+  val attackTarget = roll(
+    "attack_target",
+    EPCharModel.targetQuery.arith + EPCharModel.modQuery.arith + skillTotal.altArith + EPCharModel.globalMods
+  );
   val showDescription = flag("show_description").default(false);
   val description = text("description");
 }

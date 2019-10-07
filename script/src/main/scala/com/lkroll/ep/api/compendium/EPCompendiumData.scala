@@ -28,8 +28,8 @@ import com.lkroll.roll20.core._
 import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.ep.compendium._
-import com.lkroll.ep.api.{ asInfoTemplate, ScallopUtils, EPCommand, EPScripts, SpecialRollsCommand }
-import util.{ Try, Success, Failure }
+import com.lkroll.ep.api.{EPCommand, EPScripts, ScallopUtils, SpecialRollsCommand, asInfoTemplate}
+import util.{Failure, Success, Try}
 import org.rogach.scallop.singleArgConverter
 import scalatags.Text.all._;
 
@@ -37,39 +37,164 @@ class EPCompendiumDataConf(_args: Seq[String]) extends ScallopAPIConf(_args) {
   version(s"${EPCompendiumDataCommand.command} ${EPScripts.version} by ${EPScripts.author} ${EPScripts.emailTag}");
   banner("Search and view data loaded into the Eclipse Phase Compendium.")
   footer(s"<br/>Source code can be found on ${EPScripts.repoLink}");
-  val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val multiSearch = opt[Boolean]("multi-search", descr = "Search for a comma-separated list of items (after --), showing best matches only.");
+  val search = opt[String]("search", descr = "Search for items with similar names to &lt;param&gt;.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val multiSearch = opt[Boolean]("multi-search",
+                                 descr =
+                                   "Search for a comma-separated list of items (after --), showing best matches only.");
   val nameOnly = opt[Boolean]("name-only", descr = "Only show names, not statblocks.");
   val rank = opt[Boolean]("rank", descr = "Rank all significant results, instead of showing highest one only.");
-  val rankMax = opt[Int]("rank-max", descr = "Rank the top &lt;param&gt; significant results, instead of showing highest one only.");
+  val rankMax = opt[Int](
+    "rank-max",
+    descr = "Rank the top &lt;param&gt; significant results, instead of showing highest one only."
+  );
   val silent = opt[Boolean]("silent", descr = "Dont emit search progress output, but just the results.");
   // items
-  val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val ammo = opt[String]("ammo", descr = "Search for matches with &lt;param&gt; in ammo.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val withAmmo = opt[String]("with-ammo", descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo. Ammo name must be exact!")(ScallopUtils.singleArgSpacedConverter(identity));
-  val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val derangement = opt[String]("derangement", descr = "Search for matches with &lt;param&gt; in derangements.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val disorder = opt[String]("disorder", descr = "Search for matches with &lt;param&gt; in disorders.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val armour = opt[String]("armour", descr = "Search for matches with &lt;param&gt; in armour.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val gear = opt[String]("gear", descr = "Search for matches with &lt;param&gt; in gear.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val software = opt[String]("software", descr = "Search for matches with &lt;param&gt; in software.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val substance = opt[String]("substance", descr = "Search for matches with &lt;param&gt; in substances.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val augmentation = opt[String]("augmentation", descr = "Search for matches with &lt;param&gt; in augmentations.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val armourMod = opt[String]("armour-mod", descr = "Search for matches with &lt;param&gt; in armour mods.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val weaponAccessory = opt[String]("weapon-accessory", descr = "Search for matches with &lt;param&gt; in weapon accessories.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val psiSleight = opt[String]("psi-sleight", descr = "Search for matches with &lt;param&gt; in psi sleights.")(ScallopUtils.singleArgSpacedConverter(identity));
-  val skill = opt[String]("skill", descr = "Search for matches with &lt;param&gt; in skills.")(ScallopUtils.singleArgSpacedConverter(identity));
+  val weapon = opt[String]("weapon", descr = "Search for matches with &lt;param&gt; in weapons.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val ammo = opt[String]("ammo", descr = "Search for matches with &lt;param&gt; in ammo.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val withAmmo = opt[String](
+    "with-ammo",
+    descr = "Must be used together with --weapon. Modifies weapon to use the specified ammo. Ammo name must be exact!"
+  )(ScallopUtils.singleArgSpacedConverter(identity));
+  val morphModel = opt[String]("morph-model", descr = "Search for matches with &lt;param&gt; in morph models.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val morph = opt[String]("morph", descr = "Search for matches with &lt;param&gt; in custom morphs.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val epTrait = opt[String]("trait", descr = "Search for matches with &lt;param&gt; in traits.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val derangement = opt[String]("derangement", descr = "Search for matches with &lt;param&gt; in derangements.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val disorder = opt[String]("disorder", descr = "Search for matches with &lt;param&gt; in disorders.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val armour = opt[String]("armour", descr = "Search for matches with &lt;param&gt; in armour.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val gear = opt[String]("gear", descr = "Search for matches with &lt;param&gt; in gear.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val software = opt[String]("software", descr = "Search for matches with &lt;param&gt; in software.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val substance = opt[String]("substance", descr = "Search for matches with &lt;param&gt; in substances.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val augmentation = opt[String]("augmentation", descr = "Search for matches with &lt;param&gt; in augmentations.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val armourMod = opt[String]("armour-mod", descr = "Search for matches with &lt;param&gt; in armour mods.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val weaponAccessory =
+    opt[String]("weapon-accessory", descr = "Search for matches with &lt;param&gt; in weapon accessories.")(
+      ScallopUtils.singleArgSpacedConverter(identity)
+    );
+  val psiSleight = opt[String]("psi-sleight", descr = "Search for matches with &lt;param&gt; in psi sleights.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
+  val skill = opt[String]("skill", descr = "Search for matches with &lt;param&gt; in skills.")(
+    ScallopUtils.singleArgSpacedConverter(identity)
+  );
 
   val trailing = trailArg[List[String]]("trailing", hidden = true, required = false);
 
-  dependsOnAny(nameOnly, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
-  dependsOnAny(rank, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
-  dependsOnAny(rankMax, List(search, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill));
+  dependsOnAny(
+    nameOnly,
+    List(
+      search,
+      weapon,
+      ammo,
+      morph,
+      morphModel,
+      epTrait,
+      derangement,
+      disorder,
+      armour,
+      gear,
+      software,
+      substance,
+      augmentation,
+      armourMod,
+      weaponAccessory,
+      psiSleight,
+      skill
+    )
+  );
+  dependsOnAny(
+    rank,
+    List(
+      search,
+      weapon,
+      ammo,
+      morph,
+      morphModel,
+      epTrait,
+      derangement,
+      disorder,
+      armour,
+      gear,
+      software,
+      substance,
+      augmentation,
+      armourMod,
+      weaponAccessory,
+      psiSleight,
+      skill
+    )
+  );
+  dependsOnAny(
+    rankMax,
+    List(
+      search,
+      weapon,
+      ammo,
+      morph,
+      morphModel,
+      epTrait,
+      derangement,
+      disorder,
+      armour,
+      gear,
+      software,
+      substance,
+      augmentation,
+      armourMod,
+      weaponAccessory,
+      psiSleight,
+      skill
+    )
+  );
   dependsOnAll(withAmmo, List(weapon));
   dependsOnAll(multiSearch, List(trailing));
-  requireOne(search, multiSearch, weapon, ammo, morph, morphModel, epTrait, derangement, disorder, armour, gear, software, substance, augmentation, armourMod, weaponAccessory, psiSleight, skill);
+  requireOne(
+    search,
+    multiSearch,
+    weapon,
+    ammo,
+    morph,
+    morphModel,
+    epTrait,
+    derangement,
+    disorder,
+    armour,
+    gear,
+    software,
+    substance,
+    augmentation,
+    armourMod,
+    weaponAccessory,
+    psiSleight,
+    skill
+  );
   verify();
 
   def forDataType(dataType: String): Option[org.rogach.scallop.ScallopOption[String]] = {
@@ -139,10 +264,7 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
           case (needle, Some(r)) => span(b(needle), raw(" &rarr; "), r)
           case (needle, None)    => span(b(needle), raw(" &rarr; "), "404 Not Found")
         };
-        val pretty = div(
-          h4("Results"),
-          ul(
-            for (r <- pretties) yield li(r)));
+        val pretty = div(h4("Results"), ul(for (r <- pretties) yield li(r)));
         //debug(s"About to send '$pretty'");
         verbose(ctx.replyFooter(pretty), ctx.reply("Compendium Search", pretty));
       }
@@ -169,10 +291,13 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
       ammoO match {
         case Some(ammo) => {
           val weapons = EPCompendium.findWeapon(needle).toList;
-          val results = weapons.flatMap(w => w.load(ammo) match {
-            case Success(wwa) => Some(wwa)
-            case Failure(e)   => ctx.replyWarn(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
-          });
+          val results = weapons.flatMap(
+            w =>
+              w.load(ammo) match {
+                case Success(wwa) => Some(wwa)
+                case Failure(e)   => ctx.replyWarn(s"Error loading ${ammo.name} into ${w.name}: ${e.getMessage}"); None
+              }
+          );
           handleResults(results, config, ctx);
         }
         case None => ctx.replyWarn(s"No ammo found for name ${config.withAmmo()}")
@@ -306,17 +431,16 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
           val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r)).render;
           span(r.templateTitle, raw("&nbsp;"), raw(infoButton), raw("&nbsp;"), raw(importButton))
         });
-        val pretty = div(
-          h4("Results"),
-          ul(
-            for (r <- pretties) yield li(r)));
+        val pretty = div(h4("Results"), ul(for (r <- pretties) yield li(r)));
         verbose(ctx.replyFooter(pretty), ctx.reply("Compendium Search", pretty));
       } else {
         val resultNum = displayResults.size;
         verbose {
-          ctx.replyFooter(div(
-            h4("Search Complete"),
-            p(s"Displaying ${resultNum} ${if (resultNum > 1) { "results" } else { "result" }}.")))
+          ctx.replyFooter(div(h4("Search Complete"), p(s"Displaying ${resultNum} ${if (resultNum > 1) {
+            "results"
+          } else {
+            "result"
+          }}.")))
         };
         displayResults.foreach { r =>
           val importButton = EPCompendiumImportCommand.invoke("⤺", importArgumentFrom(r));
@@ -385,20 +509,24 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
       case w: Weapon => {
         val c = SpecialRollsCommand.minConf;
         val dmg = w.templateKV("Damage");
-        val dmgButton = SpecialRollsCommand.invoke(dmg, List(
-          c.damage <<= true,
-          c.damageDice <<= w.damage.dmgD10,
-          c.damageDiv <<= w.damage.dmgDiv,
-          c.damageConst <<= w.damage.dmgConst,
-          c.damageType <<= w.damage.dmgType.label,
-          c.ap <<= w.ap,
-          c.label <<= buttonSafeText(w.templateTitle)));
+        val dmgButton = SpecialRollsCommand.invoke(
+          dmg,
+          List(
+            c.damage <<= true,
+            c.damageDice <<= w.damage.dmgD10,
+            c.damageDiv <<= w.damage.dmgDiv,
+            c.damageConst <<= w.damage.dmgConst,
+            c.damageType <<= w.damage.dmgType.label,
+            c.ap <<= w.ap,
+            c.label <<= buttonSafeText(w.templateTitle)
+          )
+        );
         val skill = w.templateKV("Skill");
-        val skillButton = SpecialRollsCommand.invoke(skill, List(
-          c.success <<= true,
-          c.target.name <<= s"?{$skill}",
-          c.label <<= buttonSafeText(w.templateTitle),
-          c.sublabel <<= buttonSafeText(skill)));
+        val skillButton = SpecialRollsCommand.invoke(skill,
+                                                     List(c.success <<= true,
+                                                          c.target.name <<= s"?{$skill}",
+                                                          c.label <<= buttonSafeText(w.templateTitle),
+                                                          c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
       }
       case a: Augmentation => {
@@ -407,8 +535,7 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
         a.related.zipWithIndex.map {
           case (ref, i) => {
             conf.forDataType(ref.dataType).map { opt =>
-              val button = EPCompendiumDataCommand.invoke(
-                ref.name, List(opt <<= buttonSafeText(ref.name)));
+              val button = EPCompendiumDataCommand.invoke(ref.name, List(opt <<= buttonSafeText(ref.name)));
               ((prefix + i) -> button)
             }
           }
@@ -417,30 +544,36 @@ object EPCompendiumDataCommand extends EPCommand[EPCompendiumDataConf] {
       case w: WeaponWithAmmo => {
         val c = SpecialRollsCommand.minConf;
         val dmg = w.templateKV("Damage");
-        val dmgButton = SpecialRollsCommand.invoke(dmg, List(
-          c.damage <<= true,
-          c.damageDice <<= w.damage.dmgD10,
-          c.damageDiv <<= w.damage.dmgDiv,
-          c.damageConst <<= w.damage.dmgConst,
-          c.damageType <<= w.damage.dmgType.label,
-          c.ap <<= w.ap,
-          c.label <<= buttonSafeText(w.templateTitle)));
+        val dmgButton = SpecialRollsCommand.invoke(
+          dmg,
+          List(
+            c.damage <<= true,
+            c.damageDice <<= w.damage.dmgD10,
+            c.damageDiv <<= w.damage.dmgDiv,
+            c.damageConst <<= w.damage.dmgConst,
+            c.damageType <<= w.damage.dmgType.label,
+            c.ap <<= w.ap,
+            c.label <<= buttonSafeText(w.templateTitle)
+          )
+        );
         val skill = w.templateKV("Skill");
-        val skillButton = SpecialRollsCommand.invoke(skill, List(
-          c.success <<= true,
-          c.target.name <<= s"?{$skill}",
-          c.label <<= buttonSafeText(w.templateTitle),
-          c.sublabel <<= buttonSafeText(skill)));
+        val skillButton = SpecialRollsCommand.invoke(skill,
+                                                     List(c.success <<= true,
+                                                          c.target.name <<= s"?{$skill}",
+                                                          c.label <<= buttonSafeText(w.templateTitle),
+                                                          c.sublabel <<= buttonSafeText(skill)));
         List("Damage" -> dmgButton, "Skill" -> skillButton)
       }
       case s: SkillDef => {
         val c = SpecialRollsCommand.minConf;
         val skill = s.name;
-        val skillButton = SpecialRollsCommand.invoke("Success Roll", List(
-          c.success <<= true,
-          c.target.name <<= s"?{$skill}",
-          c.label <<= buttonSafeText(s.templateTitle),
-          c.sublabel <<= buttonSafeText(s.templateSubTitle)));
+        val skillButton = SpecialRollsCommand.invoke(
+          "Success Roll",
+          List(c.success <<= true,
+               c.target.name <<= s"?{$skill}",
+               c.label <<= buttonSafeText(s.templateTitle),
+               c.sublabel <<= buttonSafeText(s.templateSubTitle))
+        );
         List("Commands" -> skillButton)
       }
       case _ => List.empty

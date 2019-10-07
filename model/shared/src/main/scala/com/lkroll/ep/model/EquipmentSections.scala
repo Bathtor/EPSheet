@@ -44,12 +44,25 @@ object MeleeWeaponSection extends RepeatingSection {
   val showDivisor = "show_divisor".default(false).editable(false);
   val damageDivisor = "damage_divisor".default(1).validIn(1, 9, 1);
   val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);
-  val damageRoll = roll("damage", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus);
-  val damageRollExcellent30 = roll("damage_excellent30", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + 5);
-  val damageRollExcellent60 = roll("damage_excellent60", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + 10);
-  val damageRollQuery = roll("damage_query", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + EPCharModel.extraDamageQuery.arith);
+  val damageRoll = roll(
+    "damage",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus
+  );
+  val damageRollExcellent30 = roll(
+    "damage_excellent30",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + 5
+  );
+  val damageRollExcellent60 = roll(
+    "damage_excellent60",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + 10
+  );
+  val damageRollQuery = roll(
+    "damage_query",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.damageBonus + EPCharModel.extraDamageQuery.arith
+  );
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
-  val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
+  val damageTypeShort =
+    text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val showDescription = flag("show_description").default(false);
   val description = text("description");
 }
@@ -62,22 +75,40 @@ object RangedWeaponSection extends RepeatingSection {
   def name = "rangedweapons";
 
   val weapon = text("weapon");
-  val skillSearch = "skill_search".options("Beam Weapons", "Exotic Ranged Weapon: ...", "Kinetic Weapons", "Seeker Weapons", "Spray Weapons", "Throwing Weapons");
+  val skillSearch = "skill_search".options("Beam Weapons",
+                                           "Exotic Ranged Weapon: ...",
+                                           "Kinetic Weapons",
+                                           "Seeker Weapons",
+                                           "Spray Weapons",
+                                           "Throwing Weapons");
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val miscMod = "misc_mod".default(0);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods);
+  val attackTarget = roll(
+    "attack_target",
+    EPCharModel.modQuery + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods
+  );
   val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
   val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
   val showDivisor = "show_divisor".default(false).editable(false);
   val damageDivisor = "damage_divisor".default(1).validIn(1, 9, 1);
   val damageBonus = "damage_bonus".default(0).validIn(-99, 99, 1);
   val damageRoll = roll("damage", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus);
-  val damageRollExcellent30 = roll("damage_excellent30", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + 5);
-  val damageRollExcellent60 = roll("damage_excellent60", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + 10);
-  val damageRollQuery = roll("damage_query", ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.extraDamageDiceQuery.arith + EPCharModel.extraDamageQuery.arith);
+  val damageRollExcellent30 = roll(
+    "damage_excellent30",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + 5
+  );
+  val damageRollExcellent60 = roll(
+    "damage_excellent60",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + 10
+  );
+  val damageRollQuery = roll(
+    "damage_query",
+    ceil(DiceExprs.BasicRoll(numDamageDice.expr, 10).arith / damageDivisor) + damageBonus + EPCharModel.extraDamageDiceQuery.arith + EPCharModel.extraDamageQuery.arith
+  );
   val damageType = "damage_type".options(DamageType).default(DamageType.Kinetic);
-  val damageTypeShort = text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
+  val damageTypeShort =
+    text("damage_type_short").editable(false).default(DamageType.dynamicLabelShort(DamageType.Kinetic));
   val singleShot = "single_shot".default(false);
   val semiAutomatic = "semi_automatic".default(false);
   val burstFire = "burst_fire".default(false);
@@ -100,7 +131,8 @@ object RangedWeaponSection extends RepeatingSection {
   val magazineCurrent = "ammo".default(0).validIn(0, 999, 1);
   val magazineType = "ammo_type".default("standard");
   val damageArea = "damage_area".options(DamageArea).default(DamageArea.Point);
-  val damageAreaShort = text("damage_area_short").editable(false).default(DamageArea.dynamicLabelShort(DamageArea.Point));
+  val damageAreaShort =
+    text("damage_area_short").editable(false).default(DamageArea.dynamicLabelShort(DamageArea.Point));
   val uniformBlastArea = "uniform_blast_area".default(1).validIn(0, 99999, 1);
   val showDescription = flag("show_description").default(false);
   val description = text("description");

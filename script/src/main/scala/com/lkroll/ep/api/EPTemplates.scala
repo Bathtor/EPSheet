@@ -24,7 +24,7 @@
  */
 package com.lkroll.ep.api
 
-import com.lkroll.roll20.core.{ TemplateCoreImplicits, TemplateRef }
+import com.lkroll.roll20.core.{TemplateCoreImplicits, TemplateRef}
 import com.lkroll.ep.model.EPCharModel
 
 object EPTemplates extends TemplateCoreImplicits {

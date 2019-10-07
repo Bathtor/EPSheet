@@ -29,17 +29,25 @@ import com.lkroll.roll20.api._
 import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
 import com.lkroll.roll20.api.facade.Roll20API
-import com.lkroll.ep.model.{ EPCharModel => epmodel }
+import com.lkroll.ep.model.{EPCharModel => epmodel}
 import scalajs.js
 import scalajs.js.JSON
 import fastparse.all._
-import util.{ Try, Success, Failure }
+import util.{Failure, Success, Try}
 
 object EPScripts extends APIScriptRoot {
 
   override lazy val outputTemplate: Option[TemplateRef] = epmodel.outputTemplate.map(_.ref);
 
-  override def children: Seq[APIScript] = Seq(RollsScript, TokensScript, GroupRollsScript, GMTools, CharTools, compendium.CompendiumScript, BattleManagerScript, CharCleanerScript);
+  override def children: Seq[APIScript] =
+    Seq(RollsScript,
+        TokensScript,
+        GroupRollsScript,
+        GMTools,
+        CharTools,
+        compendium.CompendiumScript,
+        BattleManagerScript,
+        CharCleanerScript);
 
   val version = BuildInfo.version;
   val author = "Lars Kroll";
@@ -54,12 +62,16 @@ object EPScripts extends APIScriptRoot {
 
   def checkVersion(char: Character): Result[Unit] = {
     char.attributeValue(epmodel.versionField) match {
-      case Some(version) => if (version == epmodel.version()) {
-        Ok(())
-      } else {
-        Err(s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!")
-      }
-      case None => Err(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
+      case Some(version) =>
+        if (version == epmodel.version()) {
+          Ok(())
+        } else {
+          Err(
+            s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!"
+          )
+        }
+      case None =>
+        Err(s"Can't verify that character sheet for ${char.name} has matching model version! Skipping token.")
     }
   }
 }
