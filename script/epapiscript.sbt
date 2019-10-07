@@ -18,6 +18,7 @@ libraryDependencies += "com.lkroll.ep" %%% "ep-model" % "1.12.3"
 libraryDependencies += "com.lkroll.common" %%% "common-data-tools" % "1.3.+"
 libraryDependencies += "com.lihaoyi" %%% "fastparse" % "1.+"
 libraryDependencies += "org.rogach" %%% "scallop" % "3.3.+"
+libraryDependencies += "com.outr" %%% "scribe" % "2.7.3"
 libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.8" % "test"
 libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.8" % "test"
 

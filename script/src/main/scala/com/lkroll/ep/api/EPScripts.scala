@@ -30,12 +30,18 @@ import com.lkroll.roll20.api.conf._
 import com.lkroll.roll20.api.templates._
 import com.lkroll.roll20.api.facade.Roll20API
 import com.lkroll.ep.model.{EPCharModel => epmodel}
-import scalajs.js
-import scalajs.js.JSON
+import scala.scalajs.js
+import scala.scalajs.js.JSON
+import scala.scalajs.js.annotation._
 import fastparse.all._
 import util.{Failure, Success, Try}
 
 object EPScripts extends APIScriptRoot {
+
+  scribe.Logger.root
+    .clearHandlers()
+    .withHandler(writer = new Roll20Logger())
+    .replace(Some("root"));
 
   override lazy val outputTemplate: Option[TemplateRef] = epmodel.outputTemplate.map(_.ref);
 
