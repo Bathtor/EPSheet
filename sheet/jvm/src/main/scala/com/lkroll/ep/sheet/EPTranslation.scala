@@ -46,13 +46,16 @@ object EPTranslation extends SheetI18NDefaults {
   val currentMoxie = keys.currentMoxie <~ "Current Moxie Points";
   val rezPoints = keys.rezPoints <~ ("REZ", "Rez Points");
   val motivations = keys.motivations <~ "Motivations";
-  val effects = keys.effects <~ "Active Effects";
+  val effects = keys.effects <~ "Effects";
   val effectName = keys.effectName <~ "Name";
   val effectDuration = keys.effectDuration <~ "Duration";
   val effectDurationExample = keys.effectDurationExample <~ "e.g., 1min";
   val effectOnGame = keys.effectOnGame <~ "Game Effect";
   val effectOnGameExample = keys.effectOnGameExample <~ "e.g., +5 SOM, -5 COO";
   val effectDescription = keys.effectDescription <~ "Description";
+  val appliedEffects = keys.appliedEffects <~ "Applied";
+  val freeformEffects = keys.freeformEffects <~ "Freeform";
+  val effectsActiveSummary = keys.effectsActiveSummary <~ "Active Effects";
   val showHideDescription = keys.showHideDescription <~ "Show/Hide Description";
   val traits = keys.traits <~ "Traits";
   val traitName = keys.traitName <~ "Name";
@@ -132,6 +135,7 @@ object EPTranslation extends SheetI18NDefaults {
   val damage = keys.damage <~ "Damage";
   val wounds = keys.wounds <~ "Wounds";
   val woundsIgnored = keys.woundsIgnored <~ "Ignored Wounds";
+  val appl = keys.appl <~ ("appl.", "applied");
   val armour = keys.armour <~ "Armour";
   val kinetic = keys.kinetic <~ "Kinetic";
   val energy = keys.energy <~ "Energy";
@@ -148,6 +152,7 @@ object EPTranslation extends SheetI18NDefaults {
   val skillNoDefaulting = keys.skillNoDefaulting <~ "No Defaulting";
   val skillRanks = keys.skillRanks <~ "Ranks";
   val skillMorphBonus = keys.skillMorphBonus <~ "Morph Bonus";
+  val skillEffectsBonus = keys.skillEffectsBonus <~ "Active Effects";
   val skillTotal = keys.skillTotal <~ "Total";
   val skillsGenerate = keys.skillsGenerate <~ "Generate Default Skills";
   val skillsGenerating = keys.skillsGenerating <~ "Generating Skills...";
@@ -215,6 +220,7 @@ object EPTranslation extends SheetI18NDefaults {
   val weaponSkill = keys.weaponSkill <~ "Skill";
   val weaponSkillSearch = keys.weaponSkillSearch <~ "Search Skill";
   val weaponDescription = keys.weaponDescription <~ "Description";
+  val weaponSpecialisation = keys.weaponSpecialisation <~ "Specialisation";
   val firingModes = keys.firingModes <~ "Firing Modes";
   val singleShot = keys.singleShot <~ ("SS", "Single Shot");
   val semiAutomatic = keys.semiAutomatic <~ ("SA", "Semi-Automatic");

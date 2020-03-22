@@ -125,4 +125,113 @@ class ParserTests extends FunSuite with Matchers {
     secondValue2.field shouldBe Some("Underwater");
     secondValue2.mod shouldBe 30;
   }
+
+  private def parseSingleEffect(s: String): Effect = {
+    val res = ValueParsers.effectsFrom(s).get;
+    res should have length 1;
+    res(0)
+  }
+
+  test("Should parse speed mods") {
+    val positiveMod = "+2 SPD";
+    val SpeedMod(mod) = parseSingleEffect(positiveMod);
+    mod shouldBe 2;
+    val negativeMod = "-1 SPD";
+    val SpeedMod(mod2) = parseSingleEffect(negativeMod);
+    mod2 shouldBe -1;
+  }
+
+  test("Should parse moa mods") {
+    val positiveMod = "+2 MOA";
+    val MOAMod(mod) = parseSingleEffect(positiveMod);
+    mod shouldBe 2;
+    val negativeMod = "-1 MOA";
+    val MOAMod(mod2) = parseSingleEffect(negativeMod);
+    mod2 shouldBe -1;
+  }
+
+  test("Should parse ini mods") {
+    val positiveMod = "+2 INI";
+    val IniMod(mod) = parseSingleEffect(positiveMod);
+    mod shouldBe 2;
+    val negativeMod = "-1 INI";
+    val IniMod(mod2) = parseSingleEffect(negativeMod);
+    mod2 shouldBe -1;
+  }
+
+  test("Should parse aptitude mods") {
+    for (apt <- Aptitude.values) {
+      val positiveMod = "+2 " + apt.toString;
+      val AptitudeMod(apt1, mod) = parseSingleEffect(positiveMod);
+      apt1 shouldBe apt;
+      mod shouldBe 2;
+      val negativeMod = "-1 " + apt.toString;
+      val AptitudeMod(apt2, mod2) = parseSingleEffect(negativeMod);
+      apt2 shouldBe apt;
+      mod2 shouldBe -1;
+    }
+  }
+
+  test("Should parse skill mods") {
+    // #1
+    val singleData = "+30 Beam Weapons skill";
+    val SkillMod(skill, field, mod) = parseSingleEffect(singleData);
+    skill shouldBe "Beam Weapons";
+    field shouldBe None;
+    mod shouldBe 30;
+    // #2
+    val singleDataField = "+30 Beam Weapons (Underwater)";
+    val SkillMod(skill2, field2, mod2) = parseSingleEffect(singleDataField);
+    skill2 shouldBe "Beam Weapons";
+    field2 shouldBe Some("Underwater");
+    mod2 shouldBe 30;
+  }
+
+  test("Should parse ignore traumas") {
+    val effect = "Ignore modifiers from 2 traumas";
+    val IgnoreTraumas(n) = parseSingleEffect(effect);
+    n shouldBe 2;
+  }
+
+  test("Should parse ignore wounds") {
+    val effect = "Ignore modifiers from 2 wounds";
+    val IgnoreWounds(n) = parseSingleEffect(effect);
+    n shouldBe 2;
+  }
+
+  test("Should parse DUR mods") {
+    val positiveMod = "+2 DUR";
+    val DurMod(mod) = parseSingleEffect(positiveMod);
+    mod shouldBe 2;
+    val negativeMod = "-1 DUR";
+    val DurMod(mod2) = parseSingleEffect(negativeMod);
+    mod2 shouldBe -1;
+  }
+
+  test("Should parse LUC mods") {
+    val positiveMod = "+2 LUC";
+    val LucMod(mod) = parseSingleEffect(positiveMod);
+    mod shouldBe 2;
+    val negativeMod = "-1 LUC";
+    val LucMod(mod2) = parseSingleEffect(negativeMod);
+    mod2 shouldBe -1;
+  }
+
+  test("Should parse freeform effects") {
+    val effect = "This can literally be any arbitrary text";
+    val FreeForm(s) = parseSingleEffect(effect);
+    s shouldBe effect;
+  }
+
+  test("Should parse multiple effects") {
+    val effects =
+      "+30 Beam Weapons (Underwater), Ignore modifiers from 2 traumas, +2 LUC, This can literally be any arbitrary text";
+    val res = ValueParsers.effectsFrom(effects).get;
+    res should have length 4;
+    val SkillMod("Beam Weapons", Some("Underwater"), 30) = res(0);
+    val IgnoreTraumas(2) = res(1);
+    val LucMod(2) = res(2);
+    val FreeForm("This can literally be any arbitrary text") = res(3);
+  }
+
 }

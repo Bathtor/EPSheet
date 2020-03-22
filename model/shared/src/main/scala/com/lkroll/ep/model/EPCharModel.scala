@@ -138,6 +138,7 @@ object EPCharModel extends SheetModel {
   val durabilityBonus = "durability_bonus".default(0).validIn(-99, 99, 1);
   val deathRating = "death_rating".editable(false).default(0);
   val initiative = "initiative".editable(false).default(0);
+  val initiativeExtra = "initiative_extra".default(0).validIn(-99, 99, 1);
   //val initiativeFormula = number[Int]("initiative_formula").editable(false);
   lazy val iniRoll =
     roll("ini_roll", Dice.d10 + initiative - woundsApplied - traumasApplied + miscInitiativeMod & RollOptions.Tracker);
@@ -150,6 +151,7 @@ object EPCharModel extends SheetModel {
   val stressMax = "stress_max".editable(false).default(0);
   val trauma = "trauma".default(0).validIn(0, 99, 1);
   val traumasIgnored = "traumas_ignored".default(0).validIn(0, 99, 1);
+  val traumasIgnoredEffects = "traumas_ignored_effects".editable(false).default(0);
   val traumasApplied = "traumas_applied".editable(false).default(0);
   val traumaMod = "trauma_mod".editable(false).default(0);
   val damage = "damage".default(0).validIn(0, 999, 1);
@@ -157,6 +159,7 @@ object EPCharModel extends SheetModel {
   val wounds = "wounds".default(0).validIn(0, 99, 1);
   val woundMod = "wound_mod".editable(false).default(0);
   val woundsIgnored = "wounds_ignored".default(0).validIn(0, 99, 1);
+  val woundsIgnoredEffects = "wounds_ignored_effects".editable(false).default(0);
   val woundsApplied = "wounds_applied".editable(false).default(0);
   val woundTraumaMods = (traumaMod + woundMod).paren;
   val armourEnergyTotal = "armour_energy_total".editable(false).default(0);
@@ -270,6 +273,8 @@ object EPCharModel extends SheetModel {
   val generateMuseSkillsLabel = "muse_skills_generate_label".editable(false).default("generate-skills"); // other possibility is "generating-skills"
 
   lazy val effects = EffectsSection;
+  val appliedEffectsSummary = "applied_effects_summary".editable(false).default("");
+  val freeformEffectsSummary = "freeform_effects_summary".editable(false).default("");
   lazy val characterTraits = CharacterTraitSection;
   lazy val derangements = DerangementSection;
   lazy val disorders = DisorderSection;

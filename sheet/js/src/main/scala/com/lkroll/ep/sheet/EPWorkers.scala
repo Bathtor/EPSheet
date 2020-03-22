@@ -39,7 +39,7 @@ import scala.scalajs.js
 object EPWorkers extends SheetWorkerRoot {
 
   override def children: Seq[SheetWorker] =
-    Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers);
+    Seq(tabbedWorker, EPUpdates, SkillWorkers, MorphWorkers, GearWorkers, PsiWorkers, EffectsWorkers);
 
   lazy val tabbedWorker = TabbedWorker(EPCharModel, EPUpdates);
 
@@ -61,10 +61,10 @@ object EPWorkers extends SheetWorkerRoot {
     case (base, tmp, morph, morphMax) => Seq(aptField <<= aptTotal(base, tmp, morph, morphMax));
   }
 
-  val initCalc = op(intTotal, refTotal, morphIniBonus) update {
-    case (int, ref, morph) => {
+  val initCalc = op(intTotal, refTotal, morphIniBonus, initiativeExtra) update {
+    case (int, ref, morph, extra) => {
       val baseIni = Math.ceil((int + ref).toFloat / 5.0f).toInt;
-      val ini = baseIni + morph;
+      val ini = baseIni + morph + extra;
       Seq(initiative <<= ini)
     }
   };
@@ -88,17 +88,17 @@ object EPWorkers extends SheetWorkerRoot {
     case (morph, extra) => Seq(mentalOnlyActions <<= (morph + extra))
   };
 
-  val woundCalc = bind(op(wounds, woundsIgnored, morphIgnoredWounds)) update {
-    case (curWounds, woundsIgn, morph) => {
-      val woundsApl = Math.max(curWounds - woundsIgn - morph, 0);
+  val woundCalc = bind(op(wounds, woundsIgnored, morphIgnoredWounds, woundsIgnoredEffects)) update {
+    case (curWounds, woundsIgn, morph, effects) => {
+      val woundsApl = Math.max(curWounds - woundsIgn - morph - effects, 0);
       val woundsModifier = woundsApl * 10;
       Seq(woundsApplied <<= woundsApl, woundMod <<= woundsModifier)
     }
   };
 
-  val traumaCalc = bind(op(trauma, traumasIgnored)) update {
-    case (curTraumas, traumasIgn) => {
-      val traumasApl = Math.max(curTraumas - traumasIgn, 0);
+  val traumaCalc = bind(op(trauma, traumasIgnored, traumasIgnoredEffects)) update {
+    case (curTraumas, traumasIgn, effects) => {
+      val traumasApl = Math.max(curTraumas - traumasIgn - effects, 0);
       val traumasMod = traumasApl * 10;
       Seq(traumasApplied <<= traumasApl, traumaMod <<= traumasMod)
     }
@@ -108,38 +108,44 @@ object EPWorkers extends SheetWorkerRoot {
     case (tr) => Seq(museTraumaMod <<= tr * 10)
   };
 
-  val willStatsCalc = bind(op(wilTotal, lucidityExtra)) update {
-    case (wil, lucExtra) => {
+  val willStatsCalc = bind(op(wilTotal, lucidityExtra, async)) update {
+    case (wil, lucExtra, isAsync) => {
       debug(s"Updating will dependent stats with ${wil}");
       val baseLuc = wil * 2;
       val luc = baseLuc + lucExtra;
-      Seq(
-        lucidity <<= luc,
-        stressMax <<= luc,
-        insanityRating <<= baseLuc * 2, // the book isn't clear about this, but it's my interpretation
-        psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt
-      )
-    }
-  };
-
-  val traumaThresholdCalc = op(wilTotal, async) update {
-    case (wil, isAsync) => {
-      val luc = wil * 2;
       val tt = if (isAsync) {
         Math.max(Math.ceil(luc.toFloat / 5.0f).toInt - 1, 0)
       } else {
         Math.ceil(luc.toFloat / 5.0f).toInt
       };
-      Seq(traumaThreshold <<= tt)
+      Seq(
+        lucidity <<= luc,
+        stressMax <<= luc,
+        insanityRating <<= baseLuc * 2, // the book isn't clear about this, but it's my interpretation
+        psiTempTime <<= Math.ceil(wil.toFloat / 5.0).toInt,
+        traumaThreshold <<= tt
+      )
     }
   };
 
-  onChange(async, (ei: EventInfo) => {
-    val f = for {
-      _ <- traumaThresholdCalc()
-    } yield ();
-    ()
-  })
+  // val traumaThresholdCalc = op(wilTotal, async) update {
+  //   case (wil, isAsync) => {
+  //     val luc = wil * 2;
+  //     val tt = if (isAsync) {
+  //       Math.max(Math.ceil(luc.toFloat / 5.0f).toInt - 1, 0)
+  //     } else {
+  //       Math.ceil(luc.toFloat / 5.0f).toInt
+  //     };
+  //     Seq(traumaThreshold <<= tt)
+  //   }
+  // };
+
+  // onChange(async, (ei: EventInfo) => {
+  //   val f = for {
+  //     _ <- traumaThresholdCalc()
+  //   } yield ();
+  //   ()
+  // })
 
   val museWillStatsCalc = bind(op(museWil)) update {
     case (wil) => {
@@ -180,7 +186,6 @@ object EPWorkers extends SheetWorkerRoot {
     .andThen(SkillWorkers.skillTotalCalc));
 
   val wilTotalCalc = bind(op(wilBase, wilTemp, wilMorph, wilMorphMax)) update (aptTotalCalc(wilTotal), willStatsCalc
-    .andThen(traumaThresholdCalc)
     .andThen(SkillWorkers.skillTotalCalc));
 
   val aptTotals = cogTotalCalc ++ List(cooTotalCalc,
@@ -193,7 +198,6 @@ object EPWorkers extends SheetWorkerRoot {
   val aptTotalsAll = aptTotals ++ List(initCalc,
                                        dbCalc,
                                        willStatsCalc,
-                                       traumaThresholdCalc,
                                        GearWorkers.weaponRangeLimits.all(RangedWeaponSection),
                                        SkillWorkers.skillTotalCalc);
 

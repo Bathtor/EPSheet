@@ -319,6 +319,8 @@ object EPStyle extends SheetStyle {
   val `trait-tag-field` = cls();
   val `h2hr` = cls();
   val `checklabel` = cls();
+  val `spec-tag-field` = cls();
+  val `dash-for-empty` = cls();
 
   val `description-toggle` = cls();
   val `toggle-wrapper-label` = cls();

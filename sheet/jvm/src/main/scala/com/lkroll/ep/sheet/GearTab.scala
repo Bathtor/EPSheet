@@ -64,7 +64,7 @@ object GearTab extends FieldGroup {
   //  }
   val dtRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
     sup(span(EPStyle.`cat-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic))
-  }
+  };
 
   //  val daRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
   //    span(sty.`area-field`, name := f.name, SheetI18NAttrs.datai18nDynamic)
@@ -73,6 +73,17 @@ object GearTab extends FieldGroup {
   //  val ubaRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
   //    span(sty.`uniform-radius-field`, raw("("), span(name := f.name), raw("m)"))
   //  }
+
+  val specRenderer: GroupRenderer.FieldDualRenderer = (f, mode) =>
+    mode match {
+      case RenderMode.Presentation =>
+        sup(input(`type` := "hidden", name := f.name), span(EPStyle.`spec-tag-field`, "+"))
+      case RenderMode.Edit =>
+        div(sty.inlineLabelGroup,
+            label(t.weaponSpecialisation),
+            input(`type` := "checkbox", name := f.name, value := "10"))
+      case RenderMode.Normal => ???
+    };
 
   case class AreaGroup(area: FieldLike[_], areaShort: FieldLike[_], radius: FieldLike[_]) extends FieldGroup {
     val fieldRenderer = CoreTabRenderer.fieldRenderers;
@@ -210,6 +221,9 @@ object GearTab extends FieldGroup {
             char.meleeWeapons.damageTypeShort.like(dtRenderer),
             span(" ("),
             char.meleeWeapons.skillName,
+            char.meleeWeapons.specialisation.like(specRenderer),
+            span(raw(" + ")),
+            char.meleeWeapons.miscMod,
             span(")"),
             span(raw(" ~ ")),
             meleeDamageRollQuery,
@@ -229,6 +243,10 @@ object GearTab extends FieldGroup {
               char.meleeWeapons.skillSearch.like(skillSearchBox),
               char.meleeWeapons.skillName,
               char.meleeWeapons.skillTotal.hidden,
+              span(raw(" + ")),
+              char.meleeWeapons.miscMod,
+              span(raw(" + ")),
+              char.meleeWeapons.specialisation.like(specRenderer),
               flexFill
             ),
             tightfrow(
@@ -364,6 +382,9 @@ object GearTab extends FieldGroup {
             span("] "),
             span(raw("(")),
             char.rangedWeapons.skillName,
+            char.rangedWeapons.specialisation.like(specRenderer),
+            span(raw(" + ")),
+            char.rangedWeapons.miscMod,
             span(raw(") {")),
             checklabellike(t.singleShot, char.rangedWeapons.singleShot, Some(" ")),
             checklabellike(t.semiAutomatic, char.rangedWeapons.semiAutomatic, Some(" ")),
@@ -416,6 +437,8 @@ object GearTab extends FieldGroup {
               char.rangedWeapons.skillTotal.hidden,
               span(raw(" + ")),
               char.rangedWeapons.miscMod,
+              span(raw(" + ")),
+              char.rangedWeapons.specialisation.like(specRenderer),
               flexFill
             ),
             tightfrow(

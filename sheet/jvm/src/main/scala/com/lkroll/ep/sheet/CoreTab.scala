@@ -70,7 +70,7 @@ object CoreTab extends FieldGroup {
 
   val characterInfo = fblock(
     t.characterInfo,
-    EPStyle.min5rem,
+    sty.min5rem,
     (t.background -> dualMode(char.background)),
     (t.faction -> dualMode(char.faction)),
     (t.genderId -> dualMode(char.genderId)),
@@ -79,11 +79,21 @@ object CoreTab extends FieldGroup {
   );
 
   val traitTypeRenderer: GroupRenderer.FieldDualRenderer = (f, mode) => {
-    span(EPStyle.`trait-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic)
+    span(sty.`trait-tag-field`, name := f.name, SheetI18NAttrs.datai18nDynamic)
   }
+
+  val dashForEmptyRenderer: GroupRenderer.FieldDualRenderer = (f, _) =>
+    span(input(`type` := "hidden", name := f.name, value := f.initialValue),
+         span(sty.labelledValue, sty.`dash-for-empty`, name := f.name));
 
   val effects = block(
     t.effects,
+    tightfrow(
+      (t.appliedEffects -> char.appliedEffectsSummary.like(dashForEmptyRenderer)),
+      (t.freeformEffects -> char.freeformEffectsSummary.like(dashForEmptyRenderer)),
+      flexFill
+    ),
+    div(sty.smallWrapBoxTitle, sty.halfRemRowSeparator, span(t.effectsActiveSummary)),
     char.effects {
       TightRepRow(
         presOnly(
@@ -405,9 +415,29 @@ object CoreTab extends FieldGroup {
         dualMode(char.moxieMax)
       ),
       flexFillNarrow,
-      sblock(t.mentalHealth, sty.max15rem, (t.stress -> char.stress), (t.trauma -> char.trauma)),
+      sblock(
+        t.mentalHealth,
+        sty.max15rem,
+        (t.stress -> char.stress),
+        (t.trauma -> char.trauma),
+        span(raw("(")),
+        span(t.appl),
+        span(raw("&nbsp;")),
+        char.traumasApplied,
+        span(raw(")"))
+      ),
       flexFillNarrow,
-      sblock(t.physicalHealth, sty.max15rem, (t.damage -> char.damage), (t.wounds -> char.wounds)),
+      sblock(
+        t.physicalHealth,
+        sty.max15rem,
+        (t.damage -> char.damage),
+        (t.wounds -> char.wounds),
+        span(raw("(")),
+        span(t.appl),
+        span(raw("&nbsp;")),
+        char.woundsApplied,
+        span(raw(")"))
+      ),
       flexFillNarrow,
       sblock(t.armour, sty.max15rem, (t.energy -> char.armourEnergyTotal), (t.kinetic -> char.armourKineticTotal)),
       flexFillNarrow,

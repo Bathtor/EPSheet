@@ -98,7 +98,7 @@ object EPUpdates extends MinorVersionUpdateManager {
     List(rangeUpdates)
   }
   forVersion("1.10.0") {
-    val identityUpdate = op(IdentitiesSection.identity).update {
+    val identityUpdate = op(IdentitiesSection.identity) update {
       case (id) => {
         Seq(
           IdentitiesSection.atNameShort,
@@ -124,5 +124,36 @@ object EPUpdates extends MinorVersionUpdateManager {
     };
     val identityUpdates = identityUpdate.all(IdentitiesSection);
     List(identityUpdates, EPWorkers.setFrayHalved)
+  }
+  forVersion("1.13.0") {
+    val deactivateEffect = op(EffectsSection.active) update {
+      case (active) if active => Seq(EffectsSection.active <<= false)
+      case _                  => Seq.empty
+    };
+    val deactivateEffects = deactivateEffect.all(EffectsSection);
+    val resetFields = nop update { _ =>
+      Seq(
+        model.cogTemp <<= model.cogTemp.resetValue,
+        model.cooTemp <<= model.cooTemp.resetValue,
+        model.intTemp <<= model.intTemp.resetValue,
+        model.refTemp <<= model.refTemp.resetValue,
+        model.savTemp <<= model.savTemp.resetValue,
+        model.somTemp <<= model.somTemp.resetValue,
+        model.wilTemp <<= model.wilTemp.resetValue,
+        model.speedExtra <<= model.speedExtra.resetValue,
+        model.mentalOnlyActionsExtra <<= model.mentalOnlyActionsExtra.resetValue,
+        model.initiativeExtra <<= model.initiativeExtra.resetValue,
+        model.durabilityBonus <<= model.durabilityBonus.resetValue,
+        model.lucidityExtra <<= model.lucidityExtra.resetValue
+      )
+    };
+    List(deactivateEffects, resetFields) ++ List(
+      EPWorkers.aptTotalsAll,
+      EPWorkers.durStatsCalc,
+      EPWorkers.initCalc,
+      EPWorkers.spdCalc,
+      EPWorkers.moaCalc,
+      SkillWorkers.skillTotalCalc
+    )
   }
 }

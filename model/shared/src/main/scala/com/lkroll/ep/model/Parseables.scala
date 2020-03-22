@@ -29,14 +29,14 @@ object Parseables {}
 
 object Aptitude extends Enumeration {
 
-  type Aptitude = Value
+  type Aptitude = Value;
 
-  val COG, COO, INT, REF, SAV, SOM, WIL = Value
+  val COG, COO, INT, REF, SAV, SOM, WIL = Value;
 
   def valuesFrom(m: Map[Aptitude, Int]): AptitudeValues = {
     AptitudeValues(m.get(COG), m.get(COO), m.get(INT), m.get(REF), m.get(SAV), m.get(SOM), m.get(WIL))
   }
-  def defaultValues: AptitudeValues = AptitudeValues(None, None, None, None, None, None, None)
+  def defaultValues: AptitudeValues = AptitudeValues(None, None, None, None, None, None, None);
 }
 
 case class AptitudeValues(cog: Option[Int],
@@ -46,5 +46,3 @@ case class AptitudeValues(cog: Option[Int],
                           sav: Option[Int],
                           som: Option[Int],
                           wil: Option[Int]);
-
-case class SkillMod(skill: String, field: Option[String], mod: Int);

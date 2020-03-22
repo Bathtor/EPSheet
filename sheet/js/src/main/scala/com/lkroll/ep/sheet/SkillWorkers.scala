@@ -43,6 +43,7 @@ object SkillWorkers extends SheetWorker {
       activeSkills.noDefaulting,
       activeSkills.linkedAptitude,
       activeSkills.morphBonus,
+      activeSkills.effectsBonus,
       activeSkills.ranks,
       cogTotal,
       cooTotal,
@@ -53,7 +54,7 @@ object SkillWorkers extends SheetWorker {
       wilTotal
     )
   ) update {
-    case (nodef, apt, morph, ranks, cog, coo, int, ref, sav, som, wil) => {
+    case (nodef, apt, morph, effects, ranks, cog, coo, int, ref, sav, som, wil) => {
       import Aptitude._
 
       val aptTotal = ValueParsers.aptFrom(apt) match {
@@ -66,9 +67,9 @@ object SkillWorkers extends SheetWorker {
         case WIL => wil
       };
       val total = if (nodef) {
-        if (ranks == 0) 0 else aptTotal + ranks + morph
+        if (ranks == 0) 0 else aptTotal + ranks + morph + effects
       } else {
-        aptTotal + ranks + morph
+        aptTotal + ranks + morph + effects
       };
       Seq(activeSkills.total <<= total)
     }
@@ -79,6 +80,7 @@ object SkillWorkers extends SheetWorker {
       knowledgeSkills.noDefaulting,
       knowledgeSkills.linkedAptitude,
       knowledgeSkills.morphBonus,
+      knowledgeSkills.effectsBonus,
       knowledgeSkills.ranks,
       cogTotal,
       cooTotal,
@@ -89,7 +91,7 @@ object SkillWorkers extends SheetWorker {
       wilTotal
     )
   ) update {
-    case (nodef, apt, morph, ranks, cog, coo, int, ref, sav, som, wil) => {
+    case (nodef, apt, morph, effects, ranks, cog, coo, int, ref, sav, som, wil) => {
       import Aptitude._
 
       val aptTotal = ValueParsers.aptFrom(apt) match {
@@ -102,9 +104,9 @@ object SkillWorkers extends SheetWorker {
         case WIL => wil
       };
       val total = if (nodef) {
-        if (ranks == 0) 0 else aptTotal + ranks + morph
+        if (ranks == 0) 0 else aptTotal + ranks + morph + effects
       } else {
-        aptTotal + ranks + morph
+        aptTotal + ranks + morph + effects
       };
       Seq(knowledgeSkills.total <<= total)
     }
@@ -460,6 +462,7 @@ object SkillWorkers extends SheetWorker {
         activeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
         activeSkills.at(id, ranks) <<= ranks.resetValue,
         activeSkills.at(id, morphBonus) <<= morphBonus.resetValue,
+        activeSkills.at(id, effectsBonus) <<= effectsBonus.resetValue,
         activeSkills.at(id, total) <<= total.resetValue,
         activeSkills.at(id, globalMods) <<= globalMods.valueFrom(globalModsExpression)
       )
@@ -474,6 +477,7 @@ object SkillWorkers extends SheetWorker {
         knowledgeSkills.at(id, noDefaulting) <<= skill.noDefaulting,
         knowledgeSkills.at(id, ranks) <<= ranks.resetValue,
         knowledgeSkills.at(id, morphBonus) <<= morphBonus.resetValue,
+        knowledgeSkills.at(id, effectsBonus) <<= effectsBonus.resetValue,
         knowledgeSkills.at(id, total) <<= total.resetValue
       )
     }
@@ -594,6 +598,71 @@ object SkillWorkers extends SheetWorker {
           (activeUpdates ++ knowledgeUpdates).toMap
         }
       };
+      setAttrs(data)
+    };
+    r flatMap identity
+
+  }
+
+  private[sheet] def effectsSkillBoniCalc(skillBoni: List[SkillMod]): Future[Unit] = {
+    val activeTuplesF = getActiveSkills();
+    val knowledgeTuplesF = getKnowledgeSkills();
+    val r = for {
+      activeTuples <- activeTuplesF
+      knowledgeTuples <- knowledgeTuplesF
+    } yield {
+      // reset
+      debug("Resetting effect skill boni.");
+      val resetUpdates: Map[FieldLike[Any], Any] = {
+        val activeUpdates = activeTuples.map { t =>
+          activeSkills.at(t.id, activeSkills.effectsBonus) <<= activeSkills.effectsBonus.resetValue
+        }
+        val knowledgeUpdates = knowledgeTuples.map { t =>
+          knowledgeSkills.at(t.id, knowledgeSkills.effectsBonus) <<= knowledgeSkills.effectsBonus.resetValue
+        }
+        (activeUpdates ++ knowledgeUpdates).toMap
+      };
+
+      debug(s"Applying Skill Boni:\n${skillBoni.map(_.text).mkString(",")}");
+      val updates: Map[FieldLike[Any], Any] = {
+        val activeUpdates = activeTuples.map { t =>
+          val bonus = skillBoni.flatMap { sm =>
+            t.name.flatMap { tname =>
+              if (sm.skill.equalsIgnoreCase(tname)) {
+                val fieldMatch = for {
+                  smField <- sm.field;
+                  tField <- t.field
+                } yield smField.equalsIgnoreCase(tField);
+                fieldMatch match {
+                  case Some(true) | None => Some(sm.mod)
+                  case Some(false)       => None
+                }
+              } else None
+            }
+          }.sum;
+          activeSkills.at(t.id, activeSkills.morphBonus) <<= bonus
+        };
+        val knowledgeUpdates = knowledgeTuples.map { t =>
+          val bonus = skillBoni.flatMap { sm =>
+            t.name.flatMap { tname =>
+              if (sm.skill.equalsIgnoreCase(tname)) {
+                val fieldMatch = for {
+                  smField <- sm.field;
+                  tFieldRaw <- t.field;
+                  tField <- if (tFieldRaw == "???") None else Some(tFieldRaw)
+                } yield smField.equalsIgnoreCase(tField);
+                fieldMatch match {
+                  case Some(true) | None => Some(sm.mod)
+                  case Some(false)       => None
+                }
+              } else None
+            }
+          }.sum;
+          knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= bonus
+        };
+        (activeUpdates ++ knowledgeUpdates).toMap
+      };
+      val data = resetUpdates ++ updates;
       setAttrs(data)
     };
     r flatMap identity

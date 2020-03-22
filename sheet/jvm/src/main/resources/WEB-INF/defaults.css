@@ -23,7 +23,9 @@
  * 
  */
 
-/* latin */
+@import url('https://fonts.googleapis.com/css?family=Abel|Aldrich&display=swap');
+
+/*
 @font-face {
   font-family: 'Abel';
   font-style: normal;
@@ -32,14 +34,13 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
-/* latin */
 @font-face {
   font-family: 'Aldrich';
   font-style: normal;
   font-weight: 400;
   src: local('Aldrich'), url(https://fonts.gstatic.com/s/aldrich/v6/TqyqZ92O6-MkXS4JR8sZ6gLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
-}
+}*/
 
 .sheet-abel {
     font-family: 'Abel', serif;
@@ -434,13 +435,28 @@ span.sheet-h2hr:after {
 }
 
 span.sheet-cat-tag-field {
-  color: ${cat-tag-colour};
-  font-size: 80%;
-  font-weight: bold;
-  padding-left: 1px;
-  padding-right: 1px;
-  position: relative;
-  top: -0.5em;
+    color: ${cat-tag-colour};
+    font-size: 80%;
+    font-weight: bold;
+    padding-left: 1px;
+    padding-right: 1px;
+    position: relative;
+    top: -0.5em;
+}
+
+input ~ span.sheet-spec-tag-field {
+    visibility: hidden;
+}
+
+input[value="10"] ~ span.sheet-spec-tag-field {
+    visibility: visible;
+    color: ${cat-tag-colour};
+    font-size: 80%;
+    font-weight: bold;
+    padding-left: 1px;
+    padding-right: 1px;
+    position: relative;
+    top: -0.5em;
 }
 
 span.sheet-area-field {
@@ -469,6 +485,10 @@ span.sheet-skillSpec:not(:empty)::before {
 }
 
 .sheet-labelGroup span:empty::before {
+    content: "—";
+}
+
+.sheet-dash-for-empty:empty::before {
     content: "—";
 }
 

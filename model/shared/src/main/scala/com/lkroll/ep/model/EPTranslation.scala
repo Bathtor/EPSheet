@@ -50,6 +50,9 @@ object EPTranslation extends SheetI18N {
   val effectOnGame = text("effect-game");
   val effectOnGameExample = text("effect-game-example");
   val effectDescription = text("effect-description");
+  val appliedEffects = text("applied-effects");
+  val freeformEffects = text("freeform-effects");
+  val effectsActiveSummary = text("effects-active-summary");
   val showHideDescription = text("show-hide-description");
   val traits = text("traits");
   val traitName = text("trait-name");
@@ -129,6 +132,7 @@ object EPTranslation extends SheetI18N {
   val damage = text("damage");
   val wounds = text("wounds");
   val woundsIgnored = text("wounds-ignored");
+  val appl = abbr("apl", "applied");
   val armour = text("armour");
   val kinetic = text("kinetic");
   val energy = text("energy");
@@ -145,6 +149,7 @@ object EPTranslation extends SheetI18N {
   val skillNoDefaulting = text("skill-no-defaulting");
   val skillRanks = text("skill-ranks");
   val skillMorphBonus = text("skill-morph-bonus");
+  val skillEffectsBonus = text("skill-effects-bonus");
   val skillTotal = text("skill-total");
   val skillsGenerate = text("generate-skills");
   val skillsGenerating = text("generating-skills");
@@ -230,6 +235,7 @@ object EPTranslation extends SheetI18N {
   val weaponSkill = text("weapon-skill");
   val weaponSkillSearch = text("weapon-skill-search");
   val weaponDescription = text("weapon-description");
+  val weaponSpecialisation = text("weapon-specialisation");
   val firingModes = text("fire-modes");
   val singleShot = abbr("ss", "single-shot");
   val semiAutomatic = abbr("sa", "semi-automatic");

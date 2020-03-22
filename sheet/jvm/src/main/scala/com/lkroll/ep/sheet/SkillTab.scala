@@ -103,6 +103,7 @@ object SkillTab extends FieldGroup {
                   char.activeSkills.linkedAptitude,
                   (t.skillRanks -> char.activeSkills.ranks),
                   (t.skillMorphBonus -> char.activeSkills.morphBonus),
+                  (t.skillEffectsBonus -> char.activeSkills.effectsBonus),
                   (t.skillTotal -> char.activeSkills.total),
                   char.activeSkills.specialisations
                     .like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),
@@ -170,6 +171,7 @@ object SkillTab extends FieldGroup {
                   char.knowledgeSkills.linkedAptitude,
                   (t.skillRanks -> char.knowledgeSkills.ranks),
                   (t.skillMorphBonus -> char.knowledgeSkills.morphBonus),
+                  (t.skillEffectsBonus -> char.knowledgeSkills.effectsBonus),
                   (t.skillTotal -> char.knowledgeSkills.total),
                   char.knowledgeSkills.specialisations
                     .like(CoreTabRenderer.textWithPlaceholder(t.skillSpecialisations.placeholder)),

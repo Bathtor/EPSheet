@@ -48,6 +48,10 @@ object ValueParsers {
     }
   }
 
+  private lazy val modPattern = """([+-]\d+)""";
+  private lazy val numPattern = """(\d+)""";
+  private lazy val whitespace = """\s""";
+
   def aptitudesFrom(sraw: String): Try[AptitudeValues] = {
     val s = sraw.trim();
     val r = Try {
@@ -111,13 +115,11 @@ object ValueParsers {
   def aptFrom(s: String): Aptitude.Aptitude = Aptitude.withName(s);
 
   private lazy val skillPattern = {
-    val mod = """([+-]\d+)""";
     val words = """(\w(?:(?:\w| )*\w)?)""";
-    val whitespace = """\s""";
     val wordsInParenMaybe = """(?:\s\(""" + words + """\))?""";
     val skillMaybe = """(?:\sskill)?""";
 
-    val expr = mod + whitespace + words + wordsInParenMaybe + skillMaybe;
+    val expr = modPattern + whitespace + words + wordsInParenMaybe + skillMaybe;
     expr.r
   }
 
@@ -179,7 +181,49 @@ object ValueParsers {
       None
     } else {
       Some(d.asInstanceOf[T])
-    }
+    };
+
+  private lazy val speedModPattern = (modPattern + whitespace + """SPD""").r;
+  private lazy val moaModPattern = (modPattern + whitespace + """MOA""").r;
+  private lazy val iniModPattern = (modPattern + whitespace + """INI""").r;
+  private lazy val aptModPattern = (modPattern + whitespace + """(COG|COO|INT|REF|SAV|SOM|WIL)""").r;
+  private lazy val durModPattern = (modPattern + whitespace + """DUR""").r;
+  private lazy val lucModPattern = (modPattern + whitespace + """LUC""").r;
+
+  private val ignoreModifiersPattern = "Ignore" + whitespace + "modifiers" + whitespace + "from";
+
+  private lazy val ignoreWoundsPattern =
+    (ignoreModifiersPattern + whitespace + numPattern + whitespace + """wounds""").r;
+  private lazy val ignoreTraumasPattern =
+    (ignoreModifiersPattern + whitespace + numPattern + whitespace + """traumas""").r;
+
+  def effectsFrom(sraw: String): Try[Seq[Effect]] = {
+    val s = sraw.trim;
+    val r = Try {
+      if (s.isEmpty) {
+        Success(Seq.empty)
+      } else {
+        val commaSplit = s.split(",");
+        val res = commaSplit.map { group =>
+          group.trim match {
+            case speedModPattern(mod)            => SpeedMod(mod.toInt)
+            case moaModPattern(mod)              => MOAMod(mod.toInt)
+            case iniModPattern(mod)              => IniMod(mod.toInt)
+            case aptModPattern(mod, apt)         => AptitudeMod(Aptitude.withName(apt), mod.toInt)
+            case durModPattern(mod)              => DurMod(mod.toInt)
+            case lucModPattern(mod)              => LucMod(mod.toInt)
+            case skillPattern(mod, skill, null)  => SkillMod(removeFinalSkill(skill), None, mod.toInt)
+            case skillPattern(mod, skill, field) => SkillMod(removeFinalSkill(skill), Some(field), mod.toInt)
+            case ignoreWoundsPattern(n)          => IgnoreWounds(n.toInt)
+            case ignoreTraumasPattern(n)         => IgnoreTraumas(n.toInt)
+            case x                               => FreeForm(x)
+          }
+        };
+        Success(res.toSeq)
+      }
+    };
+    r.flatten
+  }
 }
 
 class ParsingException(message: String) extends Exception(message) {

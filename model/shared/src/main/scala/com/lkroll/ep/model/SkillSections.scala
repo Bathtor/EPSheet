@@ -44,6 +44,7 @@ object ActiveSkillSection extends RepeatingSection {
   val noDefaulting = "no_defaulting".default(false);
   val ranks = "ranks".default(0);
   val morphBonus = "morph_bonus".editable(false).default(0);
+  val effectsBonus = "effects_bonus".editable(false).default(0);
   val total = number[Int]("total").editable(false);
   val globalMods = "global_mods".editable(false).expression[Int].default(EPCharModel.globalMods);
   val rollTarget = roll("target", EPCharModel.modQuery.arith + total + globalMods.altArith);
@@ -65,6 +66,7 @@ object KnowledgeSkillSection extends RepeatingSection {
   val noDefaulting = "no_defaulting".default(false);
   val ranks = "ranks".default(0);
   val morphBonus = "morph_bonus".editable(false).default(0);
+  val effectsBonus = "effects_bonus".editable(false).default(0);
   val total = number[Int]("total").editable(false);
   val rollTarget = roll("target", EPCharModel.modQuery.arith + total + EPCharModel.globalMods);
   val rollSpecTarget = roll("spec_target", EPCharModel.modQuery.arith + total + EPCharModel.globalMods + 10);

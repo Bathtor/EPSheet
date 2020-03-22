@@ -49,3 +49,6 @@ ep-script.js
 .bloop/
 .metals/
 .vscode/
+metals.sbt
+
+*.code-workspace

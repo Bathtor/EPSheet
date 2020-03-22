@@ -38,7 +38,12 @@ object MeleeWeaponSection extends RepeatingSection {
   val skillSearch = "skill_search".options("Blades", "Clubs", "Exotic Melee Weapon: ...", "Unarmed Combat");
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
-  val attackTarget = roll("attack_target", EPCharModel.modQuery + skillTotal.altArith + EPCharModel.globalPhysicalMods);
+  val miscMod = "misc_mod".default(0);
+  val specialisation = "specialisation".default(0);
+  val attackTarget = roll(
+    "attack_target",
+    EPCharModel.modQuery + skillTotal.altArith + miscMod + specialisation + EPCharModel.globalPhysicalMods
+  );
   val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
   val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
   val showDivisor = "show_divisor".default(false).editable(false);
@@ -84,9 +89,10 @@ object RangedWeaponSection extends RepeatingSection {
   val skillName = "skill_name".editable(false).default("none");
   val skillTotal = "skill_total".ref(EPCharModel.activeSkills.total);
   val miscMod = "misc_mod".default(0);
+  val specialisation = "specialisation".default(0);
   val attackTarget = roll(
     "attack_target",
-    EPCharModel.modQuery + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + EPCharModel.globalPhysicalMods
+    EPCharModel.modQuery + skillTotal.altArith + EPCharModel.rangeQuery.arith + miscMod + specialisation + EPCharModel.globalPhysicalMods
   );
   val armourPenetration = "armour_penetration".default(0).validIn(-99, 0, 1);
   val numDamageDice = "num_damage_dice".default(0).validIn(0, 99, 1);
