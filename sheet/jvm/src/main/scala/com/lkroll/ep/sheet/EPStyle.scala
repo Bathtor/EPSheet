@@ -77,7 +77,8 @@ object EPStyle extends SheetStyle {
     fontSize := "1.1rem",
     fontWeight := 700,
     textTransform.uppercase,
-    textAlign.center
+    textAlign.center,
+    fontFamily := """'Aldrich', monospace"""
   );
 
   val smallWrapBoxTitle = cls(
@@ -90,7 +91,7 @@ object EPStyle extends SheetStyle {
     fontWeight := 700,
     textTransform.uppercase,
     textAlign.center,
-    span(fontSize := "0.9rem", fontWeight := 700, textTransform.uppercase)
+    span(fontSize := "0.9rem", fontWeight := 700, textTransform.uppercase, fontFamily := """'Aldrich', monospace""")
   );
 
   val largeText = cls(input(fontSize := "2.2rem", fontWeight.bold), span(fontSize := "2.2rem", fontWeight.bold));
