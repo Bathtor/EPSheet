@@ -68,6 +68,10 @@ In this section we give a quick overview over all available commands. They descr
 Installation
 ------------
 
+You can find a video of me going through the whole process described below on youtube:
+
+[![Setup Process](https://img.youtube.com/vi/tnlJzZd1yF0/0.jpg)](https://www.youtube.com/watch?v=tnlJzZd1yF0)
+
 ### Prerequisites
 
 - You must be a **Pro** subscriber of Roll20 to use API scripts in general, and this script in particular.
