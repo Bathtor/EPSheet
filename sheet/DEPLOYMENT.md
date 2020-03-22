@@ -20,7 +20,7 @@ Commit and push these new changes to the fork's master.
 
 This being done, create a stabilisation tracking issue with the title *Tracking Issue for Sheet vX.Y.Z-rc Stabilisation Phase* using the following template:
 ```markdown
-Stablisation tracking issue for <version with link to tag>.
+Stabilisation tracking issue for <version with link to tag>.
 
 Stabilisation phase is 4 playing sessions without blocking issues.
 

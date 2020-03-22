@@ -417,7 +417,7 @@ object CoreTab extends FieldGroup {
       flexFillNarrow,
       sblock(
         t.mentalHealth,
-        sty.max15rem,
+        sty.max20rem,
         (t.stress -> char.stress),
         (t.trauma -> char.trauma),
         span(raw("(")),
@@ -429,7 +429,7 @@ object CoreTab extends FieldGroup {
       flexFillNarrow,
       sblock(
         t.physicalHealth,
-        sty.max15rem,
+        sty.max20rem,
         (t.damage -> char.damage),
         (t.wounds -> char.wounds),
         span(raw("(")),
