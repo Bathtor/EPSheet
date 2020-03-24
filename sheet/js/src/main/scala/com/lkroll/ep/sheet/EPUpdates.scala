@@ -125,12 +125,21 @@ object EPUpdates extends MinorVersionUpdateManager {
     val identityUpdates = identityUpdate.all(IdentitiesSection);
     List(identityUpdates, EPWorkers.setFrayHalved)
   }
-  forVersion("1.13.0") {
+  forVersion("1.12.0") {
     val deactivateEffect = op(EffectsSection.active) update {
       case (active) if active => Seq(EffectsSection.active <<= false)
       case _                  => Seq.empty
     };
     val deactivateEffects = deactivateEffect.all(EffectsSection);
+    val resetMeleeSpecialisation = op(MeleeWeaponSection.specialisation) update { _ =>
+      Seq(MeleeWeaponSection.specialisation <<= MeleeWeaponSection.specialisation.resetValue)
+    };
+    val resetMeleeSpecialisations = resetMeleeSpecialisation.all(MeleeWeaponSection);
+    val resetRangedSpecialisation = op(RangedWeaponSection.specialisation) update { _ =>
+      Seq(RangedWeaponSection.specialisation <<= RangedWeaponSection.specialisation.resetValue)
+    };
+    val resetRangedSpecialisations = resetRangedSpecialisation.all(RangedWeaponSection);
+
     val resetFields = nop update { _ =>
       Seq(
         model.cogTemp <<= model.cogTemp.resetValue,
@@ -147,7 +156,7 @@ object EPUpdates extends MinorVersionUpdateManager {
         model.lucidityExtra <<= model.lucidityExtra.resetValue
       )
     };
-    List(deactivateEffects, resetFields) ++ List(
+    List(deactivateEffects, resetMeleeSpecialisations, resetRangedSpecialisations, resetFields) ++ List(
       EPWorkers.aptTotalsAll,
       EPWorkers.durStatsCalc,
       EPWorkers.initCalc,
@@ -156,4 +165,6 @@ object EPUpdates extends MinorVersionUpdateManager {
       SkillWorkers.skillTotalCalc
     )
   }
+
+  // Memo to self: The version in `forVersion` is actually the version we are upgrading *from* not to
 }
