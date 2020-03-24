@@ -640,7 +640,7 @@ object SkillWorkers extends SheetWorker {
               } else None
             }
           }.sum;
-          activeSkills.at(t.id, activeSkills.morphBonus) <<= bonus
+          activeSkills.at(t.id, activeSkills.effectsBonus) <<= bonus
         };
         val knowledgeUpdates = knowledgeTuples.map { t =>
           val bonus = skillBoni.flatMap { sm =>
@@ -658,7 +658,7 @@ object SkillWorkers extends SheetWorker {
               } else None
             }
           }.sum;
-          knowledgeSkills.at(t.id, knowledgeSkills.morphBonus) <<= bonus
+          knowledgeSkills.at(t.id, knowledgeSkills.effectsBonus) <<= bonus
         };
         (activeUpdates ++ knowledgeUpdates).toMap
       };
