@@ -3,7 +3,7 @@
 import java.io.File;
 import ammonite.ops._
 import ammonite.ops.ImplicitWd._
-import scalaj.http._
+//import scalaj.http._
 
 case class Roll20Config(roll20: String, campaignId: String)
 
@@ -43,16 +43,16 @@ def assemble(javacp: Path, jsfile: String) {
 		cmd.out.lines.foreach(println);
 		if (cmd.exitCode == 0) {
 			println("Assembly complete.");
-			var attempt = 0;
-			while (attempt < maxRetries) {
-				try {
-					upload(attempt);
-					return;
-				} catch {
-					case e: Throwable => e.printStackTrace(Console.err);
-				}
-				attempt += 1;
-			}
+			// var attempt = 0;
+			// while (attempt < maxRetries) {
+			// 	try {
+			// 		upload(attempt);
+			// 		return;
+			// 	} catch {
+			// 		case e: Throwable => e.printStackTrace(Console.err);
+			// 	}
+			// 	attempt += 1;
+			// }
 		} else {
 			Console.err.println("Error while assembling sheet:");
 			println(cmd);
@@ -62,31 +62,31 @@ def assemble(javacp: Path, jsfile: String) {
 	}
 }
 
-def upload(attempt: Int) {
-	if (attempt >= maxRetries) {
-		println("Reached maximum retries on upload. Aborting..."); return;
-	}
-	// read files
-	val html = read! pwd/htmlfile;
-	val css = read! pwd/cssfile;
-	val translation = read! pwd/translationfile;
-	// upload
-	println(s"#${attempt}: Uploading to ${campaign.roll20} -> ${campaign.campaignId}...");
-	val requrl = s"https://app.${campaign.roll20}.net/campaigns/savesettings/${campaign.campaignId}";
-	val respurl = s"https://app.${campaign.roll20}.net/campaigns/campaignsettings/${campaign.campaignId}";
-	val res = Http(requrl).option(HttpOptions.connTimeout(5000)).option(HttpOptions.readTimeout(30000)).postForm(Seq(
-		"customcharsheet_layout" -> html,
-	    "customcharsheet_style" -> css,
-	    "customcharsheet_translation" -> translation,
-	    "allowcharacterimport" -> "true",
-	    "bgimage" -> "none",
-	    "publicaccess" -> "false",
-	    "charsheettype" -> "custom",
-	    "compendium_override" -> "none"
-	)).cookie("rack.session", rackSessionId).asString;
-	if ((res.code != 303) || !res.headers("Location")(0).equals(respurl)) {
-		Console.err.println(s"Problem submitting sheet (${res.code}), response headers:\n${res.headers}\nbody:\n${res.body}");
-	} else {
-		println("Sheet uploaded!");
-	}
-}
+// def upload(attempt: Int) {
+// 	if (attempt >= maxRetries) {
+// 		println("Reached maximum retries on upload. Aborting..."); return;
+// 	}
+// 	// read files
+// 	val html = read! pwd/htmlfile;
+// 	val css = read! pwd/cssfile;
+// 	val translation = read! pwd/translationfile;
+// 	// upload
+// 	println(s"#${attempt}: Uploading to ${campaign.roll20} -> ${campaign.campaignId}...");
+// 	val requrl = s"https://app.${campaign.roll20}.net/campaigns/savesettings/${campaign.campaignId}";
+// 	val respurl = s"https://app.${campaign.roll20}.net/campaigns/campaignsettings/${campaign.campaignId}";
+// 	val res = Http(requrl).option(HttpOptions.connTimeout(5000)).option(HttpOptions.readTimeout(30000)).postForm(Seq(
+// 		"customcharsheet_layout" -> html,
+// 	    "customcharsheet_style" -> css,
+// 	    "customcharsheet_translation" -> translation,
+// 	    "allowcharacterimport" -> "true",
+// 	    "bgimage" -> "none",
+// 	    "publicaccess" -> "false",
+// 	    "charsheettype" -> "custom",
+// 	    "compendium_override" -> "none"
+// 	)).cookie("rack.session", rackSessionId).asString;
+// 	if ((res.code != 303) || !res.headers("Location")(0).equals(respurl)) {
+// 		Console.err.println(s"Problem submitting sheet (${res.code}), response headers:\n${res.headers}\nbody:\n${res.body}");
+// 	} else {
+// 		println("Sheet uploaded!");
+// 	}
+// }
