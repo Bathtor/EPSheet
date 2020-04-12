@@ -63,6 +63,10 @@ label {
     width: auto
 }
 
+p {
+    font-family: 'Montserrat', sans-serif;
+}
+
 input {
   background-color: ${input-background-colour};
   color: ${input-colour};
