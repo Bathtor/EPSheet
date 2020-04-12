@@ -339,6 +339,7 @@ object EPTranslation extends SheetI18N {
   val usingAPIScript = text("using-api-script");
   val apiLookup = text("api-lookup");
   val apiText = text("api-text");
+  val apiTextWarning = text("api-text-warning");
 
   // template
   val rollsfor = text("rolls-for");

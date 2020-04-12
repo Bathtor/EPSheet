@@ -331,6 +331,7 @@ Only one full-auto attack may be made with each Complex Action. This attack may 
   val miscDurBonus = keys.miscDurBonus <~ "Misc. Durability Bonus";
   val chatOutput = keys.chatOutput <~ "Chat Output";
   val apiText = keys.apiText <~ "API Text Exchange";
+  val apiTextWarning = keys.apiTextWarning <~ "WARNING: Do NOT put notes in this field! This field should only be used for copy-pasting JSON text for import/export via the API Script. The Script may arbitrarily override any text in this field!";
 
   // template
   val rollsfor = keys.rollsfor <~ "rolls for";

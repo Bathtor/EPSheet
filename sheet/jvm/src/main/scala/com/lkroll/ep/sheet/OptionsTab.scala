@@ -73,7 +73,9 @@ object OptionsTab extends FieldGroup {
       fcol(
         Seq(EPStyle.`flex-grow`, sty.marginr1rem, sty.exactly15rem),
         block(t.miscNotes, char.miscNotes.like(CoreTabRenderer.largeTextareaField)),
-        condBlock(char.usingAPIScript, t.apiText, char.apiText.like(CoreTabRenderer.largeTextareaField))
+        condBlock(char.usingAPIScript,
+                  t.apiText,
+                  char.apiText.like(CoreTabRenderer.largeTextareaFieldWithPlaceholder(t.apiTextWarning)))
       )
     )
   );

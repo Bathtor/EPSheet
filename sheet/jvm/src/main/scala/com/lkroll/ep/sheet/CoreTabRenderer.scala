@@ -182,6 +182,14 @@ trait CoreTabRenderer extends GroupRenderer {
     }
   }
 
+  def largeTextareaFieldWithPlaceholder(ph: DataLabel): FieldDualRenderer = (f, mode) => {
+    mode match {
+      case RenderMode.Edit | RenderMode.Normal =>
+        textarea(EPStyle.`eight-line-textarea`, name := f.name, f.initialValue, ph.placeholder.attrs)
+      case RenderMode.Presentation => span(EPStyle.labelledValue, name := f.name)
+    }
+  }
+
   val presEditableNum: FieldDualRenderer = (f, mode) => {
     f match {
       case n: NumberField[_] => renderNumberField(n)
