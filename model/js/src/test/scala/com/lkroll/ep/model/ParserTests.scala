@@ -1,9 +1,11 @@
 package com.lkroll.ep.model
 
 import org.scalatest._
+import funsuite._
+import matchers._
 import org.scalactic.source.Position.apply
 
-class ParserTests extends FunSuite with Matchers {
+class ParserTests extends AnyFunSuite with should.Matchers {
 
   test("Should parse simple aptitudes") {
     val singleNumber = "30";

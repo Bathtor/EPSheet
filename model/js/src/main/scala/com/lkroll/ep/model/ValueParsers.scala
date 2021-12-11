@@ -176,7 +176,7 @@ object ValueParsers {
     } yield SkillMod(skill, field, mod)
   }
 
-  private def dynamicToOption[T](d: Dynamic): Option[T] =
+  private def dynamicToOption[T](d: js.Dynamic): Option[T] =
     if (js.isUndefined(d)) {
       None
     } else {

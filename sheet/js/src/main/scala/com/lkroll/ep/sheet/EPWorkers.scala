@@ -35,7 +35,9 @@ import SheetWorkerTypeShorthands._
 import util.{Failure, Success}
 import concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
+import scala.scalajs.js.annotation._
 
+@JSExportTopLevel("EPWorkers")
 object EPWorkers extends SheetWorkerRoot {
 
   override def children: Seq[SheetWorker] =
