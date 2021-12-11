@@ -28,7 +28,7 @@ package com.lkroll.ep.sheet
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.roll20.core._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 import scalatags.Text.all._
 
 trait CoreTabRenderer extends GroupRenderer {
@@ -52,12 +52,12 @@ trait CoreTabRenderer extends GroupRenderer {
         val integerDigits = floor(log10(abs(largestBound))).toInt + 1; // +1 for first digit
         var count = 0;
         var v = stepD;
-        while (!v.isWhole()) {
+        while (!v.isWhole) {
           v *= 10.0;
           count += 1;
         }
         val decimalDigits = count + 1; // for the decimal point
-        val digits = integerDigits + decimalDigits + (if (nev.signum(minV) == -1) {
+        val digits = integerDigits + decimalDigits + (if (nev.sign(minV) == -1) {
                                                         1
                                                       } else {
                                                         0
@@ -111,7 +111,7 @@ trait CoreTabRenderer extends GroupRenderer {
           }
       case None => println(s"No default value for $ef"); (o: String) => None
     }
-    ef.enum match {
+    ef.enumeration match {
       case Some(e) =>
         EPTranslation.allFullOptions.get(e) match {
           case Some(l) => {

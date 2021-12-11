@@ -26,7 +26,7 @@ package com.lkroll.ep.sheet
 
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 import scalatags.Text.all._
 import SheetImplicits._
 

@@ -136,8 +136,9 @@ object GearWorkers extends SheetWorker {
       } else {
         weaponRangeLimits()
       };
-      f.onFailure {
-        case e: Throwable => sheet.error(e)
+      f.onComplete {
+        case Success(_) => ()
+        case Failure(e) => sheet.error(e)
       };
     }
   );

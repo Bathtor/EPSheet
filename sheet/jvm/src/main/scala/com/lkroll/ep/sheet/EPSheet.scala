@@ -28,7 +28,7 @@ package com.lkroll.ep.sheet
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.tabbed._
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 import scalatags.Text.all._
 import scalatags.stylesheet._
 
@@ -60,9 +60,9 @@ object EPSheet extends TabbedSheet {
   val psi = tab(t.psi, PsiTab);
   val muse = tab(t.muse, MuseTab);
 
-  override def style(): StyleSheet = EPStyle;
-  override def externalStyles() = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));
-  override def translation(): SheetI18NDefaults = EPTranslation;
+  override def style: StyleSheet = EPStyle;
+  override def externalStyles = List(this.getClass.getClassLoader.getResource("WEB-INF/defaults.css"));
+  override def translation: SheetI18NDefaults = EPTranslation;
   override def colourScheme = EPPalette;
   override def templates =
     EPAPIOutputTemplate :: EPInfoTemplate :: EPIniTemplate :: EPDefaultTemplate :: EPDamageTemplate :: super.templates;

@@ -29,7 +29,7 @@ import scalatags.Text.all._
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.tabbed.TabbedStyle
 import com.lkroll.roll20.sheet.model._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 import SheetImplicits._
 
 case class Aptitudes(rows: Seq[AptitudeRow]) extends FieldGroup {
@@ -207,7 +207,7 @@ case class AptitudeRow(rowName: LabelsI18N, members: Seq[SheetElement]) extends 
   val aptitudeRowRenderer = new GroupRenderer {
 
     override def fieldRenderers: GroupRenderer.FieldRenderer = {
-      case (f, _) if !f.editable =>
+      case (f, _) if !f.editable() =>
         td(span(name := f.name), input(`type` := "hidden", name := f.name, value := f.initialValue))
       case (f: NumberField[_], _) if f.editable =>
         td(span(TabbedStyle.presentation, name := f.name),

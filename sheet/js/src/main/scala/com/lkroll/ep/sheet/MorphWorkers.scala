@@ -66,14 +66,14 @@ object MorphWorkers extends SheetWorker {
           case (Some(currentId), Some(true)) if (!currentId.equalsIgnoreCase(rowId)) => {
             log(s"Active morph changed to ${rowId}");
             val updates = rowAttrs
-              .filterKeys(!_.equalsIgnoreCase(simpleRowId))
-              .mapValues(
-                attrs =>
+              .filter { case (key, value) => !key.equalsIgnoreCase(simpleRowId) }
+              .map {
+                case (key, attrs) =>
                   attrs(morphs.active) match {
-                    case Some(b) => b
-                    case None    => false
+                    case Some(b) => (key -> b)
+                    case None    => (key -> false)
                   }
-              )
+              }
               .filter({
                 case (_, active) => active
               })
@@ -98,8 +98,9 @@ object MorphWorkers extends SheetWorker {
           case x => log(s"Got something unexpected: ${x}");
         }
       };
-      doF.onFailure {
-        case e: Throwable => error(e)
+      doF.onComplete {
+        case Success(_) => ()
+        case Failure(e) => error(e)
       }
     }
   );
@@ -221,7 +222,7 @@ object MorphWorkers extends SheetWorker {
       )
   );
 
-  private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty) {
+  private def resetMorphDefaults(extraUpdates: Seq[(FieldLike[Any], Any)] = Seq.empty): Unit = {
     val updates = Seq(
       currentMorph,
       morphType,

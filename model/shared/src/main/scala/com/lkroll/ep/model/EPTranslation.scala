@@ -357,62 +357,62 @@ object EPTranslation extends SheetI18N {
 
   val traitTypeOptions = {
     val opts = TraitType.values.map(v => (v -> v.toString)).toMap;
-    enum[TraitType.type](TraitType.labelPrefix, opts)
+    enumeration[TraitType.type](TraitType.labelPrefix, opts)
   }
   val traitTypeOptionsShort = {
     val opts = TraitType.values.map(v => (v -> v.toString)).toMap;
-    enum[TraitType.type](TraitType.labelShortPrefix, opts)
+    enumeration[TraitType.type](TraitType.labelShortPrefix, opts)
   }
   val skillCategoryOptions = {
     import Skills.SkillCategory;
     val opts = SkillCategory.values.map(v => (v -> v.toString)).toMap;
-    enum[SkillCategory.type](SkillCategory.labelPrefix, opts)
+    enumeration[SkillCategory.type](SkillCategory.labelPrefix, opts)
   }
   val skillCategoryOptionsShort = {
     import Skills.SkillCategory;
     val opts = SkillCategory.values.map(v => (v -> v.toString)).toMap;
-    enum[SkillCategory.type](SkillCategory.labelShortPrefix, opts)
+    enumeration[SkillCategory.type](SkillCategory.labelShortPrefix, opts)
   }
   val skillClassOptions = {
     import Skills.SkillClass;
     val opts = SkillClass.values.map(v => (v -> v.toString)).toMap;
-    enum[SkillClass.type](SkillClass.labelPrefix, opts)
+    enumeration[SkillClass.type](SkillClass.labelPrefix, opts)
   }
   val skillSortOptions = {
     import Skills.SortBy;
     val opts = SortBy.values.map(v => (v -> v.toString)).toMap;
-    enum[SortBy.type](SortBy.labelPrefix, opts)
+    enumeration[SortBy.type](SortBy.labelPrefix, opts)
   }
   val dmgType = {
     val opts = DamageType.values.map(v => (v -> v.toString)).toMap;
-    enum[DamageType.type](DamageType.labelPrefix, opts)
+    enumeration[DamageType.type](DamageType.labelPrefix, opts)
   }
   val dmgTypeShort = {
     val opts = DamageType.values.map(v => (v -> v.toString)).toMap;
-    enum[DamageType.type](DamageType.labelShortPrefix, opts)
+    enumeration[DamageType.type](DamageType.labelShortPrefix, opts)
   }
   val dmgArea = {
     val opts = DamageArea.values.map(v => (v -> v.toString)).toMap;
-    enum[DamageArea.type](DamageArea.labelPrefix, opts)
+    enumeration[DamageArea.type](DamageArea.labelPrefix, opts)
   }
   val dmgAreaShort = {
     val opts = DamageArea.values.map(v => (v -> v.toString)).toMap;
-    enum[DamageArea.type](DamageArea.labelShortPrefix, opts)
+    enumeration[DamageArea.type](DamageArea.labelShortPrefix, opts)
   }
   val psiType = {
     val opts = PsiType.values.map(v => (v -> v.toString)).toMap;
-    enum[PsiType.type](PsiType.labelPrefix, opts)
+    enumeration[PsiType.type](PsiType.labelPrefix, opts)
   }
   val psiTypeShort = {
     val opts = PsiType.values.map(v => (v -> v.toString)).toMap;
-    enum[PsiType.type](PsiType.labelShortPrefix, opts)
+    enumeration[PsiType.type](PsiType.labelShortPrefix, opts)
   }
   val derangementSeverityOptions = {
     val opts = DerangementSeverity.values.map(v => (v -> v.toString)).toMap;
-    enum[DerangementSeverity.type](DerangementSeverity.labelPrefix, opts)
+    enumeration[DerangementSeverity.type](DerangementSeverity.labelPrefix, opts)
   }
   val chatOutputOptions = {
     val opts = ChatOutput.values.map(v => (v -> v.toString)).toMap;
-    enum[ChatOutput.type](ChatOutput.labelPrefix, opts)
+    enumeration[ChatOutput.type](ChatOutput.labelPrefix, opts)
   }
 }

@@ -27,7 +27,7 @@ package com.lkroll.ep.sheet
 import com.lkroll.roll20.sheet._
 import com.lkroll.roll20.sheet.model._
 import com.lkroll.roll20.core._
-import com.lkroll.ep.model._
+import com.lkroll.ep.model.{EPTranslation => TranslationKeys, _}
 import scalatags.Text.all._
 
 object GearTab extends FieldGroup {
@@ -95,8 +95,8 @@ object GearTab extends FieldGroup {
         span(sty.`uniform-radius-field`, raw("("), span(name := radius.name), raw("m)"))
       )
     }
-    override def renderer(): GroupRenderer = null;
-    override def members(): Seq[SheetElement] = null;
+    override def renderer: GroupRenderer = null;
+    override def members: Seq[SheetElement] = null;
   }
 
   def area(area: FieldLike[_], areaShort: FieldLike[_], radius: FieldLike[_]) = AreaGroup(area, areaShort, radius);
@@ -116,8 +116,8 @@ object GearTab extends FieldGroup {
         span(name := unit.name)
       )
     }
-    override def renderer(): GroupRenderer = null;
-    override def members(): Seq[SheetElement] = null;
+    override def renderer: GroupRenderer = null;
+    override def members: Seq[SheetElement] = null;
   }
 
   def range(rangeLabel: LabelsI18N, rangeStart: FieldLike[_], rangeEnd: FieldLike[_], unit: FieldLike[_]): RangeGroup =

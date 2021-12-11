@@ -248,10 +248,10 @@ object SkillWorkers extends SheetWorker {
     debug("****** Preparing to generate default skills");
     val activeNamesF = getRowAttrs(activeSkills, Seq(activeSkills.skillName)).map(_.flatMap {
       case (k, v) => v.apply(activeSkills.skillName)
-    } toSet);
+    }.toSet);
     val knowledgeNamesF = getRowAttrs(knowledgeSkills, Seq(knowledgeSkills.skillName)).map(_.flatMap {
       case (k, v) => v.apply(knowledgeSkills.skillName)
-    } toSet);
+    }.toSet);
 
     val r = for {
       activeNames <- activeNamesF;
@@ -309,7 +309,7 @@ object SkillWorkers extends SheetWorker {
   val generateMuseDefaultSkills = nop { _: Option[Unit] =>
     val namesF = getRowAttrs(museSkills, Seq(museSkills.skillName)).map(_.flatMap {
       case (k, v) => v.apply(museSkills.skillName)
-    } toSet);
+    }.toSet);
 
     val defaultSkills = Map("Academics" -> 50,
                             "Hardware" -> 20,

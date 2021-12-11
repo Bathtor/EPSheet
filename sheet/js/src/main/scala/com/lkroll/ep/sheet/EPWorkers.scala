@@ -254,7 +254,7 @@ object EPWorkers extends SheetWorkerRoot {
       val ratings = nameToId.keys
         .flatMap(n => {
           val nL = n.toLowerCase();
-          val matchRes = (nL, needleL).zipped.takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
+          val matchRes = nL.lazyZip(needleL).takeWhile(Function.tupled(_ == _)).map(_._1).mkString;
           val matchLength = matchRes.length;
           log(s"Compared $nL with $needleL and matched $matchRes of length $matchLength");
           if (matchLength > 0) {
@@ -281,8 +281,9 @@ object EPWorkers extends SheetWorkerRoot {
         )
       }
     };
-    doF.onFailure {
-      case e: Throwable =>
+    doF.onComplete {
+      case Success(_) => ()
+      case Failure(e) =>
         error(e);
         setAttrs(
           Map(section.at(simpleRowId, nameField) <<= nameField.resetValue,
@@ -315,8 +316,9 @@ object EPWorkers extends SheetWorkerRoot {
       };
       setAttrs(attrs)
     }
-    doF.onFailure {
-      case e: Throwable => error(e)
+    doF.onComplete {
+      case Success(_) => ()
+      case Failure(e) => error(e)
     }
     doF.flatMap(identity)
   }

@@ -4,15 +4,23 @@ import scala.sys.process._
 
 name := "EP Sheet Root"
 
-organization in ThisBuild := "com.lkroll.ep"
+ThisBuild / organization := "com.lkroll.ep"
 
-version in ThisBuild := "1.13.2"
+ThisBuild / version := "1.13.2"
 
-scalaVersion in ThisBuild := "2.12.15"
+ThisBuild / scalaVersion := "2.13.7"
 
-resolvers in ThisBuild += "Apache" at "https://repo.maven.apache.org/maven2"
-resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
-resolvers in ThisBuild += Resolver.mavenLocal
+ThisBuild / resolvers += "Apache" at "https://repo.maven.apache.org/maven2"
+ThisBuild / resolvers += Resolver.sonatypeRepo("releases")
+ThisBuild / resolvers += Resolver.mavenLocal
+
+ThisBuild / scalacOptions ++= Seq(
+    "-Xfatal-warnings",
+    "-deprecation",
+    "-feature",
+    "-unchecked",
+    "-language:implicitConversions"
+)
 
 lazy val submitSheet = taskKey[Unit]("Submit the script that assembled and uploads the sheet");
 lazy val submit = taskKey[Unit]("Assemble and fastOpt, and then upload the sheet");
@@ -54,8 +62,8 @@ lazy val epsheet = crossProject(JSPlatform, JVMPlatform)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     name := "EP Sheet",
-    libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.11.+",
-    libraryDependencies += "com.lkroll" %%% "roll20-sheet-framework" % "0.11.5",
+    libraryDependencies += "com.lihaoyi" %%% "scalatags" % "0.11.0",
+    libraryDependencies += "com.lkroll" %%% "roll20-sheet-framework" % "0.12.0-SNAPSHOT",
     libraryDependencies += "com.lkroll.ep" %%% "ep-model" % version.value,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.10" % "test",
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),

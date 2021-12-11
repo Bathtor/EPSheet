@@ -7,10 +7,10 @@ import ammonite.ops.ImplicitWd._
 
 case class Roll20Config(roll20: String, campaignId: String)
 
-def javacp(version: String): Path = pwd/RelPath(s"jvm/target/scala-2.12/EP Sheet-assembly-${version}.jar"); 
-val jsfileFast = "js/target/scala-2.12/ep-sheet-fastopt.js";
-val jsfileFull = "js/target/scala-2.12/ep-sheet-opt.js";
-val sheetworkers = "com.lkroll.ep.sheet.EPWorkers";
+def javacp(version: String): Path = pwd/RelPath(s"jvm/target/scala-2.13/EP Sheet-assembly-${version}.jar"); 
+val jsfileFast = "js/target/scala-2.13/ep-sheet-fastopt.js";
+val jsfileFull = "js/target/scala-2.13/ep-sheet-opt.js";
+val sheetworkers = "EPWorkers";
 val sheet = "com.lkroll.ep.sheet.EPSheet";
 
 val htmlfile = "ep-sheet.html";
