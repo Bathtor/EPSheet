@@ -49,8 +49,8 @@ case class SleightImport(s: PsiSleight) extends Importable {
       case SleightType.Chi => {
         char.createRepeating(PsiChiSection.sleight, rowId) <<= s.name;
         val psiType = SleightConversions.compendiumPsi2modelPsi(s.psiType);
-        char.createRepeating(PsiChiSection.psiType, rowId) <<= psiType.toString;
-        char.createRepeating(PsiChiSection.psiTypeShort, rowId) <<= ModelPsiType.dynamicLabelShort(psiType);
+        char.createRepeating(PsiChiSection.psiType, rowId).setWithWorker(psiType.toString);
+        // char.createRepeating(PsiChiSection.psiTypeShort, rowId) <<= ModelPsiType.dynamicLabelShort(psiType);
         char.createRepeating(PsiChiSection.range, rowId) <<= s.psiType.range.toString();
         char.createRepeating(PsiChiSection.action, rowId) <<= s.psiType.action;
         char.createRepeating(PsiChiSection.duration, rowId) <<= s.psiType.duration.label;
@@ -61,8 +61,8 @@ case class SleightImport(s: PsiSleight) extends Importable {
       case SleightType.Epsilon | SleightType.Gamma => {
         char.createRepeating(PsiGammaSection.sleight, rowId) <<= s.name;
         val psiType = SleightConversions.compendiumPsi2modelPsi(s.psiType);
-        char.createRepeating(PsiGammaSection.psiType, rowId) <<= psiType.toString;
-        char.createRepeating(PsiGammaSection.psiTypeShort, rowId) <<= ModelPsiType.dynamicLabelShort(psiType);
+        char.createRepeating(PsiGammaSection.psiType, rowId).setWithWorker(psiType.toString);
+        // char.createRepeating(PsiGammaSection.psiTypeShort, rowId) <<= ModelPsiType.dynamicLabelShort(psiType);
         char.createRepeating(PsiGammaSection.range, rowId) <<= s.psiType.range.toString();
         char.createRepeating(PsiGammaSection.action, rowId) <<= s.psiType.action;
         char.createRepeating(PsiGammaSection.duration, rowId) <<= s.psiType.duration.label;

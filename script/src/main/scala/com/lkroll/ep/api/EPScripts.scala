@@ -33,9 +33,9 @@ import com.lkroll.ep.model.{EPCharModel => epmodel}
 import scala.scalajs.js
 import scala.scalajs.js.JSON
 import scala.scalajs.js.annotation._
-import fastparse.all._
 import util.{Failure, Success, Try}
 
+@JSExportTopLevel("EPScripts")
 object EPScripts extends APIScriptRoot {
 
   scribe.Logger.root
@@ -69,11 +69,11 @@ object EPScripts extends APIScriptRoot {
   def checkVersion(char: Character): Result[Unit] = {
     char.attributeValue(epmodel.versionField) match {
       case Some(version) =>
-        if (version == epmodel.version()) {
+        if (version == epmodel.version) {
           Ok(())
         } else {
           Err(
-            s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version()})!"
+            s"The character sheet for ${char.name} does not have a matching model version (${version} vs ${epmodel.version})!"
           )
         }
       case None =>

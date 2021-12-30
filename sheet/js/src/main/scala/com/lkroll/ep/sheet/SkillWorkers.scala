@@ -140,12 +140,17 @@ object SkillWorkers extends SheetWorker {
   val nop7: Option[Tuple7[Int, Int, Int, Int, Int, Int, Int]] => ChainingDecision = (f) => ExecuteChain;
   val museAptSkillCalc = bind(op(museCog, museCoo, museInt, museRef, museSav, museSom, museWil)) apply (nop7, museSkillTotalCalc);
 
+  def catLabelShort(cat: Skills.SkillCategory.Value): String = {
+    val translationKey = Skills.SkillCategory.dynamicLabelShort(cat)
+    getTranslationByKey(translationKey).getOrElse(cat.toString)
+  }
+
   val skillCategoryCalc = bind(op(activeSkills.category)) update {
     case (catName) => {
       import Skills._
 
       val cat = SkillCategory.withName(catName);
-      val catLabel = SkillCategory.dynamicLabelShort(cat);
+      val catLabel = catLabelShort(cat);
       val globalModsExpression = modsForSkillCategory(cat);
       Seq(activeSkills.categoryShort <<= catLabel,
           activeSkills.globalMods <<= activeSkills.globalMods.valueFrom(globalModsExpression))
@@ -456,7 +461,7 @@ object SkillWorkers extends SheetWorker {
         activeSkills.at(id, skillName) <<= localisedName,
         activeSkills.at(id, field) <<= localisedField.getOrElse(field.resetValue),
         activeSkills.at(id, category) <<= skill.category.toString(),
-        activeSkills.at(id, categoryShort) <<= Skills.SkillCategory.dynamicLabelShort(skill.category),
+        activeSkills.at(id, categoryShort) <<= catLabelShort(skill.category),
         activeSkills.at(id, specialisations) <<= specialisations.resetValue,
         activeSkills.at(id, linkedAptitude) <<= skill.apt.toString(),
         activeSkills.at(id, noDefaulting) <<= skill.noDefaulting,

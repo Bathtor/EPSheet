@@ -103,9 +103,9 @@ case class SkillImport(s: CharacterSkill) extends Importable {
         }
         // categories (duplicating some code from the sheet worker)
         val cat = SkillConversions.compendiumCat2modelCat(s.category);
-        char.createRepeating(ActiveSkillSection.category, rowId) <<= cat.toString();
-        val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
-        char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
+        char.createRepeating(ActiveSkillSection.category, rowId).setWithWorker(cat.toString);
+        // val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
+        // char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
         val globalModsExpression = SkillConversions.modsForSkillCategory(cat);
         char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(
           globalModsExpression
@@ -185,9 +185,9 @@ case class SkillDefImport(s: SkillDef) extends Importable {
         }
         // categories (duplicating some code from the sheet worker)
         val cat = SkillConversions.compendiumCat2modelCat(s.category);
-        char.createRepeating(ActiveSkillSection.category, rowId) <<= cat.toString();
-        val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
-        char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
+        char.createRepeating(ActiveSkillSection.category, rowId).setWithWorker(cat.toString);
+        // val catLabel = Skills.SkillCategory.dynamicLabelShort(cat);
+        // char.createRepeating(ActiveSkillSection.categoryShort, rowId) <<= catLabel;
         val globalModsExpression = SkillConversions.modsForSkillCategory(cat);
         char.createRepeating(ActiveSkillSection.globalMods, rowId) <<= ActiveSkillSection.globalMods.valueFrom(
           globalModsExpression

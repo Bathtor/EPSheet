@@ -6,7 +6,7 @@ name := "EP Sheet Root"
 
 ThisBuild / organization := "com.lkroll.ep"
 
-ThisBuild / version := "1.13.2"
+ThisBuild / version := "1.14.0"
 
 ThisBuild / scalaVersion := "2.13.7"
 
@@ -15,11 +15,11 @@ ThisBuild / resolvers += Resolver.sonatypeRepo("releases")
 ThisBuild / resolvers += Resolver.mavenLocal
 
 ThisBuild / scalacOptions ++= Seq(
-    "-Xfatal-warnings",
-    "-deprecation",
-    "-feature",
-    "-unchecked",
-    "-language:implicitConversions"
+  "-Xfatal-warnings",
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-language:implicitConversions"
 )
 
 lazy val submitSheet = taskKey[Unit]("Submit the script that assembled and uploads the sheet");

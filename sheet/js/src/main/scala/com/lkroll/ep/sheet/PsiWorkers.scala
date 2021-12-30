@@ -42,12 +42,17 @@ object PsiWorkers extends SheetWorker {
     }
   }
 
+  def psiTypeLabelShort(pt: PsiType.Value): String = {
+    val translationKey = PsiType.dynamicLabelShort(pt)
+    getTranslationByKey(translationKey).getOrElse(pt.toString)
+  }
+
   val psiChiTypeCalc = bind(op(psiChi.psiType)) update {
     case (ptName) => {
       import PsiType._
 
       val pt = withName(ptName);
-      val ptLabel = dynamicLabelShort(pt);
+      val ptLabel = psiTypeLabelShort(pt);
       Seq(psiChi.psiTypeShort <<= ptLabel)
     }
   }
@@ -57,7 +62,7 @@ object PsiWorkers extends SheetWorker {
       import PsiType._
 
       val pt = withName(ptName);
-      val ptLabel = dynamicLabelShort(pt);
+      val ptLabel = psiTypeLabelShort(pt);
       Seq(psiGamma.psiTypeShort <<= ptLabel)
     }
   }

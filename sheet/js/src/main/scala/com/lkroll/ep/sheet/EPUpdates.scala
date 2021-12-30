@@ -166,5 +166,22 @@ object EPUpdates extends MinorVersionUpdateManager {
     )
   }
 
+  forVersion("1.13.0") {
+    val fixTraitTypes = EPWorkers.traitTypeCalc.all(CharacterTraitSection)
+    val fixPsiChiTypes = PsiWorkers.psiChiTypeCalc.all(PsiChiSection)
+    val fixPsiGammaTypes = PsiWorkers.psiGammaTypeCalc.all(PsiGammaSection)
+    val fixSkillCatTypes = SkillWorkers.skillCategoryCalc.all(ActiveSkillSection)
+    val fixDamageAreaTypes = GearWorkers.damageAreaCalc.all(RangedWeaponSection)
+    val fixMeleeDamageTypes = GearWorkers.meleeDamageTypeCalc.all(MeleeWeaponSection)
+    val fixRangedDamageTypes = GearWorkers.rangedDamageTypeCalc.all(RangedWeaponSection)
+    List(fixTraitTypes,
+         fixPsiChiTypes,
+         fixPsiGammaTypes,
+         fixSkillCatTypes,
+         fixDamageAreaTypes,
+         fixMeleeDamageTypes,
+         fixRangedDamageTypes)
+  }
+
   // Memo to self: The version in `forVersion` is actually the version we are upgrading *from* not to
 }

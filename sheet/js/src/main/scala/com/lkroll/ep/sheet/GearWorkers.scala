@@ -148,8 +148,9 @@ object GearWorkers extends SheetWorker {
       import DamageArea._
 
       val da = withName(daName);
-      val daLabel = dynamicLabelShort(da);
-      Seq(rangedWeapons.damageAreaShort <<= daLabel)
+      val daShortKey = dynamicLabelShort(da);
+      val daShortLabel = getTranslationByKey(daShortKey).getOrElse(da.toString)
+      Seq(rangedWeapons.damageAreaShort <<= daShortLabel)
     }
   }
 
@@ -158,8 +159,9 @@ object GearWorkers extends SheetWorker {
       import DamageType._
 
       val dt = withName(dtName);
-      val dtLabel = dynamicLabelShort(dt);
-      Seq(meleeWeapons.damageTypeShort <<= dtLabel)
+      val dtShortKey = dynamicLabelShort(dt);
+      val dtShortLabel = getTranslationByKey(dtShortKey).getOrElse(dt.toString)
+      Seq(meleeWeapons.damageTypeShort <<= dtShortLabel)
     }
   }
   val meleeDamageDiv = bind(op(meleeWeapons.damageDivisor)) update {
@@ -176,8 +178,9 @@ object GearWorkers extends SheetWorker {
       import DamageType._
 
       val dt = withName(dtName);
-      val dtLabel = dynamicLabelShort(dt);
-      Seq(rangedWeapons.damageTypeShort <<= dtLabel)
+      val dtShortKey = dynamicLabelShort(dt);
+      val dtShortLabel = getTranslationByKey(dtShortKey).getOrElse(dt.toString)
+      Seq(rangedWeapons.damageTypeShort <<= dtShortLabel)
     }
   }
   val rangedDamageDiv = bind(op(rangedWeapons.damageDivisor)) update {

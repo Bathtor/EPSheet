@@ -164,8 +164,9 @@ object EPWorkers extends SheetWorkerRoot {
       import TraitType._
 
       val traitType = TraitType.withName(traitTypeName);
-      val traitTypeLabel = TraitType.dynamicLabelShort(traitType);
-      Seq(characterTraits.traitTypeShort <<= traitTypeLabel)
+      val traitTypeShortKey = TraitType.dynamicLabelShort(traitType);
+      val traitTypeShortLabel = getTranslationByKey(traitTypeShortKey).getOrElse(traitType.toString)
+      Seq(characterTraits.traitTypeShort <<= traitTypeShortLabel)
     }
   }
 

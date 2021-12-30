@@ -45,10 +45,10 @@ case class EgoTraitImport(t: EPTrait) extends Importable {
       case TraitApplicability.Ego | TraitApplicability.Both => {
         val rowId = Some(idPool.generateRowId());
         char.createRepeating(CharacterTraitSection.traitName, rowId) <<= t.name;
-        char.createRepeating(CharacterTraitSection.traitType, rowId) <<= ctt2mtt(t.traitType).toString();
-        char.createRepeating(CharacterTraitSection.traitTypeShort, rowId) <<= ModelTraitType.dynamicLabelShort(
-          t.traitType
-        );
+        char.createRepeating(CharacterTraitSection.traitType, rowId).setWithWorker(ctt2mtt(t.traitType).toString);
+        // char.createRepeating(CharacterTraitSection.traitTypeShort, rowId) <<= ModelTraitType.dynamicLabelShort(
+        //   t.traitType
+        // );
         char.createRepeating(CharacterTraitSection.description, rowId) <<= t.descr;
         Ok("Ok")
       }

@@ -25,6 +25,7 @@
 package com.lkroll.ep.api
 
 import scala.util.{Failure, Success, Try}
+import scala.collection
 import com.lkroll.ep.model.{AptitudeValues => ModelAptitudes, SkillMod => ModelSkillMod, MorphType => ModelMorphType};
 import com.lkroll.ep.compendium.{AptitudeValues => CompendiumAptitudes, MorphType => CompendiumMorphType, Effect}
 
@@ -60,7 +61,7 @@ package object compendium {
     }
   }
 
-  def toCompendiumSkills(apts: Seq[ModelSkillMod]): Seq[Effect.SkillMod] = {
+  def toCompendiumSkills(apts: collection.Seq[ModelSkillMod]): collection.Seq[Effect.SkillMod] = {
     apts.map {
       case ModelSkillMod(skill, field, mod) =>
         Effect.SkillMod(skill, field, mod)

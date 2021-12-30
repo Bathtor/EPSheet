@@ -31,7 +31,6 @@ import com.lkroll.roll20.api.templates._
 import com.lkroll.ep.model.{EPCharModel => epmodel, EPTranslation => ept, DamageType}
 import scalajs.js
 import scalajs.js.JSON
-import fastparse.all._
 import util.{Failure, Success, Try}
 import CoreImplicits._;
 

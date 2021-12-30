@@ -124,16 +124,16 @@ sealed trait FloatOrInline {
   def toFloat(ctx: ChatContext): Try[Float];
 }
 object FloatOrInline {
-  import fastparse.all._
+  import fastparse._, NoWhitespace._
 
-  lazy val parser: P[FloatOrInline] = P(inline | raw);
-  lazy val raw: P[AFloat] =
-    P((CharIn('0' to '9').rep(1) ~ ("." ~ CharIn('0' to '9').rep(1)).?).!).map(s => AFloat(s.toFloat));
-  lazy val inline: P[Inline] = P("$[[" ~/ ws ~ CharIn('0' to '9').rep(1).! ~ ws ~ "]]").map(s => Inline(s.toInt));
-  lazy val ws = P(" ".rep);
+  def parser[_: P]: P[FloatOrInline] = P(inline | raw);
+  def raw[_: P]: P[AFloat] =
+    P((CharIn("0-9").rep(1) ~ ("." ~ CharIn("0-9").rep(1)).?).!).map(s => AFloat(s.toFloat));
+  def inline[_: P]: P[Inline] = P("$[[" ~/ ws ~ CharIn("0-9").rep(1).! ~ ws ~ "]]").map(s => Inline(s.toInt));
+  def ws[_: P] = P(" ".rep);
 
   def fromString(s: String): FloatOrInline = {
-    parser.parse(s) match {
+    parse(s, parser(_)) match {
       case Parsed.Success(r, _) => r
       case _: Parsed.Failure    => throw new RuntimeException(s"Could not parse '$s' as Float or Inline Roll Ref!")
     }

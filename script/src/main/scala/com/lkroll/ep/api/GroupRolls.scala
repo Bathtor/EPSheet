@@ -31,7 +31,6 @@ import com.lkroll.roll20.api.templates._
 import com.lkroll.ep.model.{EPCharModel => epmodel, ActiveSkillSection}
 import scalajs.js
 import scalajs.js.JSON
-import fastparse.all._
 import concurrent.Future
 import util.{Failure, Success, Try}
 
@@ -123,7 +122,7 @@ object EPGroupRollsCommand extends EPCommand[EPGroupRollsConf] {
     val f: RollConsumer = {
       case Success(res) => {
         val campaign = Campaign();
-        campaign.turnOrder ++= res.map(t => (t._1 -> t._3));
+        campaign.turnOrder ++= res.map(t => TurnOrder.TokenEntry(t._1.id, Left(t._3)));
         campaign.turnOrder.dedup();
         campaign.turnOrder.sortDesc();
         val msg = div(h4("Participants"), ul(for ((_, char, roll) <- res) yield li(b(char.name), ": ", s"[[$roll]]")));

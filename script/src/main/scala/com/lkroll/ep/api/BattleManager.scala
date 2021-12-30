@@ -31,7 +31,6 @@ import com.lkroll.roll20.api.templates._
 import com.lkroll.ep.model.{EPCharModel => epmodel}
 import scalajs.js
 import scalajs.js.JSON
-import fastparse.all._
 import concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.collection.mutable
@@ -62,7 +61,7 @@ object BattleManagerScript extends EPScript {
             )
           );
         }
-        case _ => (), // that's ok
+        case _ => () // that's ok
       }
     }
   );

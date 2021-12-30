@@ -83,10 +83,10 @@ case class WeaponImport(weapon: Weapon) extends Importable {
           char.createRepeating(MeleeWeaponSection.showDivisor, rowId) <<= true;
         }
         char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
-        char.createRepeating(MeleeWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
-          damageType
-        );
+        char.createRepeating(MeleeWeaponSection.damageType, rowId).setWithWorker(damageType.toString);
+        // char.createRepeating(MeleeWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+        //   damageType
+        // );
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.`type`.skill) match {
           case Some(skillId) => {
@@ -112,14 +112,14 @@ case class WeaponImport(weapon: Weapon) extends Importable {
           char.createRepeating(RangedWeaponSection.showDivisor, rowId) <<= true;
         }
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
-        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
-          damageType
-        );
-        char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
-        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
-          damageArea
-        );
+        char.createRepeating(RangedWeaponSection.damageType, rowId).setWithWorker(damageType.toString);
+        // char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+        //   damageType
+        // );
+        char.createRepeating(RangedWeaponSection.damageArea, rowId).setWithWorker(damageArea.toString);
+        // char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
+        //   damageArea
+        // );
         weapon.area match {
           case DamageArea.UniformBlast(r) => {
             char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
@@ -215,10 +215,10 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
           char.createRepeating(MeleeWeaponSection.showDivisor, rowId) <<= true;
         }
         char.createRepeating(MeleeWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
-        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
-          damageType
-        );
+        char.createRepeating(RangedWeaponSection.damageType, rowId).setWithWorker(damageType.toString);
+        // char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+        //   damageType
+        // );
         char.createRepeating(MeleeWeaponSection.description, rowId) <<= weapon.descr;
         cache.activeSkillId(weapon.weapon.`type`.skill) match {
           case Some(skillId) => {
@@ -244,14 +244,14 @@ case class WeaponWithAmmoImport(weapon: WeaponWithAmmo) extends Importable {
           char.createRepeating(RangedWeaponSection.showDivisor, rowId) <<= true;
         }
         char.createRepeating(RangedWeaponSection.damageBonus, rowId) <<= weapon.damage.dmgConst;
-        char.createRepeating(RangedWeaponSection.damageType, rowId) <<= damageType.toString;
-        char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
-          damageType
-        );
-        char.createRepeating(RangedWeaponSection.damageArea, rowId) <<= damageArea.toString;
-        char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
-          damageArea
-        );
+        char.createRepeating(RangedWeaponSection.damageType, rowId).setWithWorker(damageType.toString);
+        // char.createRepeating(RangedWeaponSection.damageTypeShort, rowId) <<= ModelDamageType.dynamicLabelShort(
+        //   damageType
+        // );
+        char.createRepeating(RangedWeaponSection.damageArea, rowId).setWithWorker(damageArea.toString);
+        // char.createRepeating(RangedWeaponSection.damageAreaShort, rowId) <<= ModelDamageArea.dynamicLabelShort(
+        //   damageArea
+        // );
         weapon.area match {
           case DamageArea.UniformBlast(r) => {
             char.createRepeating(RangedWeaponSection.uniformBlastArea, rowId) <<= r;
